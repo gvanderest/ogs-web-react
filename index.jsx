@@ -1,1 +1,3 @@
-export default const TEST = 123;
+export default function hello() {
+  return 123;
+};
