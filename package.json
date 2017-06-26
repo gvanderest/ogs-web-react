@@ -1,0 +1,9 @@
+{
+  "name": "ogs-web-react",
+  "version": "1.0.0",
+  "description": "OGS Web Framework in React",
+  "main": "index.js",
+  "repository": "https://bitbucket.org/gvanderest/ogs-web-react",
+  "author": "Guillaume VanderEst <guillaume@vanderest.org>",
+  "license": "MIT"
+}
