@@ -5,5 +5,20 @@
   "main": "index.jsx",
   "repository": "https://bitbucket.org/gvanderest/ogs-web-react",
   "author": "Guillaume VanderEst <guillaume@vanderest.org>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "history": "^4.6.3",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
+    "react-router-redux": "next",
+    "redux": "^3.7.1",
+    "redux-thunk": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.1.1",
+    "eslint-plugin-react": "^7.1.0"
+  }
 }
