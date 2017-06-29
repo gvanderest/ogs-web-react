@@ -1,7 +1,8 @@
-import { ERROR_FETCHING_EVENT, FETCHING_EVENT, FETCHED_EVENT, FETCHED_EVENTS } from '../actions/eventsActions';
+import { FETCHING_EVENT, FETCHED_EVENT, ERROR_FETCHING_EVENT } from '../actions/eventsActions';
+import { FETCHING_EVENTS, FETCHED_EVENTS } from '../actions/eventsActions';
 
 const initialState = {
-    fetching: false,
+    fetchingAll: false,
     byId: {}
 };
 
@@ -23,15 +24,23 @@ function handleFetchedEvent(state, action) {
 
 
 function handleFetchedEvents(state, action) {
+    let { events } = action;
+
     state = {
         ...state,
+        fetchingAll: false,
         byId: {
             ...state.byId,
         }
     };
 
-    action.events.forEach((event) => {
-        state = handleFetchedEvent(state, event);
+    events.forEach((event) => {
+        let { id } = event;
+        let existing = state.byId[id];
+        state.byId[id] = {
+            ...existing,
+            ...event
+        };
     });
 
     return state;
@@ -39,13 +48,16 @@ function handleFetchedEvents(state, action) {
 
 
 function handleFetchingEvent(state, action) {
-    let eventId = action.id;
+    let { id } = action.options;
+    let existing = state.byId[id];
     return {
         ...state,
         byId: {
             ...state.byId,
-            [eventId]: {
-                fetching: true
+            [id]: {
+                ...existing,
+                fetching: true,
+                failed: false
             }
         }
     };
@@ -53,12 +65,12 @@ function handleFetchingEvent(state, action) {
 
 
 function handleErrorFetchingEvent(state, action) {
-    let eventId = action.id;
+    let { id } = action.options;
     return {
         ...state,
         byId: {
             ...state.byId,
-            [eventId]: {
+            [id]: {
                 fetching: false,
                 failed: true
             }
@@ -67,12 +79,22 @@ function handleErrorFetchingEvent(state, action) {
 }
 
 
+function handleFetchingEvents(state) {
+    return {
+        ...state,
+        fetchingAll: true
+    };
+}
+
+
 export default function eventsReducer(state = initialState, action = {}) {
     let handlers = {
-        [ERROR_FETCHING_EVENT]: handleErrorFetchingEvent,
         [FETCHING_EVENT]: handleFetchingEvent,
         [FETCHED_EVENT]: handleFetchedEvent,
-        [FETCHED_EVENTS]: handleFetchedEvents
+        [ERROR_FETCHING_EVENT]: handleErrorFetchingEvent,
+
+        [FETCHING_EVENTS]: handleFetchingEvents,
+        [FETCHED_EVENTS]: handleFetchedEvents,
     };
     let handler = handlers[action.type];
     return handler ? handler(state, action) : state;
