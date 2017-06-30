@@ -175,7 +175,6 @@ export function fetchEventGamesCollections(options) {
                             dispatch({ type: FETCHED_TEAM, team });
                         });
 
-                        console.log('eventGamesCollection', eventGamesCollection);
                         return eventGamesCollection;
                     });
 
@@ -214,7 +213,6 @@ export function fetchFantasyEventGamesCollection(options) {
                 mode: 'cors'
             }).then((response) => {
                 response.json().then((raw) => {
-                    console.log('FANTASY EVENT GAMES REQUEST', raw);
                     let teamsById = {};
                     let gamesById = {};
                     let outcomesById = {};
@@ -261,7 +259,7 @@ export function fetchFantasyEventGamesCollection(options) {
                                 playerIds: []
                             };
                             teamsById[visitingTeam.id] = visitingTeam;
-                            game.homeTeamId = visitingTeam.id;
+                            game.visitingTeamId = visitingTeam.id;
                             game.visitingTeamScore = raw.vts;
                         }
 
@@ -277,14 +275,12 @@ export function fetchFantasyEventGamesCollection(options) {
                                 teamId
                             };
                             if (teamId) {
-                                console.log('team', teamsById[teamId]);
                                 teamsById[teamId].playerIds.push(player.id);
                             }
                             playersById[player.id] = player;
                         });
 
                         gamesById[game.id] = game;
-
                         return game.id;
                     });
 
@@ -338,8 +334,6 @@ export function fetchFantasyEventGamesCollection(options) {
                     Object.values(playersById).forEach((player) => {
                         dispatch({ type: FETCHED_PLAYER, player });
                     });
-
-                    console.log('PARSED EVG', eventGamesCollection);
 
                     return yes(eventGamesCollection);
                 }, () => {

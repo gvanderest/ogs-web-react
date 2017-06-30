@@ -5,6 +5,7 @@ import * as games from './actions/games';
 import * as outcomes from './actions/outcomes';
 import * as players from './actions/players';
 import * as teams from './actions/teams';
+import * as tickets from './actions/tickets';
 
 const actions = {
     events,
@@ -13,7 +14,8 @@ const actions = {
     games,
     outcomes,
     players,
-    teams
+    teams,
+    tickets
 };
 
 export default actions;
