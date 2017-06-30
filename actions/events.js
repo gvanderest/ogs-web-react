@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const FETCHING_EVENT = 'FETCHING_EVENT';
 export const FETCHED_EVENT = 'FETCHED_EVENT';
 export const ERROR_FETCHING_EVENT = 'ERROR_FETCHING_EVENT';
@@ -24,8 +26,37 @@ export function fetchEvent(options) {
                         description: rawEvent.description,
                         ticketCount: rawEvent.ticket_count,
                         ticketMax: rawEvent.ticket_max,
+                        ticketMaxPerUser: rawEvent.ticket_max_per_user,
                         ticketMin: rawEvent.ticket_min,
-                        externalId: String(rawEvent.external_id)
+                        externalId: String(rawEvent.external_id),
+                        closeTimestamp: moment.utc(rawEvent.close_ts).unix(),
+                        cashOnly: rawEvent.cash_only,
+                        payoutBreakdown: rawEvent.breakdown,
+                        payoutBreakdownEnhanced: rawEvent.breakdown_enhanced,
+                        lateSwap: rawEvent.can_late_swap,
+                        checkTimestamp: moment.utc(rawEvent.check_ts).unix(),
+                        finalizeTimestamp: moment.utc(rawEvent.finalize_ts).unix(),
+                        passwordProtected: rawEvent.is_password_protected,
+                        payout: rawEvent.payout,
+                        payoutCurrency: rawEvent.payoutCurrency,
+                        adminId: String(rawEvent.pool_admin_id),
+                        profit: rawEvent.profit,
+                        proPlayer: rawEvent.proplayer,
+                        resourceUri: rawEvent.resource_uri,
+                        selectionConstraints: rawEvent.selection_constraints,
+                        ticketCost: rawEvent.ticket_cost,
+                        ticketCostCurrency: rawEvent.ticket_cost_currency,
+                        eventGamesConfigName: rawEvent.eventgamesconfig,
+                        blacklisted: rawEvent.blacklisted,
+                        blacklisterUsername: rawEvent.blacklister_username,
+                        blacklistedEntrants: rawEvent.blacklisted_entrants,
+                        blacklistedEntrantsUsernames: rawEvent.blacklisted_entrants_usernames,
+                        ticketWithdrawable: rawEvent.allow_contestant_withdrawal,
+                        ticketPurchasable: rawEvent.enterable,
+                        featured: rawEvent.featured,
+                        lobbySort: rawEvent.lobbysort,
+                        lobbyTab: rawEvent.lobbytab,
+                        notes: rawEvent.notes
                     };
                     return yes(event);
                 }, () => {
@@ -45,7 +76,6 @@ export function fetchEvent(options) {
         return promise;
     };
 }
-
 
 export const FETCHING_EVENTS = 'FETCHING_EVENTS';
 export const FETCHED_EVENTS = 'FETCHED_EVENTS';

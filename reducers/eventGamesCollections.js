@@ -1,5 +1,5 @@
 import generateReducer from '../utils/generateReducer';
-import { FETCHING_EVENT_GAMES_COLLECTION, FETCHED_EVENT_GAMES_COLLECTION } from '../actions/eventGamesCollectionsActions';
+import { FETCHING_EVENT_GAMES_COLLECTION, FETCHED_EVENT_GAMES_COLLECTION } from '../actions/eventGamesCollections';
 
 
 function handleFetchedEventGamesCollection(state, action) {

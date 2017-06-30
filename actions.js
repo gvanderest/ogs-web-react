@@ -1,9 +1,9 @@
-import * as eventsActions from './actions/eventsActions';
-import * as eventGamesCollectionsActions from './actions/eventGamesCollectionsActions';
+import * as events from './actions/events';
+import * as eventGamesCollections from './actions/eventGamesCollections';
 
 const actions = {
-    events: eventsActions,
-    eventGamesCollections: eventGamesCollectionsActions
+    events,
+    eventGamesCollections
 };
 
 export default actions;

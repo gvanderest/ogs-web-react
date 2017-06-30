@@ -1,13 +1,13 @@
-import eventsReducer from './reducers/eventsReducer';
-import eventGamesCollectionsReducer from './reducers/eventGamesCollectionsReducer';
-import ticketsReducer from './reducers/ticketsReducer';
-import { routerReducer } from 'react-router-redux';
+import events from './reducers/events';
+import eventGamesCollections from './reducers/eventGamesCollections';
+import tickets from './reducers/tickets';
+import { routerReducer as routing } from 'react-router-redux';
 
 const reducers = {
-    events: eventsReducer,
-    eventGamesCollections: eventGamesCollectionsReducer,
-    tickets: ticketsReducer,
-    routing: routerReducer
+    events,
+    eventGamesCollections,
+    tickets,
+    routing
 };
 
 export default reducers;

@@ -1,5 +1,5 @@
 import { Provider as StoreProvider } from 'react-redux';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Switch as RouteSwitch } from 'react-router-dom';
 
 import store from './store';
 import connect from './connect';
@@ -11,7 +11,11 @@ import actions from './actions';
 import Application from './components/Application';
 import Router from './components/Router';
 
+import OGSApi from './ogs-api';
+
 export {
+    OGSApi,
+
     store,
     connect,
 
@@ -22,6 +26,7 @@ export {
 
     Router,
     Route,
+    RouteSwitch,
     Link,
 
     StoreProvider,
