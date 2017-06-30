@@ -1,6 +1,7 @@
 import { FETCHING_EVENT, FETCHED_EVENT, ERROR_FETCHING_EVENT } from '../actions/events';
 import { FETCHING_EVENTS, FETCHED_EVENTS } from '../actions/events';
 
+
 const initialState = {
     fetchingAll: false,
     byId: {}

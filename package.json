@@ -6,7 +6,11 @@
   "repository": "https://bitbucket.org/gvanderest/ogs-web-react",
   "author": "Guillaume VanderEst <guillaume@vanderest.org>",
   "license": "MIT",
+  "scripts": {
+    "lint": "yarn eslint ."
+  },
   "dependencies": {
+    "babel-eslint": "^7.2.3",
     "history": "^4.6.3",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",

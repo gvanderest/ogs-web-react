@@ -1,0 +1,1 @@
+export const FETCHED_OUTCOME = 'FETCHED_OUTCOME';
