@@ -1,1 +1,2 @@
 export const FETCHED_GAME = 'FETCHED_GAME';
+export const FETCHED_GAMES = 'FETCHED_GAMES';

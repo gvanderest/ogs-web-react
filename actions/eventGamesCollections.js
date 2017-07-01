@@ -1,10 +1,10 @@
 import moment from 'moment';
 
-import { FETCHED_GAME } from './games';
-import { FETCHED_TEAM } from './teams';
-import { FETCHED_OUTCOME } from './outcomes';
-import { FETCHED_EVENT_POSITION } from './eventPositions';
-import { FETCHED_PLAYER } from './players';
+import { FETCHED_GAMES } from './games';
+import { FETCHED_TEAMS } from './teams';
+import { FETCHED_OUTCOMES } from './outcomes';
+import { FETCHED_EVENT_POSITIONS } from './eventPositions';
+import { FETCHED_PLAYERS } from './players';
 
 
 export const FETCHING_EVENT_GAMES_COLLECTION = 'FETCHING_EVENT_GAMES_COLLECTION';
@@ -167,13 +167,9 @@ export function fetchEventGamesCollections(options) {
                             suffix: raw.suffix
                         };
 
-                        Object.values(gamesById).forEach((game) => {
-                            dispatch({ type: FETCHED_GAME, game });
-                        });
+                        dispatch({ type: FETCHED_GAMES, games: Object.values(gamesById) });
 
-                        Object.values(teamsById).forEach((team) => {
-                            dispatch({ type: FETCHED_TEAM, team });
-                        });
+                        dispatch({ type: FETCHED_TEAMS, teams: Object.values(teamsById) });
 
                         return eventGamesCollection;
                     });
@@ -199,9 +195,15 @@ export function fetchEventGamesCollections(options) {
 
 
 export function fetchFantasyEventGamesCollection(options) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         let promise = new Promise((yes, no) => {
             let { id, eventId } = options;
+            let state = getState();
+            let existing = state.eventGamesCollections.byId[id];
+
+            if (existing) {
+                return yes(existing);
+            }
 
             let url = `https://qa7.fantasydraft.com/api/v1/fantasy/eventgames/${ id }/`;
             if (eventId) {
@@ -312,28 +314,19 @@ export function fetchFantasyEventGamesCollection(options) {
                         eventPositionsById[eventPosition.id] = eventPosition;
                     });
 
-                    eventGamesCollection.eventPositionIds = Object.values(eventPositionsById).map((eventPosition) => {
-                        dispatch({ type: FETCHED_EVENT_POSITION, eventPosition });
-                        return eventPosition.id;
-                    });
+                    dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions: Object.values(eventPositionsById) });
+                    eventGamesCollection.eventPositionIds = Object.keys(eventPositionsById);
 
-                    eventGamesCollection.outcomeIds = Object.values(outcomesById).map((outcome) => {
-                        dispatch({ type: FETCHED_OUTCOME, outcome });
-                        return outcome.id;
-                    });
+                    dispatch({ type: FETCHED_OUTCOMES, outcomes: Object.values(outcomesById) });
+                    eventGamesCollection.outcomeIds = Object.keys(outcomesById);
 
-                    eventGamesCollection.gameIds = Object.values(gamesById).map((game) => {
-                        dispatch({ type: FETCHED_GAME, game });
-                        return game.id;
-                    });
+                    dispatch({ type: FETCHED_GAMES, teams: Object.values(gamesById) });
+                    eventGamesCollection.gameIds = Object.keys(gamesById);
 
-                    Object.values(teamsById).forEach((team) => {
-                        dispatch({ type: FETCHED_TEAM, team });
-                    });
+                    dispatch({ type: FETCHED_TEAMS, teams: Object.values(teamsById) });
+                    eventGamesCollection.teamIds = Object.keys(teamsById);
 
-                    Object.values(playersById).forEach((player) => {
-                        dispatch({ type: FETCHED_PLAYER, player });
-                    });
+                    dispatch({ type: FETCHED_PLAYERS, players: Object.values(playersById) });
 
                     return yes(eventGamesCollection);
                 }, () => {

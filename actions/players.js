@@ -1,1 +1,2 @@
 export const FETCHED_PLAYER = 'FETCHED_PLAYER';
+export const FETCHED_PLAYERS = 'FETCHED_PLAYERS';

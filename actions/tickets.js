@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export const FETCHING_TICKETS = 'FETCHING_TICKETS';
 export const FETCHED_TICKETS = 'FETCHED_TICKETS';
 export const ERROR_FETCHING_TICKETS = 'ERROR_FETCHING_TICKETS';
@@ -15,7 +13,6 @@ export function fetchTickets(options) {
                 mode: 'cors'
             }).then((response) => {
                 response.json().then(({ objects }) => {
-                    console.log('TICKETS', objects);
                     return yes(objects);
                 }, () => {
                     return no([{ type: 'JSON_ERROR' }]);
