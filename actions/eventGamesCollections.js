@@ -320,7 +320,7 @@ export function fetchFantasyEventGamesCollection(options) {
                     dispatch({ type: FETCHED_OUTCOMES, outcomes: Object.values(outcomesById) });
                     eventGamesCollection.outcomeIds = Object.keys(outcomesById);
 
-                    dispatch({ type: FETCHED_GAMES, teams: Object.values(gamesById) });
+                    dispatch({ type: FETCHED_GAMES, games: Object.values(gamesById) });
                     eventGamesCollection.gameIds = Object.keys(gamesById);
 
                     dispatch({ type: FETCHED_TEAMS, teams: Object.values(teamsById) });
