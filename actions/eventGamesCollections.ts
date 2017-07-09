@@ -1,4 +1,5 @@
-import moment from 'moment';
+import * as moment from "moment";
+import * as Promise from "promise";
 
 import { FETCHED_GAMES } from './games';
 import { FETCHED_TEAMS } from './teams';

@@ -24,6 +24,7 @@
     "react-router-redux": "next",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
+    "tslint": "^5.5.0",
     "typescript": "^2.4.1"
   },
   "devDependencies": {
