@@ -1,27 +1,25 @@
-import moment from 'moment';
-
-export const FETCHING_EVENT = 'FETCHING_EVENT';
-export const FETCHED_EVENT = 'FETCHED_EVENT';
-export const ERROR_FETCHING_EVENT = 'ERROR_FETCHING_EVENT';
-
-export function fetchEvent(options) {
-    return (dispatch, getState) => {
-        let promise = new Promise((yes, no) => {
-            let { id } = options;
-            let state = getState();
-            let existing = state.events.byId[id];
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var moment_1 = require("moment");
+exports.FETCHING_EVENT = 'FETCHING_EVENT';
+exports.FETCHED_EVENT = 'FETCHED_EVENT';
+exports.ERROR_FETCHING_EVENT = 'ERROR_FETCHING_EVENT';
+function fetchEvent(options) {
+    return function (dispatch, getState) {
+        var promise = new Promise(function (yes, no) {
+            var id = options.id;
+            var state = getState();
+            var existing = state.events.byId[id];
             if (existing && !existing.fetching) {
                 return yes(existing);
             }
-
-            dispatch({ type: FETCHING_EVENT, options });
-
-            fetch(`https://qa7.fantasydraft.com/api/v1/events/${ id }/`, {
+            dispatch({ type: exports.FETCHING_EVENT, options: options });
+            fetch("https://qa7.fantasydraft.com/api/v1/events/" + id + "/", {
                 method: 'GET',
                 credentials: 'include'
-            }).then((response) => {
-                response.json().then((rawEvent) => {
-                    let event = {
+            }).then(function (response) {
+                response.json().then(function (rawEvent) {
+                    var event = {
                         id: String(rawEvent.id),
                         description: rawEvent.description,
                         ticketCount: rawEvent.ticket_count,
@@ -29,13 +27,13 @@ export function fetchEvent(options) {
                         ticketMaxPerUser: rawEvent.ticket_max_per_user,
                         ticketMin: rawEvent.ticket_min,
                         externalId: String(rawEvent.external_id),
-                        closeTimestamp: moment.utc(rawEvent.close_ts).unix(),
+                        closeTimestamp: moment_1.default.utc(rawEvent.close_ts).unix(),
                         cashOnly: rawEvent.cash_only,
                         payoutBreakdown: rawEvent.breakdown,
                         payoutBreakdownEnhanced: rawEvent.breakdown_enhanced,
                         lateSwap: rawEvent.can_late_swap,
-                        checkTimestamp: moment.utc(rawEvent.check_ts).unix(),
-                        finalizeTimestamp: moment.utc(rawEvent.finalize_ts).unix(),
+                        checkTimestamp: moment_1.default.utc(rawEvent.check_ts).unix(),
+                        finalizeTimestamp: moment_1.default.utc(rawEvent.finalize_ts).unix(),
                         passwordProtected: rawEvent.is_password_protected,
                         payout: rawEvent.payout,
                         payoutCurrency: rawEvent.payoutCurrency,
@@ -59,39 +57,35 @@ export function fetchEvent(options) {
                         notes: rawEvent.notes
                     };
                     return yes(event);
-                }, () => {
+                }, function () {
                     return no([{ type: 'JSON_ERROR' }]);
                 });
-            }, () => {
+            }, function () {
                 return no([{ type: 'NOT_FOUND' }]);
             });
         });
-
-        promise.then((event) => {
-            dispatch({ type: FETCHED_EVENT, options, event });
-        }, (errors) => {
-            dispatch({ type: ERROR_FETCHING_EVENT, options, errors });
+        promise.then(function (event) {
+            dispatch({ type: exports.FETCHED_EVENT, options: options, event: event });
+        }, function (errors) {
+            dispatch({ type: exports.ERROR_FETCHING_EVENT, options: options, errors: errors });
         });
-
         return promise;
     };
 }
-
-export const FETCHING_EVENTS = 'FETCHING_EVENTS';
-export const FETCHED_EVENTS = 'FETCHED_EVENTS';
-export const ERROR_FETCHING_EVENTS = 'ERROR_FETCHING_EVENTS';
-
-export function fetchEvents(options) {
-    return (dispatch) => {
-        dispatch({ type: FETCHING_EVENTS, options });
-
-        let promise = new Promise((yes, no) => {
+exports.fetchEvent = fetchEvent;
+exports.FETCHING_EVENTS = 'FETCHING_EVENTS';
+exports.FETCHED_EVENTS = 'FETCHED_EVENTS';
+exports.ERROR_FETCHING_EVENTS = 'ERROR_FETCHING_EVENTS';
+function fetchEvents(options) {
+    return function (dispatch) {
+        dispatch({ type: exports.FETCHING_EVENTS, options: options });
+        var promise = new Promise(function (yes, no) {
             fetch('https://qa7.fantasydraft.com/api/v1/fantasy/events/', {
                 method: 'GET',
                 credentials: 'include'
-            }).then((response) => {
-                response.json().then((rawEvents) => {
-                    let events = rawEvents.objects.map((rawEvent) => {
+            }).then(function (response) {
+                response.json().then(function (rawEvents) {
+                    var events = rawEvents.objects.map(function (rawEvent) {
                         return {
                             id: String(rawEvent.i),
                             context: rawEvent.ctx,
@@ -102,6 +96,7 @@ export function fetchEvents(options) {
                             externalId: String(rawEvent.eid),
                             ticketMaxPerUser: rawEvent.maxu,
                             ticketMin: rawEvent.min,
+                            payout: rawEvent.p,
                             payoutCurrency: rawEvent.pc,
                             status: rawEvent.s,
                             ticketCost: rawEvent.tc,
@@ -111,20 +106,20 @@ export function fetchEvents(options) {
                         };
                     });
                     yes(events);
-                }, () => {
+                }, function () {
                     return no([{ type: 'JSON_ERROR' }]);
                 });
-            }, () => {
+            }, function () {
                 no([{ type: 'NOT_FOUND' }]);
             });
         });
-
-        promise.then((events) => {
-            dispatch({ type: FETCHED_EVENTS, options, events });
-        }, (errors) => {
-            dispatch({ type: ERROR_FETCHING_EVENTS, options, errors });
+        promise.then(function (events) {
+            dispatch({ type: exports.FETCHED_EVENTS, options: options, events: events });
+        }, function (errors) {
+            dispatch({ type: exports.ERROR_FETCHING_EVENTS, options: options, errors: errors });
         });
-
         return promise;
     };
 }
+exports.fetchEvents = fetchEvents;
+//# sourceMappingURL=events.js.map
