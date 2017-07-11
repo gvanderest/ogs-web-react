@@ -1,29 +1,45 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
-import { FETCHED_GAMES } from './games';
-import { FETCHED_TEAMS } from './teams';
-import { FETCHED_OUTCOMES } from './outcomes';
-import { FETCHED_EVENT_POSITIONS } from './eventPositions';
-import { FETCHED_PLAYERS } from './players';
+import { FETCHED_EVENT_POSITIONS } from "./eventPositions";
+import { FETCHED_GAMES } from "./games";
+import { FETCHED_OUTCOMES } from "./outcomes";
+import { FETCHED_PLAYERS } from "./players";
+import { FETCHED_TEAMS } from "./teams";
 
+export const FETCHING_EVENT_GAMES_COLLECTION = "FETCHING_EVENT_GAMES_COLLECTION";
+export const FETCHED_EVENT_GAMES_COLLECTION = "FETCHED_EVENT_GAMES_COLLECTION";
+export const ERROR_FETCHING_EVENT_GAMES_COLLECTION = "ERROR_FETCHING_EVENT_GAMES_COLLECTION";
 
-export const FETCHING_EVENT_GAMES_COLLECTION = 'FETCHING_EVENT_GAMES_COLLECTION';
-export const FETCHED_EVENT_GAMES_COLLECTION = 'FETCHED_EVENT_GAMES_COLLECTION';
-export const ERROR_FETCHING_EVENT_GAMES_COLLECTION = 'ERROR_FETCHING_EVENT_GAMES_COLLECTION';
+export const FETCHING_EVENT_GAMES_COLLECTIONS = "FETCHING_EVENT_GAMES_COLLECTIONS";
+export const FETCHED_EVENT_GAMES_COLLECTIONS = "FETCHED_EVENT_GAMES_COLLECTIONS";
+export const ERROR_FETCHING_EVENT_GAMES_COLLECTIONS = "ERROR_FETCHING_EVENT_GAMES_COLLECTIONS";
 
+import {
+    IEventGamesCollection,
+    IEventPosition,
+    IGame,
+    IMinifiedGame,
+    IOutcome,
+    IPlayer,
+    IReduxAction,
+    IReduxDispatch,
+    IReduxGetState,
+    IReduxState,
+    IReduxThunk,
+    ITeam,
+} from "../interfaces";
 
-export const FETCHING_EVENT_GAMES_COLLECTIONS = 'FETCHING_EVENT_GAMES_COLLECTIONS';
-export const FETCHED_EVENT_GAMES_COLLECTIONS = 'FETCHED_EVENT_GAMES_COLLECTIONS';
-export const ERROR_FETCHING_EVENT_GAMES_COLLECTIONS = 'ERROR_FETCHING_EVENT_GAMES_COLLECTIONS';
+interface IFetchEventGamesCollectionOptions {
+    id: string;
+}
 
-
-export function fetchEventGamesCollection(options) {
-    return (dispatch, getState) => {
-        let promise = new Promise((yes, no) => {
-            let state = getState();
-            let { id } = options;
-            let existing = state.eventGamesCollections.byId[id];
+export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): IReduxThunk {
+    return (dispatch: IReduxDispatch, getState: IReduxGetState): Promise<number> => {
+        const promise = new Promise((yes, no) => {
+            const state: IReduxState = getState();
+            const { id } = options;
+            const existing = state.eventGamesCollections.byId[id];
             if (existing && !existing.fetching) {
                 return yes(existing);
             }
@@ -31,28 +47,28 @@ export function fetchEventGamesCollection(options) {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTION, options });
 
             fetch(`https://qa7.fantasydraft.com/api/v1/eventgames/${ id }/`, {
-                mode: 'cors',
-                method: 'GET'
+                method: "GET",
+                mode: "cors",
             }).then((response) => {
                 response.json().then((raw) => {
-                    let eventGames = {
-                        id: String(raw.id),
-                        context: raw.context,
-                        settings: JSON.parse(raw.settings_json),
+                    const eventGames = {
                         config: {
-                            id: String(raw.config.id),
                             hidden: raw.config.hidden,
+                            id: String(raw.config.id),
                             name: raw.config.name,
                             salaryCap: raw.config.salary_cap,
-                            settings: JSON.parse(raw.config.settings_json)
-                        }
+                            settings: JSON.parse(raw.config.settings_json),
+                        },
+                        context: raw.context,
+                        id: String(raw.id),
+                        settings: JSON.parse(raw.settings_json),
                     };
                     return yes(eventGames);
                 }, () => {
-                    return no({ type: 'JSON_ERROR' });
+                    return no({ type: "JSON_ERROR" });
                 });
             }, () => {
-                return no({ type: 'NOT_FOUND' });
+                return no({ type: "NOT_FOUND" });
             });
         });
 
@@ -66,46 +82,59 @@ export function fetchEventGamesCollection(options) {
     };
 }
 
+interface IRawTeam {
+    id: string;
+    alias: string;
+    city: string;
+    conference: string;
+    division: string;
+    external_id: number;
+    provider: string;
+    league: string;
+    name: string;
+    ranks_json: string;
+    season: number;
+    settings_json: string;
+    team_code_global_id: number;
+}
 
-function transformTeam(raw) {
+function transformTeam(raw: IRawTeam): ITeam {
     if (!raw) {
         return null;
     }
     return {
-        id: String(raw.id),
         alias: raw.alias,
         city: raw.city,
         conference: raw.conference,
         division: raw.division,
         externalId: String(raw.external_id),
+        id: String(raw.id),
         league: raw.league,
         name: raw.name,
         provider: raw.provider,
         ranks: raw.ranks_json ? JSON.parse(raw.ranks_json) : {},
         season: raw.season,
         settings: JSON.parse(raw.settings_json), // FIXME camelcase?
-        teamCodeGlobalId: String(raw.team_code_global_id) // FIXME rename to providerId?
+        teamCodeGlobalId: String(raw.team_code_global_id), // FIXME rename to providerId?
     };
 }
 
-
-export function fetchEventGamesCollections(options) {
+export function fetchEventGamesCollections(options = {}) {
     return (dispatch) => {
-        let promise = new Promise((yes, no) => {
+        const promise = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS, options });
 
-            fetch('https://qa7.fantasydraft.com/api/v1/eventgames/', {
-                method: 'GET',
-                mode: 'cors'
+            fetch("https://qa7.fantasydraft.com/api/v1/eventgames/", {
+                method: "GET",
+                mode: "cors",
             }).then((response) => {
                 response.json().then(({ objects }) => {
-                    let gamesById = {};
-                    let teamsById = {};
+                    const gamesById: { [key: string]: IGame } = {};
+                    const teamsById: { [key: string]: ITeam } = {};
 
-                    let eventGamesCollections = objects.map((raw) => {
+                    const eventGamesCollections: IEventGamesCollection[] = objects.map((raw) => {
                         raw.games.forEach((rawGame) => {
-                            let game = {
-                                id: String(rawGame.id),
+                            let game: IGame = {
                                 externalId: String(rawGame.external_id),
                                 finalized: rawGame.finalized,
                                 gameCodeGlobalId: rawGame.game_code_global_id, // FIXME providerId ?
@@ -113,26 +142,27 @@ export function fetchEventGamesCollections(options) {
                                 gameStatus: rawGame.game_status,
                                 gameTimestamp: moment.utc(rawGame.game_time).unix(),
                                 gameUnit: rawGame.game_unit,
+                                id: String(rawGame.id),
                                 league: rawGame.league,
                                 playoffGameNumber: rawGame.playoff_game_nbr,
                                 playoffInfo: rawGame.playoff_info, // FIXME not sure on structure
                                 playoffRound: rawGame.playoff_round, // FIXME
-                                timeUnitsRemaining: rawGame.pmr,
                                 provider: rawGame.provider,
                                 scheduledTimestamp: moment.utc(rawGame.sch_timestamp).unix(),
                                 season: rawGame.season,
                                 settings: JSON.parse(rawGame.settings_json), // FIXME camelCase-ify
                                 timeRemaining: rawGame.time_remaining,
-                                week: rawGame.week
+                                timeUnitsRemaining: rawGame.pmr,
+                                week: rawGame.week,
                             };
 
                             if (rawGame.home_team) {
-                                let homeTeam = transformTeam(rawGame.home_team);
+                                const homeTeam: ITeam = transformTeam(rawGame.home_team);
                                 teamsById[homeTeam.id] = homeTeam;
                                 game.homeTeamId = homeTeam.id;
                             }
                             if (rawGame.visiting_team) {
-                                let visitingTeam = transformTeam(rawGame.visiting_team);
+                                const visitingTeam: ITeam = transformTeam(rawGame.visiting_team);
                                 teamsById[visitingTeam.id] = visitingTeam;
                                 game.visitingTeamId = visitingTeam.id;
                             }
@@ -140,16 +170,15 @@ export function fetchEventGamesCollections(options) {
                             gamesById[game.id] = game;
                         });
 
-                        let eventGamesCollection = {
-                            id: String(raw.id),
+                        const eventGamesCollection = {
                             checkEventTimestamp: moment.utc(raw.check_event).unix(),
                             closeEventTimestamp: moment.utc(raw.close_event).unix(),
                             config: {
-                                id: String(raw.config.id),
                                 hidden: raw.config.hidden,
+                                id: String(raw.config.id),
                                 name: raw.config.name,
                                 salaryCap: raw.config.salaryCap, // FIXME rename
-                                settings: JSON.parse(raw.config.settings_json) // FIXME camelCase
+                                settings: JSON.parse(raw.config.settings_json), // FIXME camelCase
                             },
                             context: raw.context,
                             createOutcomesTimestamp: moment.utc(raw.create_outcomes_ts).unix(),
@@ -158,14 +187,15 @@ export function fetchEventGamesCollections(options) {
                             createdTimestamp: moment.utc(raw.created_ts).unix(),
                             disableRecurrences: raw.disable_recurrences,
                             finalizeEventTimestamp: moment.utc(raw.finalize_event).unix(),
-                            gameIds: raw.games.map((rawGame) => { return String(rawGame.id); }),
+                            gameIds: raw.games.map((rawGame: IGame) => { String(rawGame.id); }),
+                            id: String(raw.id),
                             modifiedTimestamp: moment.utc(raw.modified_ts).unix(),
                             name: raw.name,
                             openEventTimestamp: moment.utc(raw.open_event).unix(),
                             prefix: raw.prefix,
                             resourceUri: raw.resource_uri,
                             settings: JSON.parse(raw.settings_json), // FIXME camelCase
-                            suffix: raw.suffix
+                            suffix: raw.suffix,
                         };
 
                         dispatch({ type: FETCHED_GAMES, games: Object.values(gamesById) });
@@ -177,10 +207,10 @@ export function fetchEventGamesCollections(options) {
 
                     return yes(eventGamesCollections);
                 }, () => {
-                    return no({ type: 'JSON_ERROR' });
+                    return no({ type: "JSON_ERROR" });
                 });
             }, () => {
-                return no({ type: 'NOT_FOUND' });
+                return no({ type: "NOT_FOUND" });
             });
         });
 
@@ -194,13 +224,12 @@ export function fetchEventGamesCollections(options) {
     };
 }
 
-
 export function fetchFantasyEventGamesCollection(options) {
     return (dispatch, getState) => {
-        let promise = new Promise((yes, no) => {
-            let { id, eventId } = options;
-            let state = getState();
-            let existing = state.eventGamesCollections.byId[id];
+        const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
+            const { id, eventId } = options;
+            const state = getState();
+            const existing: IEventGamesCollection = state.eventGamesCollections.byId[id];
 
             if (existing) {
                 return yes(existing);
@@ -212,54 +241,54 @@ export function fetchFantasyEventGamesCollection(options) {
             }
 
             fetch(url, {
-                method: 'GET',
-                mode: 'cors'
+                method: "GET",
+                mode: "cors",
             }).then((response) => {
-                response.json().then((raw) => {
-                    let teamsById = {};
-                    let gamesById = {};
-                    let outcomesById = {};
-                    let eventPositionsById = {};
-                    let playersById = {};
+                response.json().then((rawEventGames) => {
+                    const teamsById: { [key: string]: ITeam } = {};
+                    const gamesById: { [key: string]: IGame } = {};
+                    const outcomesById: { [key: string]: IOutcome } = {};
+                    const eventPositionsById: { [key: string]: IEventPosition } = {};
+                    const playersById: { [key: string]: IPlayer } = {};
 
-                    let eventGamesCollection = {
-                        id: String(raw.i),
+                    const eventGamesCollection: IEventGamesCollection = {
+                        closeTimestamp: moment.utc(rawEventGames.c).unix(),
                         config: {
-                            name: raw.cfg,
-                            salaryCap: raw.sc // FIXME Rename this to be more generic?
+                            name: rawEventGames.cfg,
+                            salaryCap: rawEventGames.sc, // FIXME Rename this to be more generic?
                         },
-                        closeTimestamp: moment.utc(raw.c).unix(),
-                        createdOutcomes: raw.co,
-                        context: raw.cxt,
-                        exportUrl: raw.exu,
-                        settings: JSON.parse(raw.evgsj) // FIXME camelCase
+                        context: rawEventGames.cxt,
+                        createdOutcomes: rawEventGames.co,
+                        exportUrl: rawEventGames.exu,
+                        id: String(rawEventGames.i),
+                        settings: JSON.parse(rawEventGames.evgsj), // FIXME camelCase
                     };
 
-                    Object.values(raw.g).forEach((raw) => {
-                        let game = {
+                    Object.values(raw.g).forEach((raw: IMinifiedGame) => {
+                        const game: IGame = {
+                            gameInfo: JSON.parse(raw.gi),
                             id: String(raw.i),
-                            gameInfo: JSON.parse(raw.gi)
                         };
 
                         if (raw.hti) {
-                            let homeTeam = {
-                                id: String(raw.hti),
+                            const homeTeam: ITeam = {
                                 alias: raw.hta,
+                                id: String(raw.hti),
                                 name: raw.htn,
+                                playerIds: [],
                                 ranks: raw.htrj,
-                                playerIds: []
                             };
                             teamsById[homeTeam.id] = homeTeam;
                             game.homeTeamId = homeTeam.id;
                             game.homeTeamScore = raw.hts;
                         }
                         if (raw.vti) {
-                            let visitingTeam = {
-                                id: String(raw.vti),
+                            const visitingTeam: ITeam = {
                                 alias: raw.vta,
+                                id: String(raw.vti),
                                 name: raw.vtn,
+                                playerIds: [],
                                 ranks: raw.vtrj,
-                                playerIds: []
                             };
                             teamsById[visitingTeam.id] = visitingTeam;
                             game.visitingTeamId = visitingTeam.id;
@@ -267,15 +296,15 @@ export function fetchFantasyEventGamesCollection(options) {
                         }
 
                         Object.keys(raw.p).forEach((rawPlayerId) => {
-                            let rawPlayer = raw.p[rawPlayerId];
-                            let teamId = String(rawPlayer.t);
-                            let player = {
-                                id: String(rawPlayerId),
+                            const rawPlayer = raw.p[rawPlayerId];
+                            const teamId = String(rawPlayer.t);
+                            const player: IPlayer = {
                                 batterHandedness: rawPlayer.bh,
                                 externalId: String(rawPlayer.ei),
                                 handedness: rawPlayer.h,
+                                id: String(rawPlayerId),
                                 injuryStatus: rawPlayer.is,
-                                teamId
+                                teamId,
                             };
                             if (teamId) {
                                 teamsById[teamId].playerIds.push(player.id);
@@ -288,10 +317,10 @@ export function fetchFantasyEventGamesCollection(options) {
                     });
 
                     Object.values(raw.o).forEach((raw) => {
-                        let outcome = {
-                            id: String(raw.i),
+                        let outcome: IOutcome = {
                             closeTimestamp: moment.utc(raw.c).unix(),
                             externalId: raw.ei,
+                            id: String(raw.i),
                             name: raw.n,
                             pointsAvailable: raw.pa,
                             pointsProjected: raw.pp,
@@ -304,7 +333,7 @@ export function fetchFantasyEventGamesCollection(options) {
                     });
 
                     Object.values(raw.evp).forEach((raw) => {
-                        let eventPosition = {
+                        let eventPosition: IEventPosition = {
                             id: String(raw.i),
                             name: raw.n,
                             outcomeTypeNames: raw.o,
@@ -331,10 +360,10 @@ export function fetchFantasyEventGamesCollection(options) {
 
                     return yes(eventGamesCollection);
                 }, () => {
-                    return no({ type: 'JSON_ERROR' });
+                    return no({ type: "JSON_ERROR" });
                 });
             }, () => {
-                return no({ type: 'NOT_FOUND' });
+                return no({ type: "NOT_FOUND" });
             });
         });
 

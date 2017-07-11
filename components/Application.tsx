@@ -1,10 +1,10 @@
-import React from 'react';
-import store from '../store';
-import { Provider } from 'react-redux';
+import * as React from "react";
 
+import { Provider } from "react-redux";
+import store from "../store";
 
 export default class Application extends React.PureComponent {
-    render() {
+    public render() {
         return (
             <Provider store={ store }>
                 { this.props.children }

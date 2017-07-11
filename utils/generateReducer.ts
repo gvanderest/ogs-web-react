@@ -1,8 +1,26 @@
-import IAction from "../interfaces/IAction";
+import { IReduxAction, IReduxState } from "../interfaces";
 
-export default function generateReducer(initialState = {}, handlers = {}) {
-    return function generatedReducer(state = initialState, action: IAction = { type: null }) {
-        const handler: (object, IAction) => object = handlers[action.type];
-        return handler ? handler(state, action) : state;
+type IHandler = (IReduxState, IReduxAction) => IReduxState;
+
+interface IHandlers {
+    [key: string]: IHandler;
+}
+
+type IGeneratedReducer = (state: IReduxState, action: IReduxAction) => IReduxState;
+
+const defaultAction = { type: null };
+
+export default function generateReducer(initialState: IReduxState, handlers: IHandlers): IGeneratedReducer {
+    return function generatedReducer(
+        state: IReduxState = initialState,
+        action: IReduxAction = defaultAction,
+    ): IReduxState {
+        const handler: IHandler = handlers[action.type];
+
+        if (typeof handler === "function") {
+            return handler(state, action);
+        } else {
+            return state;
+        }
     };
 }

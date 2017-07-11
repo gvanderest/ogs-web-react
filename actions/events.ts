@@ -1,15 +1,22 @@
-import moment from 'moment';
+import * as moment from "moment";
+import * as Promise from "promise";
 
-export const FETCHING_EVENT = 'FETCHING_EVENT';
-export const FETCHED_EVENT = 'FETCHED_EVENT';
-export const ERROR_FETCHING_EVENT = 'ERROR_FETCHING_EVENT';
+export const FETCHING_EVENT = "FETCHING_EVENT";
+export const FETCHED_EVENT = "FETCHED_EVENT";
+export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-export function fetchEvent(options) {
-    return (dispatch, getState) => {
-        let promise = new Promise((yes, no) => {
-            let { id } = options;
-            let state = getState();
-            let existing = state.events.byId[id];
+import { IEvent, IMinifiedFantasyEvent, IReduxDispatch, IReduxGetState } from "../interfaces";
+
+interface IFetchEventOptions {
+    id: string;
+}
+
+export function fetchEvent(options: IFetchEventOptions) {
+    return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
+        const promise = new Promise((yes, no) => {
+            const { id } = options;
+            const state = getState();
+            const existing = state.events.byId[id];
             if (existing && !existing.fetching) {
                 return yes(existing);
             }
@@ -17,53 +24,53 @@ export function fetchEvent(options) {
             dispatch({ type: FETCHING_EVENT, options });
 
             fetch(`https://qa7.fantasydraft.com/api/v1/events/${ id }/`, {
-                method: 'GET',
-                credentials: 'include'
+                credentials: "include",
+                method: "GET",
             }).then((response) => {
                 response.json().then((rawEvent) => {
-                    let event = {
-                        id: String(rawEvent.id),
-                        description: rawEvent.description,
-                        ticketCount: rawEvent.ticket_count,
-                        ticketMax: rawEvent.ticket_max,
-                        ticketMaxPerUser: rawEvent.ticket_max_per_user,
-                        ticketMin: rawEvent.ticket_min,
-                        externalId: String(rawEvent.external_id),
-                        closeTimestamp: moment.utc(rawEvent.close_ts).unix(),
+                    const event = {
+                        adminId: String(rawEvent.pool_admin_id),
+                        blacklisted: rawEvent.blacklisted,
+                        blacklistedEntrants: rawEvent.blacklisted_entrants,
+                        blacklistedEntrantsUsernames: rawEvent.blacklisted_entrants_usernames,
+                        blacklisterUsername: rawEvent.blacklister_username,
                         cashOnly: rawEvent.cash_only,
-                        payoutBreakdown: rawEvent.breakdown,
-                        payoutBreakdownEnhanced: rawEvent.breakdown_enhanced,
-                        lateSwap: rawEvent.can_late_swap,
                         checkTimestamp: moment.utc(rawEvent.check_ts).unix(),
+                        closeTimestamp: moment.utc(rawEvent.close_ts).unix(),
+                        description: rawEvent.description,
+                        eventGamesConfigName: rawEvent.eventgamesconfig,
+                        externalId: String(rawEvent.external_id),
+                        featured: rawEvent.featured,
                         finalizeTimestamp: moment.utc(rawEvent.finalize_ts).unix(),
+                        id: String(rawEvent.id),
+                        lateSwap: rawEvent.can_late_swap,
+                        lobbySort: rawEvent.lobbysort,
+                        lobbyTab: rawEvent.lobbytab,
+                        notes: rawEvent.notes,
                         passwordProtected: rawEvent.is_password_protected,
                         payout: rawEvent.payout,
+                        payoutBreakdown: rawEvent.breakdown,
+                        payoutBreakdownEnhanced: rawEvent.breakdown_enhanced,
                         payoutCurrency: rawEvent.payoutCurrency,
-                        adminId: String(rawEvent.pool_admin_id),
-                        profit: rawEvent.profit,
                         proPlayer: rawEvent.proplayer,
+                        profit: rawEvent.profit,
                         resourceUri: rawEvent.resource_uri,
                         selectionConstraints: rawEvent.selection_constraints,
                         ticketCost: rawEvent.ticket_cost,
                         ticketCostCurrency: rawEvent.ticket_cost_currency,
-                        eventGamesConfigName: rawEvent.eventgamesconfig,
-                        blacklisted: rawEvent.blacklisted,
-                        blacklisterUsername: rawEvent.blacklister_username,
-                        blacklistedEntrants: rawEvent.blacklisted_entrants,
-                        blacklistedEntrantsUsernames: rawEvent.blacklisted_entrants_usernames,
-                        ticketWithdrawable: rawEvent.allow_contestant_withdrawal,
+                        ticketCount: rawEvent.ticket_count,
+                        ticketMax: rawEvent.ticket_max,
+                        ticketMaxPerUser: rawEvent.ticket_max_per_user,
+                        ticketMin: rawEvent.ticket_min,
                         ticketPurchasable: rawEvent.enterable,
-                        featured: rawEvent.featured,
-                        lobbySort: rawEvent.lobbysort,
-                        lobbyTab: rawEvent.lobbytab,
-                        notes: rawEvent.notes
+                        ticketWithdrawable: rawEvent.allow_contestant_withdrawal,
                     };
                     return yes(event);
                 }, () => {
-                    return no([{ type: 'JSON_ERROR' }]);
+                    return no([{ type: "JSON_ERROR" }]);
                 });
             }, () => {
-                return no([{ type: 'NOT_FOUND' }]);
+                return no([{ type: "NOT_FOUND" }]);
             });
         });
 
@@ -77,46 +84,54 @@ export function fetchEvent(options) {
     };
 }
 
-export const FETCHING_EVENTS = 'FETCHING_EVENTS';
-export const FETCHED_EVENTS = 'FETCHED_EVENTS';
-export const ERROR_FETCHING_EVENTS = 'ERROR_FETCHING_EVENTS';
+export const FETCHING_EVENTS = "FETCHING_EVENTS";
+export const FETCHED_EVENTS = "FETCHED_EVENTS";
+export const ERROR_FETCHING_EVENTS = "ERROR_FETCHING_EVENTS";
+
+interface IFetchEventsOptions {
+    id?: number;
+}
+
+interface IFetchedEventsResult {
+    objects: IMinifiedFantasyEvent[];
+}
 
 export function fetchEvents(options) {
     return (dispatch) => {
         dispatch({ type: FETCHING_EVENTS, options });
 
-        let promise = new Promise((yes, no) => {
-            fetch('https://qa7.fantasydraft.com/api/v1/fantasy/events/', {
-                method: 'GET',
-                credentials: 'include'
+        const promise: Promise<IEvent[]> = new Promise((yes, no) => {
+            fetch("https://qa7.fantasydraft.com/api/v1/fantasy/events/", {
+                credentials: "include",
+                method: "GET",
             }).then((response) => {
                 response.json().then((rawEvents) => {
-                    let events = rawEvents.objects.map((rawEvent) => {
+                    const events: IEvent[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): IEvent => {
                         return {
-                            id: String(rawEvent.i),
-                            context: rawEvent.ctx,
+                            adminId: String(rawEvent.adm),
                             closeTimestamp: rawEvent.ct,
+                            context: rawEvent.ctx,
                             description: rawEvent.d,
-                            ticketMax: rawEvent.max,
-                            ticketCount: rawEvent.tc,
                             externalId: String(rawEvent.eid),
-                            ticketMaxPerUser: rawEvent.maxu,
-                            ticketMin: rawEvent.min,
+                            id: String(rawEvent.i),
+                            lobbyTab: rawEvent.lt,
                             payout: rawEvent.p,
                             payoutCurrency: rawEvent.pc,
                             status: rawEvent.s,
                             ticketCost: rawEvent.tc,
-                            ticketCostCurrency: rawEvent.tcc,
-                            lobbyTab: rawEvent.lt,
-                            adminId: rawEvent.adm
+                            ticketCostCurrency: rawEvent.pc,
+                            ticketCount: rawEvent.tc,
+                            ticketMax: rawEvent.max,
+                            ticketMaxPerUser: rawEvent.maxu,
+                            ticketMin: rawEvent.min,
                         };
                     });
                     yes(events);
                 }, () => {
-                    return no([{ type: 'JSON_ERROR' }]);
+                    return no([{ type: "JSON_ERROR" }]);
                 });
             }, () => {
-                no([{ type: 'NOT_FOUND' }]);
+                no([{ type: "NOT_FOUND" }]);
             });
         });
 

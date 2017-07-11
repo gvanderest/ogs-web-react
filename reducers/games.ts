@@ -1,24 +1,32 @@
-import reduceRecord from '../utils/reduceRecord';
-import reduceRecords from '../utils/reduceRecords';
-import generateReducer from '../utils/generateReducer';
-import { FETCHED_GAME, FETCHED_GAMES } from '../actions/games';
+import { FETCHED_GAME, FETCHED_GAMES } from "../actions/games";
 
+import generateReducer from "../utils/generateReducer";
+import reduceRecord from "../utils/reduceRecord";
+import reduceRecords from "../utils/reduceRecords";
 
-function handleFetchedGames(state, action) {
-    let { games } = action;
+import { IGame, IReduxAction } from "../interfaces";
+
+interface IHandleFetchedGamesAction extends IReduxAction {
+    games: IGame[];
+}
+
+function handleFetchedGames(state, action: IHandleFetchedGamesAction) {
+    const { games } = action;
     return reduceRecords(state, games);
 }
 
+interface IHandleFetchedGameAction extends IReduxAction {
+    game: IGame;
+}
 
 function handleFetchedGame(state, action) {
-    let { game } = action;
+    const { game } = action;
     return reduceRecord(state, game);
 }
 
-
 export default generateReducer({
-    byId: {}
+    byId: {},
 }, {
     [FETCHED_GAME]: handleFetchedGame,
-    [FETCHED_GAMES]: handleFetchedGames
+    [FETCHED_GAMES]: handleFetchedGames,
 });

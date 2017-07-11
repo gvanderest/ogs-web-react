@@ -1,15 +1,23 @@
-export default function reduceRecords(state, records=[], index='id', field='byId') {
+interface IState {
+    [key: string]: any;
+}
+
+interface IRecord {
+    [key: string]: any;
+}
+
+export default function reduceRecords(state: IState, records: IRecord[] = [], index = "id", field = "byId") {
     state = {
         ...state,
         [field]: {
-            ...state[field]
-        }
+            ...state[field],
+        },
     };
     records.forEach((record) => {
-        let indexValue = record[index];
+        const indexValue: string = record[index];
         state[field][indexValue] = {
             ...state[field][indexValue],
-            ...record
+            ...record,
         };
     });
     return state;
