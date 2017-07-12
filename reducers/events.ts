@@ -1,15 +1,28 @@
-import { FETCHING_EVENT, FETCHED_EVENT, ERROR_FETCHING_EVENT } from '../actions/events';
-import { FETCHING_EVENTS, FETCHED_EVENTS } from '../actions/events';
+import { ERROR_FETCHING_EVENT, FETCHED_EVENT, FETCHING_EVENT} from "../actions/events";
+import { FETCHED_EVENTS, FETCHING_EVENTS } from "../actions/events";
+import { IEvent } from "../interfaces";
+import { IReduxAction } from "../interfaces";
+import generateReducer from "../utils/generateReducer";
 
+interface IEventsState {
+    byId: {
+        [key: string]: IEvent;
+    };
+    fetchingAll: boolean;
+}
 
-const initialState = {
+const initialState: IEventsState = {
+    byId: {},
     fetchingAll: false,
-    byId: {}
 };
 
+interface IHandleFetchedEventAction {
+    type: string;
+    event: IEvent;
+}
 
-function handleFetchedEvent(state, action) {
-    let { event } = action;
+function handleFetchedEvent(state: IEventsState, action: IHandleFetchedEventAction) {
+    const event: IEvent = action.event;
     return {
         ...state,
         byId: {
@@ -17,86 +30,96 @@ function handleFetchedEvent(state, action) {
             [event.id]: {
                 ...state.byId[event.id],
                 ...event,
-                fetching: false
-            }
-        }
+                fetching: false,
+            },
+        },
     };
 }
 
+interface IHandleFetchedEventsAction {
+    type: string;
+    events: IEvent[];
+}
 
-function handleFetchedEvents(state, action) {
-    let { events } = action;
+function handleFetchedEvents(state: IEventsState, action: IHandleFetchedEventsAction) {
+    const events: IEvent[] = action.events;
 
     state = {
         ...state,
-        fetchingAll: false,
         byId: {
             ...state.byId,
-        }
+        },
+        fetchingAll: false,
     };
 
     events.forEach((event) => {
-        let { id } = event;
-        let existing = state.byId[id];
+        const id: string = event.id;
+        const existing: IEvent = state.byId[id];
         state.byId[id] = {
             ...existing,
-            ...event
+            ...event,
         };
     });
 
     return state;
 }
 
+interface IHandleFetchingEventAction {
+    type: string;
+    options: {
+        id: string;
+    };
+}
 
-function handleFetchingEvent(state, action) {
-    let { id } = action.options;
-    let existing = state.byId[id];
+function handleFetchingEvent(state: IEventsState, action: IHandleFetchingEventAction) {
+    const id: string = action.options.id;
+    const existing: IEvent = state.byId[id];
     return {
         ...state,
         byId: {
             ...state.byId,
             [id]: {
                 ...existing,
+                failed: false,
                 fetching: true,
-                failed: false
-            }
-        }
+            },
+        },
     };
 }
 
+interface IHandleErrorFetchingEventAction {
+    type: string;
+    options: {
+        id: string;
+    };
+}
 
-function handleErrorFetchingEvent(state, action) {
-    let { id } = action.options;
+function handleErrorFetchingEvent(state: IEventsState, action: IHandleErrorFetchingEventAction) {
+    const id: string = action.options.id;
     return {
         ...state,
         byId: {
             ...state.byId,
             [id]: {
+                failed: true,
                 fetching: false,
-                failed: true
-            }
-        }
+            },
+        },
     };
 }
 
-
-function handleFetchingEvents(state) {
+function handleFetchingEvents(state: IEventsState) {
     return {
         ...state,
-        fetchingAll: true
+        fetchingAll: true,
     };
 }
 
-
-export default function eventsReducer(state = initialState, action = {}) {
-    let handlers = {
+export default generateReducer(initialState, {
         [FETCHING_EVENT]: handleFetchingEvent,
         [FETCHED_EVENT]: handleFetchedEvent,
         [ERROR_FETCHING_EVENT]: handleErrorFetchingEvent,
 
         [FETCHING_EVENTS]: handleFetchingEvents,
         [FETCHED_EVENTS]: handleFetchedEvents,
-    };
-    let handler = handlers[action.type];
-    return handler ? handler(state, action) : state;
-}
+});

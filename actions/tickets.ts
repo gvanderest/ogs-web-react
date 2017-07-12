@@ -1,5 +1,6 @@
 import * as Promise from "promise";
 import { ITicket } from "../interfaces";
+import { IReduxDispatch } from "../interfaces";
 
 export const FETCHING_TICKET = "FETCHING_TICKET";
 export const FETCHED_TICKET = "FETCHED_TICKET";
@@ -10,7 +11,7 @@ export const FETCHED_TICKETS = "FETCHED_TICKETS";
 export const ERROR_FETCHING_TICKETS = "ERROR_FETCHING_TICKETS";
 
 export function fetchTickets(options = {}) {
-    return (dispatch) => {
+    return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
 
             fetch("https://qa7.fantasydraft.com/api/v1/tickets/", {
@@ -39,8 +40,12 @@ export function fetchTickets(options = {}) {
     };
 }
 
-export function fetchTicket(options = {}) {
-    return (dispatch) => {
+interface IFetchTicketOptions {
+    id: string;
+}
+
+export function fetchTicket(options: IFetchTicketOptions) {
+    return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
             fetch(`https://qa7.fantasydraft.com/api/v1/tickets/${ id }/`, {

@@ -5,17 +5,23 @@ export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-import { IEvent, IMinifiedFantasyEvent, IReduxDispatch, IReduxGetState } from "../interfaces";
+import { IEvent, IMinifiedFantasyEvent, IReduxDispatch, IReduxGetState, IReduxStore } from "../interfaces";
 
 interface IFetchEventOptions {
     id: string;
+}
+
+interface IEventsState {
+    byId: {
+        [key: string]: IEvent;
+    };
 }
 
 export function fetchEvent(options: IFetchEventOptions) {
     return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
-            const state = getState();
+            const state: IReduxStore = getState();
             const existing = state.events.byId[id];
             if (existing && !existing.fetching) {
                 return yes(existing);
@@ -96,8 +102,8 @@ interface IFetchedEventsResult {
     objects: IMinifiedFantasyEvent[];
 }
 
-export function fetchEvents(options) {
-    return (dispatch) => {
+export function fetchEvents(options?: IFetchEventsOptions) {
+    return (dispatch: IReduxDispatch) => {
         dispatch({ type: FETCHING_EVENTS, options });
 
         const promise: Promise<IEvent[]> = new Promise((yes, no) => {

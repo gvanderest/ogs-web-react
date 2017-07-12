@@ -1,3 +1,5 @@
+import { IReduxAction } from "./interfaces";
+
 import * as eventGamesCollections from "./actions/eventGamesCollections";
 import * as eventPositions from "./actions/eventPositions";
 import * as events from "./actions/events";
@@ -7,7 +9,13 @@ import * as players from "./actions/players";
 import * as teams from "./actions/teams";
 import * as tickets from "./actions/tickets";
 
-const actions = {
+interface IActions {
+    [key: string]: {
+        [moreKeys: string]: any;
+    };
+}
+
+const actions: IActions = {
     eventGamesCollections,
     eventPositions,
     events,

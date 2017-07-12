@@ -4,13 +4,13 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { IGame, IReduxAction } from "../interfaces";
+import { IGame, IReduxAction, IReduxState } from "../interfaces";
 
 interface IHandleFetchedGamesAction extends IReduxAction {
     games: IGame[];
 }
 
-function handleFetchedGames(state, action: IHandleFetchedGamesAction) {
+function handleFetchedGames(state: IReduxState, action: IHandleFetchedGamesAction) {
     const { games } = action;
     return reduceRecords(state, games);
 }
@@ -19,7 +19,7 @@ interface IHandleFetchedGameAction extends IReduxAction {
     game: IGame;
 }
 
-function handleFetchedGame(state, action) {
+function handleFetchedGame(state: IReduxState, action: IHandleFetchedGameAction) {
     const { game } = action;
     return reduceRecord(state, game);
 }

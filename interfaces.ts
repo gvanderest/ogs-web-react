@@ -20,35 +20,39 @@ export interface IEvent {
 }
 
 export interface IEventGamesCollectionConfig {
+    id: string;
     name: string;
     salaryCap: number;
     hidden: boolean;
+    settings: string;
 }
 
 export interface IEventGamesCollection {
     id: string;
     context: string;
     exportUrl: string;
-    outcomeIds: string[];
-    eventPositionIds: string[];
+    outcomeIds?: string[];
+    eventPositionIds?: string[];
+    createdGml: boolean;
     gameIds: string[];
     closeTimestamp: number;
+    checkTimestamp: number;
+    createdTimestamp: number;
     createdOutcomes: boolean;
-    homeTeamId: string;
-    settings: string;
     config: IEventGamesCollectionConfig;
+    hidden: boolean;
 }
 
 export interface IGame {
     id: string;
-    homeTeamId?: string;
-    homeTeamScore?: number;
-    visitingTeamId?: string;
-    visitingTeamScore?;
-    gameInfo: {};
+    homeTeamId: string;
+    homeTeamScore: number;
+    visitingTeamId: string;
+    visitingTeamScore: number;
+    gameInfo: any; // FIXME
     externalId: string;
     finalized: boolean;
-    gameCodeGlobalId: string;
+    gameCodeGlobalId?: string;
     gameDay: string;
     gameStatus: string;
     gameTimestamp: number;
@@ -87,11 +91,14 @@ export interface IOutcome {
 export interface IEventPosition {
     id: string;
     name: string;
+    outcomeTypeNames: string[];
+    sortOrder: number;
+    status: string;
 }
 
 export interface IPlayer {
     id: string;
-    name: string;
+    name?: string;
     teamId: string;
     externalId: string;
     batterHandedness: string;
@@ -103,17 +110,18 @@ export interface ITeam {
     alias: string;
     city?: string;
     conference?: string;
-    division: string;
-    externalId: string;
+    division?: string;
+    externalId?: string;
     league: string;
     provider: string;
-    ranks: string;
+    ranks: object;
     season: number;
     settings: string;
     teamCodeGlobalId: string;
     id: string;
     name: string;
     playerIds?: string[];
+    gameId?: string;
 }
 
 export interface IReduxStore {
@@ -183,24 +191,60 @@ export interface IReduxState {
     [key: string]: any;
 }
 
+export interface IMinifiedPlayer {
+    ei: number;
+    h: string;
+    is: boolean;
+    bh: string;
+    t: number;
+    inj: string;
+}
+
 export interface IMinifiedGame {
+    f: boolean;
     i: string;
     hti: number;
     hta: string;
     htn: string;
     hts: number;
-    htrj: string;
     vti: number;
     vta: string;
     vtn: string;
     vts: number;
-    vtrj: string;
+    gu: string;
+    gt: string;
+    gs: string;
     gi: string;
+    wdh: boolean;
+    wc: string;
+    s: string;
+    wj: string;
+    ws: string;
+    d: string;
+    l: string;
+    p: {
+        [key: string]: IMinifiedPlayer;
+    };
+    htstd: string;
+    htrj: string;
+    vtrj: string;
 }
 
-export type IReduxDispatch = (IReduxAction) => any;
+export interface IMinifiedOutcome {
+    c: string;
+    ei: string;
+    i: number;
+    pp: number;
+    n: string;
+    si: string;
+    pa: number;
+    t: string;
+    sc: number;
+}
 
-export type IReduxGetState = () => IReduxState;
+export type IReduxDispatch = (action: IReduxAction) => any;
+
+export type IReduxGetState = () => IReduxStore;
 
 export type IReduxThunk = (dispatch: IReduxDispatch, getState: IReduxGetState) => any;
 
@@ -222,4 +266,32 @@ export interface IMinifiedFantasyEvent {
     co: boolean;
     min: number;
     evgcn: string;
+}
+export interface IMinifiedEventPosition {
+    i: number;
+    s: string;
+    o: string[];
+    n: string;
+    so: number;
+}
+
+export interface IMinifiedEventGamesCollection {
+    c: string;
+    cxt: string;
+    i: number;
+    cfg: string;
+    evgsj: string;
+    g: {
+        [key: string]: IMinifiedGame;
+    };
+    o: {
+        [key: string]: IMinifiedOutcome;
+    };
+    sc: number;
+    exu: string;
+    evp: {
+        [key: string]: IMinifiedEventPosition;
+    };
+    co: boolean;
+    evt: IMinifiedFantasyEvent;
 }

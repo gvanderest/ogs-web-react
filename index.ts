@@ -11,11 +11,7 @@ import reducers from "./reducers";
 import Application from "./components/Application";
 import Router from "./components/Router";
 
-// import OGSApi from "./ogs-api";
-
 export {
-    // OGSApi,
-
     store,
     connect,
 

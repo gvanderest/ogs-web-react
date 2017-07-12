@@ -1,9 +1,25 @@
-import generateReducer from '../utils/generateReducer';
-import { FETCHING_EVENT_GAMES_COLLECTION, FETCHED_EVENT_GAMES_COLLECTION } from '../actions/eventGamesCollections';
+import { FETCHED_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
+import { FETCHING_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
+import { IEventGamesCollection } from "../interfaces";
+import { IReduxAction } from "../interfaces";
+import generateReducer from "../utils/generateReducer";
 
+interface IEventGamesCollectionState {
+    byId: {
+        [key: string]: IEventGamesCollection;
+    };
+}
 
-function handleFetchedEventGamesCollection(state, action) {
-    let { eventGamesCollection } = action;
+interface IHandleFetchedEventGamesCollectionAction {
+    type: string;
+    eventGamesCollection: IEventGamesCollection;
+}
+
+function handleFetchedEventGamesCollection(
+    state: IEventGamesCollectionState,
+    action: IHandleFetchedEventGamesCollectionAction,
+) {
+    const { eventGamesCollection } = action;
     return {
         ...state,
         byId: {
@@ -11,30 +27,36 @@ function handleFetchedEventGamesCollection(state, action) {
             [eventGamesCollection.id]: {
                 ...state.byId[eventGamesCollection.id],
                 ...eventGamesCollection,
-                fetching: false
-            }
-        }
+                fetching: false,
+            },
+        },
     };
 }
 
+interface IHandleFetchingEventGamesCollectionAction {
+    type: string;
+    id: string;
+}
 
-function handleFetchingEventGamesCollection(state, action) {
-    let { id } = action;
+function handleFetchingEventGamesCollection(
+    state: IEventGamesCollectionState,
+    action: IHandleFetchingEventGamesCollectionAction,
+) {
+    const { id } = action;
     return {
         ...state,
         byId: {
             ...state.byId,
             [id]: {
-                fetching: true
-            }
-        }
+                fetching: true,
+            },
+        },
     };
 }
 
-
 export default generateReducer({
-    byId: {}
+    byId: {},
 }, {
     [FETCHING_EVENT_GAMES_COLLECTION]: handleFetchingEventGamesCollection,
-    [FETCHED_EVENT_GAMES_COLLECTION]: handleFetchedEventGamesCollection
+    [FETCHED_EVENT_GAMES_COLLECTION]: handleFetchedEventGamesCollection,
 });

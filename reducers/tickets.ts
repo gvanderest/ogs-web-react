@@ -1,47 +1,51 @@
-import reduceRecord from '../utils/reduceRecord';
-import generateReducer from '../utils/generateReducer';
-import { FETCHING_TICKETS, FETCHED_TICKETS, FETCHED_TICKET } from '../actions/tickets';
+import generateReducer from "../utils/generateReducer";
+import reduceRecord from "../utils/reduceRecord";
 
+import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "../actions/tickets";
+import { IReduxAction, IReduxState, ITicket } from "../interfaces";
 
-function handleFetchingTickets(state) {
-    return {
-        ...state,
-        fetchingAll: true
+interface ITicketsState {
+    byId: {
+        [key: string]: ITicket;
     };
 }
 
+function handleFetchingTickets(state: IReduxState) {
+    return {
+        ...state,
+        fetchingAll: true,
+    };
+}
 
-function handleFetchedTickets(state, action) {
-    let { tickets } = action;
-    let newState = {
+function handleFetchedTickets(state: IReduxState, action: IReduxAction) {
+    const tickets: ITicket[] = action.tickets;
+    const newState = {
         ...state,
         byId: {
             ...state.byId,
-        }
+        },
     };
 
-    tickets.forEach((ticket) => {
+    tickets.forEach((ticket: ITicket) => {
         newState.byId[ticket.id] = {
             ...newState.byId[ticket.id],
-            ...ticket
+            ...ticket,
         };
     });
 
     return newState;
 }
 
-
-function handleFetchedTicket(state, action) {
-    let { ticket } = action;
+function handleFetchedTicket(state: IReduxState, action: IReduxAction) {
+    const ticket: ITicket = action.ticket;
     return reduceRecord(state, ticket);
 }
 
-
 export default generateReducer({
     byId: {},
-    fetchingAll: false
+    fetchingAll: false,
 }, {
     [FETCHING_TICKETS]: handleFetchingTickets,
     [FETCHED_TICKETS]: handleFetchedTickets,
-    [FETCHED_TICKET]: handleFetchedTicket
+    [FETCHED_TICKET]: handleFetchedTicket,
 });
