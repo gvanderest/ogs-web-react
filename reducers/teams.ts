@@ -4,7 +4,7 @@ import reduceRecords from "../utils/reduceRecords";
 
 import { FETCHED_TEAM, FETCHED_TEAMS } from "../actions/teams";
 
-import { IReduxAction, IReduxState, ITeam } from "../interfaces";
+import { ITeam } from "../interfaces";
 
 const initialState: ITeamsState = {
     byId: {},

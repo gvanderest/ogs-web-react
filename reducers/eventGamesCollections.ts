@@ -1,7 +1,6 @@
 import { FETCHED_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
 import { FETCHING_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
 import { IEventGamesCollection } from "../interfaces";
-import { IReduxAction } from "../interfaces";
 import generateReducer from "../utils/generateReducer";
 
 interface IEventGamesCollectionState {

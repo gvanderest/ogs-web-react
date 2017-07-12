@@ -1,7 +1,6 @@
 import { ERROR_FETCHING_EVENT, FETCHED_EVENT, FETCHING_EVENT} from "../actions/events";
 import { FETCHED_EVENTS, FETCHING_EVENTS } from "../actions/events";
 import { IEvent } from "../interfaces";
-import { IReduxAction } from "../interfaces";
 import generateReducer from "../utils/generateReducer";
 
 interface IEventsState {

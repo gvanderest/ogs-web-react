@@ -4,22 +4,22 @@ import reduceRecords from "../utils/reduceRecords";
 
 import { FETCHED_PLAYER, FETCHED_PLAYERS } from "../actions/players";
 
-import { IPlayer, IReduxAction, IReduxState } from "../interfaces";
+import { IPlayer, IReduxAction } from "../interfaces";
 
-function handleFetchedPlayers(state: IReduxState, action: IReduxAction) {
+interface IPlayersState {
+    byId: {
+        [key: string]: IPlayer;
+    };
+}
+
+function handleFetchedPlayers(state: IPlayersState, action: IReduxAction) {
     const players: IPlayer[] = action.players;
     return reduceRecords(state, players);
 }
 
-function handleFetchedPlayer(state: IReduxState, action: IReduxAction) {
+function handleFetchedPlayer(state: IPlayersState, action: IReduxAction) {
     const player: IPlayer = action.player;
     return reduceRecord(state, player);
-}
-
-interface IPlayersStore {
-    byId: {
-        [key: string]: IPlayer;
-    };
 }
 
 export default generateReducer({

@@ -11,12 +11,6 @@ interface IFetchEventOptions {
     id: string;
 }
 
-interface IEventsState {
-    byId: {
-        [key: string]: IEvent;
-    };
-}
-
 export function fetchEvent(options: IFetchEventOptions) {
     return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
         const promise = new Promise((yes, no) => {
@@ -96,10 +90,6 @@ export const ERROR_FETCHING_EVENTS = "ERROR_FETCHING_EVENTS";
 
 interface IFetchEventsOptions {
     id?: number;
-}
-
-interface IFetchedEventsResult {
-    objects: IMinifiedFantasyEvent[];
 }
 
 export function fetchEvents(options?: IFetchEventsOptions) {

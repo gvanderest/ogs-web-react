@@ -1,5 +1,3 @@
-import { IReduxAction } from "./interfaces";
-
 import * as eventGamesCollections from "./actions/eventGamesCollections";
 import * as eventPositions from "./actions/eventPositions";
 import * as events from "./actions/events";

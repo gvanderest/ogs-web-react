@@ -20,54 +20,103 @@ export interface IEvent {
 }
 
 export interface IEventGamesCollectionConfig {
-    id: string;
+    id?: string;
     name: string;
     salaryCap: number;
-    hidden: boolean;
-    settings: string;
+    hidden?: boolean;
+    addOutcomesAfterOpen: boolean;
+    hideSelections: boolean;
+}
+
+export interface IEventGamesCollectionScoring {
+    pitcher_no_hitter?: number;
+    batter_hit_by_pitch?: number;
+    batter_home_runs?: number;
+    batter_triples?: number;
+    pitcher_innings_pitched?: number;
+    pitcher_hit_batter?: number;
+    batter_singles?: number;
+    pitcher_walks_against?: number;
+    batter_stolen_bases?: number;
+    batter_runs_scored?: number;
+    pitcher_wins?: number;
+    pitcher_hits_against?: number;
+    pitcher_earned_runs_allowed?: number;
+    pitcher_complete_game_shutout?: number;
+    pitcher_strike_outs?: number;
+    batter_rbi?: number;
+    batter_walks?: number;
+    batter_doubles?: number;
+    batter_caught_stealing?: number;
+    pitcher_complete_game?: number;
 }
 
 export interface IEventGamesCollection {
+    checkEventTimestamp?: number;
+    closeEventTimestamp: number;
+    createOutcomesTimestamp?: number;
+    disableRecurrences?: boolean;
+    finalizeEventTimestamp?: number;
+    modifiedTimestamp?: number;
+    openEventTimestamp?: number;
+    resourceUri?: string;
+    addOutcomesAfterOpen?: boolean;
     id: string;
     context: string;
+    hideSelections: boolean;
+    lineupsUrl: string;
+    name?: string;
+    prefix?: string;
+    suffix?: string;
+    scoring?: IEventGamesCollectionScoring;
     exportUrl: string;
     outcomeIds?: string[];
     eventPositionIds?: string[];
-    createdGml: boolean;
+    createdGml?: boolean;
     gameIds: string[];
-    closeTimestamp: number;
-    checkTimestamp: number;
-    createdTimestamp: number;
+    checkTimestamp?: number;
+    createdTimestamp?: number;
     createdOutcomes: boolean;
     config: IEventGamesCollectionConfig;
-    hidden: boolean;
+}
+
+export interface IEventGamesCollectionConfigSettings {
+    scoring: any;
+    hide_selections: boolean;
+    add_outcomes_after_open: boolean;
+    lineups_url: string;
+    export_url: string;
+    task_ids: any;
+}
+
+// FIXME
+export interface IGameInfo {
+    [key: string]: any;
 }
 
 export interface IGame {
     id: string;
-    homeTeamId: string;
-    homeTeamScore: number;
-    visitingTeamId: string;
-    visitingTeamScore: number;
-    gameInfo: any; // FIXME
-    externalId: string;
+    homeTeamId?: string;
+    homeTeamScore?: number;
+    visitingTeamId?: string;
+    visitingTeamScore?: number;
+    gameInfo?: IGameInfo;
+    externalId?: string;
     finalized: boolean;
-    gameCodeGlobalId?: string;
-    gameDay: string;
-    gameStatus: string;
-    gameTimestamp: number;
-    gameUnit: string;
+    startDay: string;
+    status: string;
+    startTimestamp: number;
+    periodUnit?: string;
     league: string;
-    playoffGameNumber: number;
-    playoffInfo: string;
-    playoffRound: number;
-    timeUnitsRemaining: number;
-    provider: string;
-    scheduledTimestamp: number;
-    season: number;
-    settings: string;
-    timeRemaining: string;
-    week: number;
+    playoffGameNumber?: number;
+    playoffInfo?: string;
+    playoffRound?: number;
+    timeUnitsRemaining?: number;
+    provider?: string;
+    scheduledTimestamp?: number;
+    season?: number;
+    timeRemaining?: string;
+    week?: number;
 }
 
 export interface ITicket {
@@ -113,11 +162,11 @@ export interface ITeam {
     division?: string;
     externalId?: string;
     league: string;
-    provider: string;
+    provider?: string;
     ranks: object;
-    season: number;
-    settings: string;
-    teamCodeGlobalId: string;
+    season?: number;
+    settings?: string;
+    teamCodeGlobalId?: string;
     id: string;
     name: string;
     playerIds?: string[];
@@ -294,4 +343,12 @@ export interface IMinifiedEventGamesCollection {
     };
     co: boolean;
     evt: IMinifiedFantasyEvent;
+}
+
+export interface IEventGamesCollectionSettings {
+    add_outcomes_after_open: boolean;
+    hide_selections: boolean;
+    export_url: string;
+    lineups_url: string;
+    scoring: IEventGamesCollectionScoring;
 }

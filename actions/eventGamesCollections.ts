@@ -17,7 +17,8 @@ export const ERROR_FETCHING_EVENT_GAMES_COLLECTIONS = "ERROR_FETCHING_EVENT_GAME
 
 import {
     IEventGamesCollection,
-    IEventGamesCollectionSettingsJson,
+    IEventGamesCollectionConfigSettings,
+    IEventGamesCollectionSettings,
     IEventPosition,
     IGame,
     IMinifiedEventGamesCollection,
@@ -26,7 +27,6 @@ import {
     IMinifiedPlayer,
     IOutcome,
     IPlayer,
-    IReduxAction,
     IReduxDispatch,
     IReduxGetState,
     IReduxState,
@@ -55,26 +55,38 @@ export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOpt
                 mode: "cors",
             }).then((response) => {
                 response.json().then((raw: IRawEventGamesCollection) => {
-                    const eventGamesSettings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettingsJson;
-                    const exportUrl = eventGamesSettings.export_url;
+                    const eventGamesSettings = JSON.parse(raw.settings_json) as
+                        IEventGamesCollectionSettings;
                     const gameIds = Object.keys(raw.games);
+                    const configSettings = JSON.parse(raw.config.settings_json) as
+                        IEventGamesCollectionConfigSettings;
+
                     const eventGames: IEventGamesCollection = {
+                        addOutcomesAfterOpen: eventGamesSettings.add_outcomes_after_open,
                         checkTimestamp: moment.utc(raw.check_event).unix(),
-                        closeTimestamp: moment.utc(raw.close_event).unix(),
+                        closeEventTimestamp: moment.utc(raw.close_event).unix(),
                         config: {
+                            addOutcomesAfterOpen: configSettings.add_outcomes_after_open,
                             hidden: raw.config.hidden,
+                            hideSelections: configSettings.hide_selections,
                             id: String(raw.config.id),
                             name: raw.config.name,
                             salaryCap: raw.config.salary_cap,
-                            settings: JSON.parse(raw.config.settings_json),
                         },
                         context: raw.context,
                         createdGml: raw.created_gml,
                         createdOutcomes: raw.created_outcomes,
                         createdTimestamp: moment.utc(raw.created_ts).unix(),
-                        exportUrl,
+                        exportUrl: eventGamesSettings.export_url,
                         gameIds,
+                        hideSelections: eventGamesSettings.hide_selections,
                         id: String(raw.id),
+                        lineupsUrl: eventGamesSettings.lineups_url,
+                        name: raw.name,
+                        openEventTimestamp: moment.utc(raw.open_event).unix(),
+                        prefix: raw.prefix,
+                        scoring: eventGamesSettings.scoring,
+                        suffix: raw.suffix,
                     };
 
                     return yes(eventGames);
@@ -146,7 +158,7 @@ interface IRawGame {
     playoff_game_nbr: number;
     playoff_info: string;
     playoff_round: number;
-    provider: number;
+    provider: string;
     sch_timestamp: string;
     season: number;
     settings_json: string;
@@ -204,24 +216,22 @@ export function fetchEventGamesCollections() {
                     const eventGamesCollections: IEventGamesCollection[] = objects.map((
                         raw: IRawEventGamesCollection,
                     ) => {
-                        raw.games.forEach((rawGame) => {
+                        raw.games.forEach((rawGame: IRawGame) => {
                             const game: IGame = {
-                                externalId: String(rawGame.external_id),
+                                externalId: String(rawGame.game_code_global_id),
                                 finalized: rawGame.finalized,
-                                gameCodeGlobalId: rawGame.game_code_global_id, // FIXME providerId ?
-                                gameDay: rawGame.game_day,
-                                gameStatus: rawGame.game_status,
-                                gameTimestamp: moment.utc(rawGame.game_time).unix(),
-                                gameUnit: rawGame.game_unit,
                                 id: String(rawGame.id),
                                 league: rawGame.league,
+                                periodUnit: rawGame.game_unit,
                                 playoffGameNumber: rawGame.playoff_game_nbr,
                                 playoffInfo: rawGame.playoff_info, // FIXME not sure on structure
                                 playoffRound: rawGame.playoff_round, // FIXME
                                 provider: rawGame.provider,
                                 scheduledTimestamp: moment.utc(rawGame.sch_timestamp).unix(),
                                 season: rawGame.season,
-                                settings: JSON.parse(rawGame.settings_json), // FIXME camelCase-ify
+                                startDay: rawGame.game_day,
+                                startTimestamp: moment.utc(rawGame.game_time).unix(),
+                                status: rawGame.game_status,
                                 timeRemaining: rawGame.time_remaining,
                                 timeUnitsRemaining: rawGame.pmr,
                                 week: rawGame.week,
@@ -241,15 +251,23 @@ export function fetchEventGamesCollections() {
                             gamesById[game.id] = game;
                         });
 
-                        const eventGamesCollection = {
+                        const { config } = raw;
+                        const configSettings = JSON.parse(config.settings_json) as
+                            IEventGamesCollectionConfigSettings;
+
+                        const settings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettings;
+
+                        const eventGamesCollection: IEventGamesCollection = {
+                            addOutcomesAfterOpen: settings.add_outcomes_after_open,
                             checkEventTimestamp: moment.utc(raw.check_event).unix(),
                             closeEventTimestamp: moment.utc(raw.close_event).unix(),
                             config: {
-                                hidden: raw.config.hidden,
-                                id: String(raw.config.id),
-                                name: raw.config.name,
-                                salaryCap: raw.config.salaryCap, // FIXME rename
-                                settings: JSON.parse(raw.config.settings_json), // FIXME camelCase
+                                addOutcomesAfterOpen: configSettings.add_outcomes_after_open,
+                                hidden: config.hidden,
+                                hideSelections: configSettings.hide_selections,
+                                id: String(config.id),
+                                name: config.name,
+                                salaryCap: config.salary_cap,
                             },
                             context: raw.context,
                             createOutcomesTimestamp: moment.utc(raw.create_outcomes_ts).unix(),
@@ -257,15 +275,18 @@ export function fetchEventGamesCollections() {
                             createdOutcomes: raw.created_outcomes,
                             createdTimestamp: moment.utc(raw.created_ts).unix(),
                             disableRecurrences: raw.disable_recurrences,
+                            exportUrl: settings.export_url,
                             finalizeEventTimestamp: moment.utc(raw.finalize_event).unix(),
-                            gameIds: raw.games.map((rawGame: IRawGame) => { String(rawGame.id); }),
+                            gameIds: raw.games.map((rawGame: IRawGame) => String(rawGame.id) ),
+                            hideSelections: settings.hide_selections,
                             id: String(raw.id),
+                            lineupsUrl: settings.lineups_url,
                             modifiedTimestamp: moment.utc(raw.modified_ts).unix(),
                             name: raw.name,
                             openEventTimestamp: moment.utc(raw.open_event).unix(),
                             prefix: raw.prefix,
                             resourceUri: raw.resource_uri,
-                            settings: JSON.parse(raw.settings_json), // FIXME camelCase
+                            scoring: settings.scoring,
                             suffix: raw.suffix,
                         };
 
@@ -329,25 +350,16 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                     const eventPositionsById: { [key: string]: IEventPosition } = {};
                     const playersById: { [key: string]: IPlayer } = {};
 
-                    const eventGamesCollection: IEventGamesCollection = {
-                        closeTimestamp: moment.utc(rawEventGames.c).unix(),
-                        config: {
-                            name: rawEventGames.cfg,
-                            salaryCap: rawEventGames.sc, // FIXME Rename this to be more generic?
-                        },
-                        context: rawEventGames.cxt,
-                        createdOutcomes: rawEventGames.co,
-                        exportUrl: rawEventGames.exu,
-                        id: String(rawEventGames.i),
-                        settings: JSON.parse(rawEventGames.evgsj), // FIXME camelCase
-                    };
-
-                    Object.keys(rawEventGames.g).forEach((rawGameId) => {
+                    Object.keys(rawEventGames.g).forEach((rawGameId: string) => {
                         const rawGame: IMinifiedGame = rawEventGames.g[rawGameId];
                         const game: IGame = {
                             finalized: rawGame.f,
                             gameInfo: JSON.parse(rawGame.gi) as object,
                             id: String(rawGame.i),
+                            league: rawGame.l,
+                            startDay: rawGame.d,
+                            startTimestamp: moment.utc(rawGame.gt).unix(),
+                            status: rawGame.s,
                         };
 
                         if (rawGame.hti) {
@@ -427,6 +439,27 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
                         eventPositionsById[eventPosition.id] = eventPosition;
                     });
+
+                    const settings = JSON.parse(rawEventGames.evgsj) as IEventGamesCollectionSettings;
+
+                    const eventGamesCollection: IEventGamesCollection = {
+                        addOutcomesAfterOpen: settings.add_outcomes_after_open,
+                        closeEventTimestamp: moment.utc(rawEventGames.c).unix(),
+                        config: {
+                            addOutcomesAfterOpen: settings.add_outcomes_after_open,
+                            hideSelections: settings.hide_selections,
+                            name: rawEventGames.cfg,
+                            salaryCap: rawEventGames.sc, // FIXME Rename this to be more generic?
+                        },
+                        context: rawEventGames.cxt,
+                        createdOutcomes: rawEventGames.co,
+                        exportUrl: rawEventGames.exu,
+                        gameIds: Object.keys(rawEventGames.g),
+                        hideSelections: settings.hide_selections,
+                        id: String(rawEventGames.i),
+                        lineupsUrl: settings.lineups_url,
+                        scoring: settings.scoring,
+                    };
 
                     const eventPositions = Object.keys(eventPositionsById).map(
                         (eventPositionId) => eventPositionsById[eventPositionId]);

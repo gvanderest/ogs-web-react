@@ -2,7 +2,7 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 
 import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "../actions/tickets";
-import { IReduxAction, IReduxState, ITicket } from "../interfaces";
+import { IReduxAction, ITicket } from "../interfaces";
 
 interface ITicketsState {
     byId: {
@@ -10,14 +10,14 @@ interface ITicketsState {
     };
 }
 
-function handleFetchingTickets(state: IReduxState) {
+function handleFetchingTickets(state: ITicketsState) {
     return {
         ...state,
         fetchingAll: true,
     };
 }
 
-function handleFetchedTickets(state: IReduxState, action: IReduxAction) {
+function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
     const tickets: ITicket[] = action.tickets;
     const newState = {
         ...state,
@@ -36,7 +36,7 @@ function handleFetchedTickets(state: IReduxState, action: IReduxAction) {
     return newState;
 }
 
-function handleFetchedTicket(state: IReduxState, action: IReduxAction) {
+function handleFetchedTicket(state: ITicketsState, action: IReduxAction) {
     const ticket: ITicket = action.ticket;
     return reduceRecord(state, ticket);
 }
