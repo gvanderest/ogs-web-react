@@ -1,26 +1,26 @@
-import * as React from "react";
-
 declare const grecaptcha: any;
 
-// let queuedRecaptchaRenders = [];
+import * as React from "react";
 
-// function processRecaptchaRenders() {
-//     if (grecaptcha) {
-//         queuedRecaptchaRenders.forEach((callback) => {
-//             callback();
-//         });
-//         queuedRecaptchaRenders = [];
-//     }
-// }
+let queuedRecaptchaRenders: Array<() => void> = [];
 
-// function queueRecaptchaRender(callback) {
-//     queuedRecaptchaRenders.push(callback);
-//     processRecaptchaRenders();
-// }
+function processRecaptchaRenders() {
+    if (typeof grecaptcha !== "undefined") {
+        queuedRecaptchaRenders.forEach((callback: typeof Function) => {
+            callback();
+        });
+        queuedRecaptchaRenders = [];
+    }
+}
 
-// window.onloadCallback = function handleRecaptchaLibraryLoad() {
-//     processRecaptchaRenders();
-// };
+function queueRecaptchaRender(callback: typeof Function) {
+    queuedRecaptchaRenders.push(callback);
+    processRecaptchaRenders();
+}
+
+(window as any).onloadCallback = function handleRecaptchaLibraryLoad() {
+    processRecaptchaRenders();
+};
 
 interface IProps {
     nonce?: any;
@@ -59,23 +59,28 @@ export default class Captcha extends React.Component<IProps, IState> {
     }
     public componentDidMount() {
         if (Captcha.provider === Captcha.PROVIDER_RECAPTCHA) {
-            const recaptchaId = grecaptcha.render(this.refs.container, {
-                "callback": this.props.onResult,
-                "expired-callback": this.props.onExpire,
-                "sitekey" : Captcha.apiKey,
-                "size": this.props.recaptchaSize,
-                "tabindex": this.props.tabIndex,
-                "theme": this.props.recaptchaTheme,
-                "type": this.props.recaptchaType,
-            });
-            this.setState({
-                recaptchaId,
-            });
+            queueRecaptchaRender((() => {
+                if (!this.refs.container) {
+                    return;
+                }
+                const recaptchaId = grecaptcha.render(this.refs.container, {
+                    "callback": this.props.onResult,
+                    "expired-callback": this.props.onExpire,
+                    "sitekey" : Captcha.apiKey,
+                    "size": this.props.recaptchaSize,
+                    "tabindex": this.props.tabIndex,
+                    "theme": this.props.recaptchaTheme,
+                    "type": this.props.recaptchaType,
+                });
+                this.setState({
+                    recaptchaId,
+                });
+            }).bind(this));
         }
     }
     public componentWillUnmount() {
         if (Captcha.provider === Captcha.PROVIDER_RECAPTCHA) {
-            this.refs.container.remove();
+            (this.refs.container as HTMLElement).remove();
         }
     }
     public render() {
