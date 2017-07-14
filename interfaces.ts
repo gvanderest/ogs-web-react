@@ -275,8 +275,8 @@ export interface IMinifiedGame {
         [key: string]: IMinifiedPlayer;
     };
     htstd: string;
-    htrj: string;
-    vtrj: string;
+    htrj: object;
+    vtrj: object;
 }
 
 export interface IMinifiedOutcome {

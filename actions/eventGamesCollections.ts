@@ -369,7 +369,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                                 league: rawGame.l,
                                 name: rawGame.htn,
                                 playerIds: [],
-                                ranks: JSON.parse(rawGame.htrj) as object,
+                                ranks: rawGame.htrj,
                             };
                             teamsById[homeTeam.id] = homeTeam;
                             game.homeTeamId = homeTeam.id;
@@ -382,7 +382,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                                 league: rawGame.l,
                                 name: rawGame.vtn,
                                 playerIds: [],
-                                ranks: JSON.parse(rawGame.vtrj) as object,
+                                ranks: rawGame.htrj,
                             };
                             teamsById[visitingTeam.id] = visitingTeam;
                             game.visitingTeamId = visitingTeam.id;
