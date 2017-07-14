@@ -29,12 +29,11 @@ interface ILoginOptions {
 
 export function logout(): IReduxThunk {
     return (dispatch: IReduxDispatch): void => {
+        dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
             credentials: "include",
             method: "DELETE",
             mode: "cors",
-        }).then(() => {
-            dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         });
     };
 }
