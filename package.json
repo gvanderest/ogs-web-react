@@ -11,6 +11,7 @@
     "test": "yarn jest"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.69",
     "@types/react-redux": "^4.4.45",
     "@types/react-router-redux": "^5.0.3",
     "babel-eslint": "^7.2.3",

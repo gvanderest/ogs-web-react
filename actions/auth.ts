@@ -42,9 +42,10 @@ export function logout(): IReduxThunk {
 export function login(options: ILoginOptions): IReduxThunk {
     return (dispatch: IReduxDispatch): Promise<ICustomer> => {
         const promise: Promise<ICustomer> = new Promise((yes, no) => {
-            const { username, password } = options;
+            const { captcha, username, password } = options;
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
                 body: JSON.stringify({
+                    captcha,
                     password,
                     username,
                 }),
