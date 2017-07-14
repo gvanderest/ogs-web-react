@@ -1,0 +1,110 @@
+import * as Promise from "promise";
+import { IReduxDispatch, IReduxThunk } from "../interfaces";
+
+export const AUTHENTICATING_CUSTOMER = "AUTHENTICATING_CUSTOMER";
+export const AUTHENTICATED_CUSTOMER = "AUTHENTICATED_CUSTOMER";
+export const ERROR_AUTHENTICATING_CUSTOMER = "ERROR_AUTHENTICATING_CUSTOMER";
+
+export const FETCHING_AUTHENTICATED_CUSTOMER = "FETCHING_AUTHENTICATED_CUSTOMER";
+export const FETCHED_AUTHENTICATED_CUSTOMER = "FETCHED_AUTHENTICATED_CUSTOMER";
+export const NO_AUTHENTICATED_CUSTOMER = "NO_AUTHENTICATED_CUSTOMER";
+
+interface IRawCustomer {
+    id: number;
+}
+
+interface ICustomer {
+    id: string;
+}
+
+interface IRawAuthResponse {
+    objects: any[];
+}
+
+interface ILoginOptions {
+    username: string;
+    password: string;
+    captcha?: string;
+}
+
+export function logout(): IReduxThunk {
+    return (dispatch: IReduxDispatch): void => {
+        fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
+            credentials: "include",
+            method: "DELETE",
+            mode: "cors",
+        }).then(() => {
+            dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
+        });
+    };
+}
+
+export function login(options: ILoginOptions): IReduxThunk {
+    return (dispatch: IReduxDispatch): Promise<ICustomer> => {
+        const promise: Promise<ICustomer> = new Promise((yes, no) => {
+            const { username, password } = options;
+            fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
+                body: JSON.stringify({
+                    password,
+                    username,
+                }),
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+                mode: "cors",
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((rawCustomer: IRawCustomer) => {
+                        const customer: ICustomer = {
+                            id: String(rawCustomer.id),
+                        };
+                        yes(customer);
+                    }, no);
+                } else {
+                    no();
+                }
+            }, no);
+        });
+
+        dispatch({ type: FETCHING_AUTHENTICATED_CUSTOMER });
+        promise.then((customer) => {
+            dispatch({ type: FETCHED_AUTHENTICATED_CUSTOMER, customer });
+        }, () => {
+            dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
+            dispatch({ type: ERROR_AUTHENTICATING_CUSTOMER });
+        });
+
+        return promise;
+    };
+}
+
+export function fetchAuthenticatedCustomer(): IReduxThunk {
+    return (dispatch: IReduxDispatch): Promise<ICustomer> => {
+        const promise = new Promise<ICustomer>((yes, no) => {
+            fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
+                credentials: "include",
+                method: "GET",
+                mode: "cors",
+            }).then((response) => {
+                response.json().then((rawAuth: IRawAuthResponse) => {
+                    if (rawAuth.objects.length) {
+                        yes(rawAuth.objects[0]);
+                    } else {
+                        no();
+                    }
+                }, no);
+            }, no);
+        });
+
+        dispatch({ type: FETCHING_AUTHENTICATED_CUSTOMER });
+        promise.then((customer) => {
+            dispatch({ type: FETCHED_AUTHENTICATED_CUSTOMER, customer });
+        }, () => {
+            dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
+        });
+
+        return promise;
+    };
+}

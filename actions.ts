@@ -1,3 +1,4 @@
+import * as auth from "./actions/auth";
 import * as eventGamesCollections from "./actions/eventGamesCollections";
 import * as eventPositions from "./actions/eventPositions";
 import * as events from "./actions/events";
@@ -14,6 +15,7 @@ interface IActions {
 }
 
 const actions: IActions = {
+    auth,
     eventGamesCollections,
     eventPositions,
     events,

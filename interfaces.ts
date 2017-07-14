@@ -352,3 +352,7 @@ export interface IEventGamesCollectionSettings {
     lineups_url: string;
     scoring: IEventGamesCollectionScoring;
 }
+
+export interface ICustomer {
+    id: string;
+}
