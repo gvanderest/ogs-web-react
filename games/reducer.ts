@@ -1,10 +1,13 @@
-import { FETCHED_GAME, FETCHED_GAMES } from "../actions/games";
+import { FETCHED_GAME } from "./actions";
+import { FETCHED_GAMES } from "./actions";
 
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { IGame, IReduxAction, IReduxState } from "../interfaces";
+import { IGame } from "../interfaces";
+import { IReduxAction } from "../interfaces";
+import { IReduxState } from "../interfaces";
 
 interface IHandleFetchedGamesAction extends IReduxAction {
     games: IGame[];

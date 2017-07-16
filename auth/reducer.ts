@@ -1,8 +1,8 @@
-import { FETCHED_AUTHENTICATED_CUSTOMER } from "../actions/auth";
-import { FETCHING_AUTHENTICATED_CUSTOMER } from "../actions/auth";
-import { NO_AUTHENTICATED_CUSTOMER } from "../actions/auth";
 import { ICustomer } from "../interfaces";
 import generateReducer from "../utils/generateReducer";
+import { FETCHED_AUTHENTICATED_CUSTOMER } from "./actions";
+import { FETCHING_AUTHENTICATED_CUSTOMER } from "./actions";
+import { NO_AUTHENTICATED_CUSTOMER } from "./actions";
 
 interface IState {
     customerId: string;

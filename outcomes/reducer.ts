@@ -2,7 +2,7 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { FETCHED_OUTCOME, FETCHED_OUTCOMES } from "../actions/outcomes";
+import { FETCHED_OUTCOME, FETCHED_OUTCOMES } from "./actions";
 
 import { IOutcome, IReduxAction, IReduxState } from "../interfaces";
 

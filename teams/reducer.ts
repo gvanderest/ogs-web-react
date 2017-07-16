@@ -2,7 +2,8 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { FETCHED_TEAM, FETCHED_TEAMS } from "../actions/teams";
+import { FETCHED_TEAM } from "./actions";
+import { FETCHED_TEAMS } from "./actions";
 
 import { ITeam } from "../interfaces";
 

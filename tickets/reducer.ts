@@ -1,8 +1,9 @@
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 
-import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "../actions/tickets";
 import { IReduxAction, ITicket } from "../interfaces";
+
+import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "./actions";
 
 interface ITicketsState {
     byId: {

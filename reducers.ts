@@ -1,13 +1,14 @@
 import { routerReducer as routing } from "react-router-redux";
-import auth from "./reducers/auth";
-import eventGamesCollections from "./reducers/eventGamesCollections";
-import eventPositions from "./reducers/eventPositions";
-import events from "./reducers/events";
-import games from "./reducers/games";
-import outcomes from "./reducers/outcomes";
-import players from "./reducers/players";
-import teams from "./reducers/teams";
-import tickets from "./reducers/tickets";
+
+import auth from "./auth/reducer";
+import eventGamesCollections from "./eventGamesCollections/reducer";
+import eventPositions from "./eventPositions/reducer";
+import events from "./events/reducer";
+import games from "./games/reducer";
+import outcomes from "./outcomes/reducer";
+import players from "./players/reducer";
+import teams from "./teams/reducer";
+import tickets from "./tickets/reducer";
 
 const reducers = {
     auth,

@@ -1,7 +1,7 @@
-import { FETCHED_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
-import { FETCHING_EVENT_GAMES_COLLECTION } from "../actions/eventGamesCollections";
 import { IEventGamesCollection } from "../interfaces";
 import generateReducer from "../utils/generateReducer";
+import { FETCHED_EVENT_GAMES_COLLECTION } from "./actions";
+import { FETCHING_EVENT_GAMES_COLLECTION } from "./actions";
 
 interface IEventGamesCollectionState {
     byId: {

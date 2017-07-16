@@ -1,11 +1,11 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
-import { FETCHED_EVENT_POSITIONS } from "./eventPositions";
-import { FETCHED_GAMES } from "./games";
-import { FETCHED_OUTCOMES } from "./outcomes";
-import { FETCHED_PLAYERS } from "./players";
-import { FETCHED_TEAMS } from "./teams";
+import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
+import { FETCHED_GAMES } from "../games/actions";
+import { FETCHED_OUTCOMES } from "../outcomes/actions";
+import { FETCHED_PLAYERS } from "../players/actions";
+import { FETCHED_TEAMS } from "../teams/actions";
 
 export const FETCHING_EVENT_GAMES_COLLECTION = "FETCHING_EVENT_GAMES_COLLECTION";
 export const FETCHED_EVENT_GAMES_COLLECTION = "FETCHED_EVENT_GAMES_COLLECTION";

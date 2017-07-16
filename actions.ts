@@ -1,12 +1,12 @@
-import * as auth from "./actions/auth";
-import * as eventGamesCollections from "./actions/eventGamesCollections";
-import * as eventPositions from "./actions/eventPositions";
-import * as events from "./actions/events";
-import * as games from "./actions/games";
-import * as outcomes from "./actions/outcomes";
-import * as players from "./actions/players";
-import * as teams from "./actions/teams";
-import * as tickets from "./actions/tickets";
+import * as auth from "./auth/actions";
+import * as eventGamesCollections from "./eventGamesCollections/actions";
+import * as eventPositions from "./eventPositions/actions";
+import * as events from "./events/actions";
+import * as games from "./games/actions";
+import * as outcomes from "./outcomes/actions";
+import * as players from "./players/actions";
+import * as teams from "./teams/actions";
+import * as tickets from "./tickets/actions";
 
 interface IActions {
     [key: string]: {

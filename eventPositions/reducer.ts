@@ -2,7 +2,7 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { FETCHED_EVENT_POSITION, FETCHED_EVENT_POSITIONS } from "../actions/eventPositions";
+import { FETCHED_EVENT_POSITION, FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
 
 import { IEventPosition } from "../interfaces";
 

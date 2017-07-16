@@ -2,7 +2,7 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { FETCHED_PLAYER, FETCHED_PLAYERS } from "../actions/players";
+import { FETCHED_PLAYER, FETCHED_PLAYERS } from "./actions";
 
 import { IPlayer, IReduxAction } from "../interfaces";
 
