@@ -1,4 +1,5 @@
 import * as auth from "./auth/actions";
+import * as customers from "./customers/actions";
 import * as eventGamesCollections from "./eventGamesCollections/actions";
 import * as eventPositions from "./eventPositions/actions";
 import * as events from "./events/actions";
@@ -16,6 +17,7 @@ interface IActions {
 
 const actions: IActions = {
     auth,
+    customers,
     eventGamesCollections,
     eventPositions,
     events,

@@ -1,6 +1,7 @@
 import { routerReducer as routing } from "react-router-redux";
 
 import auth from "./auth/reducer";
+import customers from "./customers/reducer";
 import eventGamesCollections from "./eventGamesCollections/reducer";
 import eventPositions from "./eventPositions/reducer";
 import events from "./events/reducer";
@@ -12,6 +13,7 @@ import tickets from "./tickets/reducer";
 
 const reducers = {
     auth,
+    customers,
     eventGamesCollections,
     eventPositions,
     events,

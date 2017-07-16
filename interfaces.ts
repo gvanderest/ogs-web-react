@@ -355,4 +355,10 @@ export interface IEventGamesCollectionSettings {
 
 export interface ICustomer {
     id: string;
+    user: IUser;
+}
+
+export interface IUser {
+    id: string;
+    username: string;
 }
