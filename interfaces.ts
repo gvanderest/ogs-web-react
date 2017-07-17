@@ -291,7 +291,7 @@ export interface IMinifiedOutcome {
     sc: number;
 }
 
-export type IReduxDispatch = (action: IReduxAction) => any;
+export type IReduxDispatch = (action: IReduxAction | IReduxThunk) => any;
 
 export type IReduxGetState = () => IReduxStore;
 

@@ -9,10 +9,6 @@ export const FETCHING_AUTHENTICATED_CUSTOMER = "FETCHING_AUTHENTICATED_CUSTOMER"
 export const FETCHED_AUTHENTICATED_CUSTOMER = "FETCHED_AUTHENTICATED_CUSTOMER";
 export const NO_AUTHENTICATED_CUSTOMER = "NO_AUTHENTICATED_CUSTOMER";
 
-interface IRawCustomer {
-    id: number;
-}
-
 interface ICustomer {
     id: string;
 }
@@ -56,11 +52,10 @@ export function login(options: ILoginOptions): IReduxThunk {
                 mode: "cors",
             }).then((response) => {
                 if (response.ok) {
-                    response.json().then((rawCustomer: IRawCustomer) => {
-                        const customer: ICustomer = {
-                            id: String(rawCustomer.id),
-                        };
-                        yes(customer);
+                    response.json().then(() => {
+                        dispatch(fetchAuthenticatedCustomer()).then((customer: ICustomer) => {
+                            yes(customer);
+                        }, no);
                     }, no);
                 } else {
                     no();
@@ -73,7 +68,6 @@ export function login(options: ILoginOptions): IReduxThunk {
             dispatch({ type: FETCHED_AUTHENTICATED_CUSTOMER, customer });
         }, () => {
             dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
-            dispatch({ type: ERROR_AUTHENTICATING_CUSTOMER });
         });
 
         return promise;
