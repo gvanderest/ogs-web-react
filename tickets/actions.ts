@@ -10,22 +10,21 @@ export const FETCHING_TICKETS = "FETCHING_TICKETS";
 export const FETCHED_TICKETS = "FETCHED_TICKETS";
 export const ERROR_FETCHING_TICKETS = "ERROR_FETCHING_TICKETS";
 
-export function fetchTickets(options = {}) {
+import API from "../api";
+
+interface ITicketsResponse {
+    objects: {
+        [key: number]: ITicket;
+    };
+}
+
+export function fetchTickets(options: { [key: string]: string } = {}) {
     return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
-
-            fetch("https://qa7.fantasydraft.com/api/v1/tickets/", {
-                credentials: "include",
-                method: "GET",
-                mode: "cors",
-            }).then((response) => {
-                response.json().then(({ objects }) => {
-                    return yes(objects);
-                }, () => {
-                    return no([{ type: "JSON_ERROR" }]);
-                });
-            }, () => {
-                return no([{ type: "NOT_FOUND" }]);
+            API.get("v1/tickets", { event__status__in: "o,c" }).then((response: ITicketsResponse) => {
+                yes(response.objects);
+            }, (type: string) => {
+                no([{ type }]);
             });
         });
 
