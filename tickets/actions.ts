@@ -1,4 +1,5 @@
 import * as Promise from "promise";
+import { IRawTicket } from "../interfaces";
 import { ITicket } from "../interfaces";
 import { IReduxDispatch } from "../interfaces";
 
@@ -13,16 +14,20 @@ export const ERROR_FETCHING_TICKETS = "ERROR_FETCHING_TICKETS";
 import API from "../api";
 
 interface ITicketsResponse {
-    objects: {
-        [key: number]: ITicket;
-    };
+    objects: IRawTicket[];
 }
 
 export function fetchTickets(options: { [key: string]: string } = {}) {
     return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             API.get("v1/tickets", { event__status__in: "o,c" }).then((response: ITicketsResponse) => {
-                yes(response.objects);
+                const tickets = response.objects.map((rawTicket) => {
+                    return {
+                        ...rawTicket,
+                        eventId: rawTicket.event_id,
+                    };
+                });
+                yes(tickets);
             }, (type: string) => {
                 no([{ type }]);
             });

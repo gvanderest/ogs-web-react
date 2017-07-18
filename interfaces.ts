@@ -362,3 +362,14 @@ export interface IUser {
     id: string;
     username: string;
 }
+
+export interface IRawEvent {
+    id: number;
+    description: string;
+}
+
+export interface IRawTicket {
+    id: number;
+    event_id: number;
+    event?: IRawEvent;
+}
