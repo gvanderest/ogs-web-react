@@ -217,13 +217,16 @@ export interface IReduxStore {
 }
 
 export interface IReduxActions {
+    auth: {
+        login: (options: object) => Promise<ICustomer>;
+    };
     eventGamesCollections: {
         fetchEventGamesCollection: (options: object) => Promise<IEventGamesCollection>;
         fetchFantasyEventGamesCollection: (options: object) => Promise<IEventGamesCollection>;
     };
     tickets: {
         fetchTicket: (options: object) => Promise<ITicket>;
-        fetchTickets: (options: object) => Promise<ITicket[]>;
+        fetchTickets: (options?: object) => Promise<ITicket[]>;
     };
     events: {
         fetchEvent: (options: object) => Promise<IEvent>;

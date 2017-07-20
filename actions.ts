@@ -9,6 +9,8 @@ import * as players from "./players/actions";
 import * as teams from "./teams/actions";
 import * as tickets from "./tickets/actions";
 
+import { push } from "react-router-redux";
+
 interface IActions {
     [key: string]: {
         [moreKeys: string]: any;
@@ -24,6 +26,9 @@ const actions: IActions = {
     games,
     outcomes,
     players,
+    routing: {
+        push,
+    },
     teams,
     tickets,
 };

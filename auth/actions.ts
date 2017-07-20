@@ -24,12 +24,15 @@ interface ILoginOptions {
 }
 
 export function logout(): IReduxThunk {
-    return (dispatch: IReduxDispatch): void => {
+    return (dispatch: IReduxDispatch): Promise<void> => {
         dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
             credentials: "include",
             method: "DELETE",
             mode: "cors",
+        });
+        return new Promise((yes) => {
+            yes();
         });
     };
 }
