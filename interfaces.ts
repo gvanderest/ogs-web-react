@@ -174,6 +174,9 @@ export interface ITeam {
 }
 
 export interface IReduxStore {
+    auth: {
+        customerId: string;
+    };
     eventGamesCollections: {
         byId: {
             [key: string]: IEventGamesCollection;
@@ -231,6 +234,9 @@ export interface IReduxActions {
     events: {
         fetchEvent: (options: object) => Promise<IEvent>;
         fetchEvents: (options: object) => Promise<IEvent[]>;
+    };
+    routing: {
+        push: (url: string) => void;
     };
 }
 
