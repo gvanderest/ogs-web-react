@@ -11,27 +11,15 @@
     "test": "yarn jest"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.69",
-    "@types/react-redux": "^4.4.45",
-    "@types/react-router-redux": "^5.0.3",
-    "babel-eslint": "^7.2.3",
-    "history": "^4.6.3",
+    "@types/lodash": "^4.14.71",
+    "@types/react-redux": "^4.4.47",
+    "@types/react-router-redux": "^5.0.4",
     "moment": "^2.18.1",
-    "moment-timezone": "^0.5.13",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
-    "react-router": "^4.1.1",
-    "react-router-dom": "^4.1.1",
+    "react-router-dom": "^4.1.2",
     "react-router-redux": "next",
-    "redux": "^3.7.1",
-    "redux-thunk": "^2.2.0",
-    "tslint": "^5.5.0",
-    "typescript": "^2.4.1"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
-  "devDependencies": {
-    "eslint": "^4.1.1",
-    "eslint-plugin-react": "^7.1.0",
-    "jest": "^20.0.4"
-  }
+  "devDependencies": {}
 }
