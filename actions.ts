@@ -8,6 +8,7 @@ import * as outcomes from "./outcomes/actions";
 import * as players from "./players/actions";
 import * as teams from "./teams/actions";
 import * as tickets from "./tickets/actions";
+import * as transactions from "./transactions/actions";
 
 import { push } from "react-router-redux";
 
@@ -31,6 +32,7 @@ const actions: IActions = {
     },
     teams,
     tickets,
+    transactions,
 };
 
 export default actions;

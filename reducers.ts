@@ -10,6 +10,7 @@ import outcomes from "./outcomes/reducer";
 import players from "./players/reducer";
 import teams from "./teams/reducer";
 import tickets from "./tickets/reducer";
+import transactions from "./transactions/reducer";
 
 const reducers = {
     auth,
@@ -23,6 +24,7 @@ const reducers = {
     routing,
     teams,
     tickets,
+    transactions,
 };
 
 export default reducers;

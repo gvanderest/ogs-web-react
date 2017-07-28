@@ -217,6 +217,11 @@ export interface IReduxStore {
             [key: string]: IPlayer;
         },
     };
+    transactions: {
+        byId: {
+            [key: string]: ITransaction;
+        };
+    };
 }
 
 export interface IReduxActions {
@@ -238,6 +243,9 @@ export interface IReduxActions {
     routing: {
         push: (url: string) => void;
     };
+    transactions: {
+        fetchTransactions: (options?: object) => Promise<ITransaction[]>;
+    }
 }
 
 export interface IReduxAction {
@@ -381,4 +389,28 @@ export interface IRawTicket {
     id: number;
     event_id: number;
     event?: IRawEvent;
+}
+
+export interface IRawTransaction {
+    amount: number;
+    closed: boolean;
+    created_ts: string;
+    currency: string;
+    description: string;
+    external_id: string;
+    id: number;
+    name: string;
+    paid: boolean;
+}
+
+export interface ITransaction {
+    amount: number;
+    closed: boolean;
+    createdTimestamp: number;
+    currency: string;
+    description: string;
+    externalId: string;
+    id: string;
+    name: string;
+    paid: boolean;
 }
