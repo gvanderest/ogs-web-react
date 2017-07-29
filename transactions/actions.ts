@@ -22,7 +22,7 @@ export function fetchTransactions() {
                 mode: "cors",
             }).then((response) => {
                 response.json().then((results: IRawTransactionsResults) => {
-                    const transactions: ITransaction[] = results.objects.map((tx) => {
+                    const transactions: ITransaction[] = results.objects.map((tx: IRawTransaction) => {
                         const { amount, closed, currency, description, id,
                             external_id, paid, created_ts } = tx;
                         return {
@@ -42,6 +42,7 @@ export function fetchTransactions() {
             }, no);
        });
 
+        dispatch({ type: FETCHING_TRANSACTIONS });
         promise.then((transactions) => {
             dispatch({ type: FETCHED_TRANSACTIONS, transactions });
         }, () => {

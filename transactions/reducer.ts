@@ -4,12 +4,14 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecords from "../utils/reduceRecords";
 
 interface IState {
+    fetching: false,
     byId: {
         [key: string]: ITransaction;
     };
 }
 
 const initialState: IState = {
+    fetching: false,
     byId: {},
 };
 
@@ -23,7 +25,10 @@ interface IHandleFetchedTransactionsAction {
 
 function handleFetchedTransactions(state: IState, action: IHandleFetchedTransactionsAction) {
     const { transactions } = action;
-    return reduceRecords(state, transactions);
+    return {
+        ...reduceRecords(state, transactions),
+        fetching: false,
+    };
 }
 
 export default generateReducer(initialState, {
