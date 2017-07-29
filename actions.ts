@@ -6,6 +6,7 @@ import * as events from "./events/actions";
 import * as games from "./games/actions";
 import * as outcomes from "./outcomes/actions";
 import * as players from "./players/actions";
+import * as systemMessages from "./systemMessages/actions";
 import * as teams from "./teams/actions";
 import * as tickets from "./tickets/actions";
 import * as transactions from "./transactions/actions";
@@ -30,6 +31,7 @@ const actions: IActions = {
     routing: {
         push,
     },
+    systemMessages,
     teams,
     tickets,
     transactions,

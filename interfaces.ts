@@ -414,3 +414,33 @@ export interface ITransaction {
     name: string;
     paid: boolean;
 }
+
+/**
+end_ts: "2017-07-28T23:15:00",
+id: 15,
+message: "<h4><b>MLB Update! The Rockies @ Nationals game is postponed, scoring will not count toward today's contests.</b></h4>",
+settings: {
+color: "rgb(212,245,253)"
+},
+start_ts: "2017-07-28T21:15:00"
+}
+ */
+export interface IRawSystemMessage {
+    end_ts: string;
+    id: number;
+    message: string;
+    settings: {
+        [key: string]: string;
+    };
+    start_ts: string;
+}
+
+export interface ISystemMessage {
+    endTimestamp: number;
+    id: string;
+    message: string;
+    settings: {
+        [key: string]: string;
+    };
+    startTimestamp: number;
+}
