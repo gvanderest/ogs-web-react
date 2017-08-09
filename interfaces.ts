@@ -444,3 +444,22 @@ export interface ISystemMessage {
     };
     startTimestamp: number;
 }
+
+export interface ITemplateTicket {
+    id: string;
+    externalId: string;
+    closeTimestamp: number;
+    selections?: ISelection[];
+    selectionIds: string[];
+    context: string;
+    modifiedTimestamp: number;
+}
+
+export interface ISelection {
+    id: string;
+    outcome?: IOutcome;
+    outcomeId: string;
+    eventPosition?: IEventPosition;
+    eventPositionId: string;
+    earnedPoints: number;
+}

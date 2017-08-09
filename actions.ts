@@ -8,6 +8,7 @@ import * as outcomes from "./outcomes/actions";
 import * as players from "./players/actions";
 import * as systemMessages from "./systemMessages/actions";
 import * as teams from "./teams/actions";
+import * as templateTickets from "./templateTickets/actions";
 import * as tickets from "./tickets/actions";
 import * as transactions from "./transactions/actions";
 
@@ -33,6 +34,7 @@ const actions: IActions = {
     },
     systemMessages,
     teams,
+    templateTickets,
     tickets,
     transactions,
 };
