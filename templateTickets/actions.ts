@@ -74,19 +74,17 @@ interface IRawEventGamesCollection {
     disableRecurrences: boolean;
     eventGamesConfig: number;
     finalizeEvent: string;
-    games: {
-       [key: number]: {
-           gameTime: string;
-           homeTeamAlias: string;
-           homeTeamId: number;
-           id: number;
-           league: string;
-           pmr: number;
-           settingsJson: string;
-           visitingTeamAlias: string;
-           visitingTeamId: number;
-       };
-    };
+    games: Array<{
+        gameTime: string;
+        homeTeamAlias: string;
+        homeTeamId: number;
+        id: number;
+        league: string;
+        pmr: number;
+        settingsJson: string;
+        visitingTeamAlias: string;
+        visitingTeamId: number;
+    }>;
     id: number;
     openEvent: string;
     settingsJson: string;
@@ -119,13 +117,17 @@ export function fetchTemplateTickets() {
                         evg.gameIds = evg.games.map((game) => String(game.id));
                         eventGamesCollections.push(evg);
 
-                        result.templates.forEach((template: IRawTemplate) => {
-                            template.id = String(template.id);
-                            template.externalId = String(template.externalId);
-                            template.modifiedTimestamp = Math.max.apply(null, template.selections.map((selection) => {
+                        result.templates.forEach((rawTemplate: IRawTemplate) => {
+                            const modifiedTimestamp = Math.max.apply(null, template.selections.map((selection) => {
                                 selection.modifiedTimestamp = moment.utc(selection.modifiedTs).unix();
                                 return selection.modifiedTimestamp;
                             }));
+                            const template: ITemplateTicket = {
+                                id: String(rawTemplate.id),
+                                modifiedTimestamp,
+                            };
+                            template.id = String(template.id);
+                            template.externalId = String(template.externalId);
                             template.selectionIds = template.selections.map((rawSelection) => {
                                 return String(rawSelection.id);
                             });

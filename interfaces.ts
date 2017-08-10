@@ -127,6 +127,11 @@ export interface ITicket {
     id: string;
     eventId: string;
     event: IEvent;
+    amountWon: number;
+    templateId: string;
+    position: number; // FIXME rename to rank?
+    positionTied: boolean; // FIXME rename to rankTied?
+    earnedPoints: number;
 }
 
 export interface IOutcome {
@@ -160,6 +165,7 @@ export interface IPlayer {
     handedness: string;
     injuryStatus: string;
     team?: ITeam;
+    league: string;
 }
 
 export interface ITeam {
@@ -234,6 +240,11 @@ export interface IReduxStore {
     transactions: {
         byId: {
             [key: string]: ITransaction;
+        };
+    };
+    templateTickets: {
+        byId: {
+            [key: string]: ITemplateTicket;
         };
     };
 }
@@ -414,12 +425,15 @@ export interface IUser {
 export interface IRawEvent {
     id: number;
     description: string;
+    ticket_cost: number;
 }
 
 export interface IRawTicket {
     id: number;
     event_id: number;
     event?: IRawEvent;
+    amount_won: number;
+    template_id: number;
 }
 
 export interface IRawTransaction {
@@ -469,11 +483,14 @@ export interface ISystemMessage {
 export interface ITemplateTicket {
     id: string;
     externalId: string;
+    eventGamesCollection?: IEventGamesCollection;
     closeTimestamp: number;
     selections?: ISelection[];
     selectionIds: string[];
     context: string;
     modifiedTimestamp: number;
+    ticketIds: string[];
+    tickets?: ITicket[];
 }
 
 export interface ISelection {
@@ -483,4 +500,5 @@ export interface ISelection {
     eventPosition?: IEventPosition;
     eventPositionId: string;
     earnedPoints: number;
+    modifiedTimestamp?: number;
 }

@@ -108,7 +108,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
             <div className="infinite-scroll" ref="container">
                 <div className="infinite-scroll-header">
                     <table className={ this.props.className } ref="header">
-                        { this.renderHeader() }
+                        { this.renderHeader(allRecords) }
                     </table>
                 </div>
                 <div
@@ -128,7 +128,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
                 </div>
                 <div className="infinite-scroll-footer">
                     <table className={ this.props.className || "" } ref="footer">
-                        { this.renderFooter() }
+                        { this.renderFooter(allRecords) }
                     </table>
                 </div>
             </div>
@@ -151,7 +151,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
         return this.props.viewportHeight || DEFAULT_VIEWPORT_HEIGHT;
 
     }
-    protected getRecords(props) {
+    protected getRecords(props: IBaseProps & IProps) {
         return props.records;
     }
     protected handleWindowResize() {
@@ -272,7 +272,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
             width: this.props.width || "100%",
         };
     }
-    protected renderHeader() {
+    protected renderHeader(records: T[]) {
         if (!this.props.headerComponent) {
             return null;
         }
@@ -282,7 +282,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
             </thead>
         );
     }
-    protected renderFooter() {
+    protected renderFooter(records?: T[]) {
         if (!this.props.footerComponent) {
             return null;
         }
@@ -298,7 +298,7 @@ extends React.Component<IBaseProps & IProps, IBaseState & IState> {
         }
         return React.createElement(this.props.emptyComponent, this.props);
     }
-    protected renderRecords(records: T[]) {
+    protected renderRecords(records?: T[]) {
         const self = this;
         return records.map((record: IRecord) => {
             return this.renderRecord.call(self, record);

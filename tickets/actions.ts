@@ -27,9 +27,11 @@ export function fetchTickets(options: { [key: string]: string } = {}) {
                 const tickets = response.objects.map((rawTicket) => {
                     return {
                         ...rawTicket,
+                        amountWon: rawTicket.amount_won,
                         event: {
                             ...rawTicket.event,
                             id: String(rawTicket.event_id),
+                            ticketCost: rawTicket.event.ticket_cost,
                         },
                         eventId: String(rawTicket.event_id),
                         templateId: String(rawTicket.template_id),

@@ -5,14 +5,14 @@ export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-import { IEvent, IMinifiedFantasyEvent, IReduxDispatch, IReduxGetState, IReduxStore } from "../interfaces";
+import { IEvent, IMinifiedFantasyEvent, IReduxDispatch } from "../interfaces";
 
 interface IFetchEventOptions {
     id: string;
 }
 
 export function fetchEvent(options: IFetchEventOptions) {
-    return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
+    return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
 
