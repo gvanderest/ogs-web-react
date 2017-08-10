@@ -4,6 +4,7 @@ import * as Promise from "promise";
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
 import {
     IEventGamesCollection,
+    IReduxDispatch,
     ITemplateTicket,
 } from "../interfaces";
 
@@ -99,7 +100,7 @@ interface IRawResults {
 }
 
 export function fetchTemplateTickets() {
-    return (dispatch) => {
+    return (dispatch: IReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/tickets/sportstemplates/", {
                 credentials: "include",
@@ -112,15 +113,13 @@ export function fetchTemplateTickets() {
 
                     results.objects.map((result: IRawResult) => {
                         const evg: IRawEventGamesCollection = result.eventGamesCollection;
-                        evg.id = String(evg.id);
-                        evg.closeEventTimestamp = moment.utc(evg.closeEvent).unix();
-                        evg.gameIds = evg.games.map((game) => String(game.id));
-                        eventGamesCollections.push(evg);
+                        const templateIds: string[] = [];
 
                         result.templates.forEach((rawTemplate: IRawTemplate) => {
-                            const modifiedTimestamp = Math.max.apply(null, template.selections.map((selection) => {
-                                selection.modifiedTimestamp = moment.utc(selection.modifiedTs).unix();
-                                return selection.modifiedTimestamp;
+                            templateIds.push(String(rawTemplate.id));
+
+                            const modifiedTimestamp = Math.max.apply(null, rawTemplate.selections.map((selection) => {
+                                return moment.utc(selection.modifiedTs).unix();
                             }));
                             const template: ITemplateTicket = {
                                 id: String(rawTemplate.id),
@@ -133,6 +132,14 @@ export function fetchTemplateTickets() {
                             });
                             templateTickets.push(template);
                         });
+
+                        const eventGamesCollection: IEventGamesCollection = {
+                            closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
+                            gameIds: evg.games.map((game) => String(game.id)),
+                            id: String(evg.id),
+                            templateIds,
+                        };
+                        eventGamesCollections.push(eventGamesCollection);
                     });
 
                     dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
