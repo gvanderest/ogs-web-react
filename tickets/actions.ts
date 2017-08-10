@@ -1,4 +1,7 @@
 import * as Promise from "promise";
+
+import { FETCHED_EVENT } from "../events/actions";
+import { FETCHED_EVENTS } from "../events/actions";
 import { IRawTicket } from "../interfaces";
 import { ITicket } from "../interfaces";
 import { IReduxDispatch } from "../interfaces";
@@ -24,9 +27,18 @@ export function fetchTickets(options: { [key: string]: string } = {}) {
                 const tickets = response.objects.map((rawTicket) => {
                     return {
                         ...rawTicket,
-                        eventId: rawTicket.event_id,
+                        event: {
+                            ...rawTicket.event,
+                            id: String(rawTicket.event_id),
+                        },
+                        eventId: String(rawTicket.event_id),
+                        templateId: String(rawTicket.template_id),
                     };
                 });
+
+                const events = tickets.map((ticket) => ticket.event);
+                dispatch({ type: FETCHED_EVENTS, events });
+
                 yes(tickets);
             }, (type: string) => {
                 no([{ type }]);
@@ -73,6 +85,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
 
         dispatch({ type: FETCHING_TICKET, options });
         promise.then((ticket) => {
+            dispatch({ type: FETCHED_EVENT, event: ticket.event });
             dispatch({ type: FETCHED_TICKET, options, ticket });
         }, (errors) => {
             dispatch({ type: ERROR_FETCHING_TICKET, options, errors });

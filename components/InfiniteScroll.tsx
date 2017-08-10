@@ -11,11 +11,12 @@ interface IRecord {
     [key: string]: any;
 }
 
-interface IProps {
+interface IBaseProps {
+    records?: any[];
     [key: string]: any;
 }
 
-interface IState {
+interface IBaseState {
     topIndex: number;
     viewportRecords: any[];
     rowHeight: number;
@@ -34,10 +35,12 @@ interface IViewport {
     scrollHeight: number;
 }
 
-export default class InfiniteScroll<T extends IRecord> extends React.Component<IProps, IState> {
+export default class InfiniteScroll<T extends IRecord, IProps, IState>
+extends React.Component<IBaseProps & IProps, IBaseState & IState> {
+    public state: IBaseState | IState;
     public uniqueId: number;
     protected resizeHandler: (event: Event) => Event;
-    constructor(props: IProps) {
+    constructor(props: IBaseProps & IProps) {
         super(props);
 
         this.uniqueId = ++uniqueIdentifier;
@@ -52,7 +55,7 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
         };
     }
     public componentDidMount() {
-        this.queueSliceViewport(this.getRecords());
+        this.sliceViewport(this.getRecords(this.props));
 
         this.resizeHandler = this.handleWindowResize.bind(this);
         window.addEventListener("resize", this.resizeHandler);
@@ -64,16 +67,12 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
 
         this.tableWillUnmount();
     }
-    public componentWillReceiveProps(nextProps: IProps) {
-        this.queueSliceViewport(nextProps.records);
-
-        // After the above slice, sometimes the scroller gets stuck.
-        // FIXME This may have to do with the anchor
-        setTimeout(this.handleScroll.bind(this));
+    public componentWillReceiveProps(nextProps: IBaseProps & IProps) {
+        this.sliceViewport(this.getRecords(nextProps));
     }
     public render() {
         let recordComponents;
-        const allRecords = (this.getRecords() || []) as T[];
+        const allRecords = (this.getRecords(this.props) || []) as T[];
         const rowHeight = this.getRowHeight();
         const topIndex = this.state.topIndex;
         const anchorTop = topIndex * rowHeight;
@@ -139,6 +138,11 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
     public componentDidUpdate() {
         this.queueUpdateExternals();
         this.updateRowHeight();
+        const { state } = this;
+        const { viewport } = this.refs;
+        if (viewport.scrollHeight !== state.scrollHeight) {
+            this.sliceViewport(this.getRecords(this.props));
+        }
     }
     protected getRowHeight() {
         return this.state.rowHeight || this.state.detectedRowHeight || DEFAULT_ROW_HEIGHT;
@@ -147,8 +151,8 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
         return this.props.viewportHeight || DEFAULT_VIEWPORT_HEIGHT;
 
     }
-    protected getRecords() {
-        return this.props.records;
+    protected getRecords(props) {
+        return props.records;
     }
     protected handleWindowResize() {
         this.handleScroll();
@@ -224,7 +228,7 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
             return column.offsetWidth;
         });
 
-        const records = this.getRecords();
+        const records = this.getRecords(this.props);
         const recordsAreAvailable = records.length !== 0;
 
         _.each(externals, (external: HTMLElement) => {
@@ -260,14 +264,8 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
         });
 
     }
-    protected queueSliceViewport(records: object[]) {
-        const self = this;
-        // window.requestAnimationFrame(() => {
-        self.sliceViewport(records);
-        // });
-    }
     protected handleScroll() {
-        this.queueSliceViewport(this.getRecords());
+        this.sliceViewport(this.getRecords(this.props));
     }
     protected getBodyStyle() {
         return {
@@ -308,7 +306,7 @@ export default class InfiniteScroll<T extends IRecord> extends React.Component<I
     }
     protected renderRecord(record: T) {
         return (
-            <tr>
+            <tr key={ record.id }>
                 <td>{ record.id }</td>
             </tr>
         );

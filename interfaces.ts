@@ -1,6 +1,7 @@
 export interface IEvent {
     adminId: string;
-    lobbyTab: string;
+    lobbyTabs: string[];
+    denyGroups: string[];
     id: string;
     externalId: string;
     description: string;
@@ -70,8 +71,8 @@ export interface IEventGamesCollection {
     suffix?: string;
     scoring?: IEventGamesCollectionScoring;
     exportUrl: string;
-    outcomeIds?: string[];
-    eventPositionIds?: string[];
+    outcomeIds: string[];
+    eventPositionIds: string[];
     createdGml?: boolean;
     gameIds: string[];
     checkTimestamp?: number;
@@ -96,8 +97,10 @@ export interface IGameInfo {
 
 export interface IGame {
     id: string;
+    homeTeam?: ITeam;
     homeTeamId?: string;
     homeTeamScore?: number;
+    visitingTeam?: ITeam;
     visitingTeamId?: string;
     visitingTeamScore?: number;
     gameInfo?: IGameInfo;
@@ -107,6 +110,7 @@ export interface IGame {
     status: string;
     startTimestamp: number;
     periodUnit?: string;
+    label: string; // like "ABC @ XYZ"
     league: string;
     playoffGameNumber?: number;
     playoffInfo?: string;
@@ -130,11 +134,13 @@ export interface IOutcome {
     name: string;
     externalId: string;
     closeTimestamp: number;
-    pointsAvailable: number;
-    pointsProjected: number;
+    availablePoints: number;
+    plannedPoints: number;
     selectionCost: number;
     statsId: string;
     typeName: string;
+    player?: IPlayer;
+    injuryStatus?: string; // FIXME Move this to IPlayer exclusively
 }
 
 export interface IEventPosition {
@@ -153,6 +159,7 @@ export interface IPlayer {
     batterHandedness: string;
     handedness: string;
     injuryStatus: string;
+    team?: ITeam;
 }
 
 export interface ITeam {
@@ -171,11 +178,18 @@ export interface ITeam {
     name: string;
     playerIds?: string[];
     gameId?: string;
+    game?: IGame;
+    opponent?: ITeam;
 }
 
 export interface IReduxStore {
     auth: {
         customerId: string;
+    };
+    customers: {
+        byId: {
+            [key: string]: ICustomer;
+        };
     };
     eventGamesCollections: {
         byId: {
@@ -245,7 +259,7 @@ export interface IReduxActions {
     };
     transactions: {
         fetchTransactions: (options?: object) => Promise<ITransaction[]>;
-    }
+    };
 }
 
 export interface IReduxAction {
@@ -321,7 +335,7 @@ export interface IMinifiedFantasyEvent {
     ctx: string;
     d: string;
     eid: number;
-    lt: string;
+    lt: string | string[];
     p: number;
     pc: string;
     s: string;
@@ -332,6 +346,7 @@ export interface IMinifiedFantasyEvent {
     co: boolean;
     min: number;
     evgcn: string;
+    rg: any;
 }
 export interface IMinifiedEventPosition {
     i: number;
@@ -371,13 +386,29 @@ export interface IEventGamesCollectionSettings {
 }
 
 export interface ICustomer {
+    address1: string;
+    address2: string;
+    phone: string;
     id: string;
     user: IUser;
+    experienceGroups: string[];
+    account?: {
+        balance: number;
+        accounts: {
+            [key: string]: number;
+        };
+        accountsMap: {
+            [key: string]: string;
+        }
+    };
 }
 
 export interface IUser {
     id: string;
     username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
 }
 
 export interface IRawEvent {
@@ -415,16 +446,6 @@ export interface ITransaction {
     paid: boolean;
 }
 
-/**
-end_ts: "2017-07-28T23:15:00",
-id: 15,
-message: "<h4><b>MLB Update! The Rockies @ Nationals game is postponed, scoring will not count toward today's contests.</b></h4>",
-settings: {
-color: "rgb(212,245,253)"
-},
-start_ts: "2017-07-28T21:15:00"
-}
- */
 export interface IRawSystemMessage {
     end_ts: string;
     id: number;
@@ -456,7 +477,7 @@ export interface ITemplateTicket {
 }
 
 export interface ISelection {
-    id: string;
+    id?: string;
     outcome?: IOutcome;
     outcomeId: string;
     eventPosition?: IEventPosition;

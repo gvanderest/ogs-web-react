@@ -77,6 +77,7 @@ export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOpt
                         createdGml: raw.created_gml,
                         createdOutcomes: raw.created_outcomes,
                         createdTimestamp: moment.utc(raw.created_ts).unix(),
+                        eventPositionIds: [],
                         exportUrl: eventGamesSettings.export_url,
                         gameIds,
                         hideSelections: eventGamesSettings.hide_selections,
@@ -84,6 +85,7 @@ export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOpt
                         lineupsUrl: eventGamesSettings.lineups_url,
                         name: raw.name,
                         openEventTimestamp: moment.utc(raw.open_event).unix(),
+                        outcomeIds: [],
                         prefix: raw.prefix,
                         scoring: eventGamesSettings.scoring,
                         suffix: raw.suffix,
@@ -217,10 +219,12 @@ export function fetchEventGamesCollections() {
                         raw: IRawEventGamesCollection,
                     ) => {
                         raw.games.forEach((rawGame: IRawGame) => {
+                            const label: string = `${rawGame.visiting_team.alias} @ ${rawGame.home_team.alias}`;
                             const game: IGame = {
                                 externalId: String(rawGame.game_code_global_id),
                                 finalized: rawGame.finalized,
                                 id: String(rawGame.id),
+                                label,
                                 league: rawGame.league,
                                 periodUnit: rawGame.game_unit,
                                 playoffGameNumber: rawGame.playoff_game_nbr,
@@ -275,6 +279,7 @@ export function fetchEventGamesCollections() {
                             createdOutcomes: raw.created_outcomes,
                             createdTimestamp: moment.utc(raw.created_ts).unix(),
                             disableRecurrences: raw.disable_recurrences,
+                            eventPositionIds: [],
                             exportUrl: settings.export_url,
                             finalizeEventTimestamp: moment.utc(raw.finalize_event).unix(),
                             gameIds: raw.games.map((rawGame: IRawGame) => String(rawGame.id) ),
@@ -284,6 +289,7 @@ export function fetchEventGamesCollections() {
                             modifiedTimestamp: moment.utc(raw.modified_ts).unix(),
                             name: raw.name,
                             openEventTimestamp: moment.utc(raw.open_event).unix(),
+                            outcomeIds: [],
                             prefix: raw.prefix,
                             resourceUri: raw.resource_uri,
                             scoring: settings.scoring,
@@ -293,7 +299,7 @@ export function fetchEventGamesCollections() {
                         const games = Object.keys(gamesById).map((id) => gamesById[id]);
                         dispatch({ type: FETCHED_GAMES, games });
 
-                        const  teams = Object.keys(teamsById).map((id) => teamsById[id]);
+                        const teams = Object.keys(teamsById).map((id) => teamsById[id]);
                         dispatch({ type: FETCHED_TEAMS, teams });
 
                         return eventGamesCollection;
@@ -308,11 +314,11 @@ export function fetchEventGamesCollections() {
             });
         });
 
-        promise.then((eventGamesCollections) => {
-            dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
-        }, (error) => {
-            dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTIONS, error });
-        });
+        // promise.then((eventGamesCollections) => {
+        //     dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
+        // }, (error) => {
+        //     dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTIONS, error });
+        // });
 
         return promise;
     };
@@ -352,10 +358,12 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
                     Object.keys(rawEventGames.g).forEach((rawGameId: string) => {
                         const rawGame: IMinifiedGame = rawEventGames.g[rawGameId];
+                        const label: string = `${rawGame.vta} @ ${rawGame.hta}`;
                         const game: IGame = {
                             finalized: rawGame.f,
                             gameInfo: JSON.parse(rawGame.gi) as object,
                             id: String(rawGame.i),
+                            label,
                             league: rawGame.l,
                             startDay: rawGame.d,
                             startTimestamp: moment.utc(rawGame.gt).unix(),
@@ -398,6 +406,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                                 handedness: rawPlayer.h,
                                 id: String(rawPlayerId),
                                 injuryStatus: rawPlayer.inj,
+                                league: rawGame.l,
                                 teamId,
                             };
                             if (teamId) {
@@ -413,12 +422,12 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                     Object.keys(rawEventGames.o).forEach((rawOutcomeId) => {
                         const rawOutcome: IMinifiedOutcome = rawEventGames.o[rawOutcomeId];
                         const outcome: IOutcome = {
+                            availablePoints: rawOutcome.pa,
                             closeTimestamp: moment.utc(rawOutcome.c).unix(),
                             externalId: rawOutcome.ei,
                             id: String(rawOutcome.i),
                             name: rawOutcome.n,
-                            pointsAvailable: rawOutcome.pa,
-                            pointsProjected: rawOutcome.pp,
+                            plannedPoints: rawOutcome.pp,
                             selectionCost: rawOutcome.sc,
                             statsId: rawOutcome.si, // FIXME rename this to something better
                             typeName: rawOutcome.t,

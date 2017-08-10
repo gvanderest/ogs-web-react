@@ -116,6 +116,7 @@ export function fetchTemplateTickets() {
                         const evg: IRawEventGamesCollection = result.eventGamesCollection;
                         evg.id = String(evg.id);
                         evg.closeEventTimestamp = moment.utc(evg.closeEvent).unix();
+                        evg.gameIds = evg.games.map((game) => String(game.id));
                         eventGamesCollections.push(evg);
 
                         result.templates.forEach((template: IRawTemplate) => {

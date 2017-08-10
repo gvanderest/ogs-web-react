@@ -1,5 +1,7 @@
 import * as Promise from "promise";
 import { IReduxDispatch, IReduxThunk } from "../interfaces";
+import { ICustomer } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export const AUTHENTICATING_CUSTOMER = "AUTHENTICATING_CUSTOMER";
 export const AUTHENTICATED_CUSTOMER = "AUTHENTICATED_CUSTOMER";
@@ -8,10 +10,6 @@ export const ERROR_AUTHENTICATING_CUSTOMER = "ERROR_AUTHENTICATING_CUSTOMER";
 export const FETCHING_AUTHENTICATED_CUSTOMER = "FETCHING_AUTHENTICATED_CUSTOMER";
 export const FETCHED_AUTHENTICATED_CUSTOMER = "FETCHED_AUTHENTICATED_CUSTOMER";
 export const NO_AUTHENTICATED_CUSTOMER = "NO_AUTHENTICATED_CUSTOMER";
-
-interface ICustomer {
-    id: string;
-}
 
 interface IRawAuthResponse {
     objects: any[];
@@ -77,6 +75,36 @@ export function login(options: ILoginOptions): IReduxThunk {
     };
 }
 
+interface IRawCustomer {
+    address1: string;
+    address2: string;
+    phone: string;
+    account: {
+        balance: number;
+        accounts: {
+            [key: string]: number;
+        };
+        accounts_map: {
+            [key: string]: string;
+        };
+    };
+    user: {
+        email: string;
+        id: number;
+        first_name: string;
+        last_name: string;
+        username: string;
+    };
+    id: number;
+    experience_groups: {
+        [key: number]: {
+            id: number;
+            is_member: boolean;
+            name: string;
+        };
+    };
+}
+
 export function fetchAuthenticatedCustomer(): IReduxThunk {
     return (dispatch: IReduxDispatch): Promise<ICustomer> => {
         const promise = new Promise<ICustomer>((yes, no) => {
@@ -86,11 +114,50 @@ export function fetchAuthenticatedCustomer(): IReduxThunk {
                 mode: "cors",
             }).then((response) => {
                 response.json().then((rawAuth: IRawAuthResponse) => {
-                    if (rawAuth.objects.length) {
-                        yes(rawAuth.objects[0]);
-                    } else {
-                        no();
+                    const rawUser = rawAuth.objects[0];
+                    if (!rawUser) {
+                        return no();
                     }
+                    fetch(`https://qa7.fantasydraft.com/api/v1/customers/${ rawUser.id }/`, {
+                        credentials: "include",
+                        method: "GET",
+                        mode: "cors",
+                    }).then((cxResponse) => {
+                        cxResponse.json().then((cx: IRawCustomer) => {
+                            const user: IUser = {
+                                email: cx.user.email,
+                                firstName: cx.user.first_name,
+                                id: String(cx.user.id),
+                                lastName: cx.user.last_name,
+                                username: cx.user.username,
+                            };
+
+                            const experienceGroups = Object.keys(cx.experience_groups).map((id) => {
+                                return cx.experience_groups[id].name;
+                            });
+
+                            const customer: ICustomer = {
+                                account: {
+                                    accounts: {
+                                        ...cx.account.accounts,
+                                    },
+                                    accountsMap: {
+                                        ...cx.account.accounts_map,
+                                    },
+                                    balance: cx.account.balance,
+                                },
+                                address1: cx.address1,
+                                address2: cx.address2,
+                                experienceGroups,
+                                id: String(cx.id),
+                                phone: cx.phone,
+                                user,
+                            };
+                            customer.user.firstName = cx.user.first_name;
+                            customer.user.lastName = cx.user.last_name;
+                            yes(customer);
+                        });
+                    }, no);
                 }, no);
             }, no);
         });

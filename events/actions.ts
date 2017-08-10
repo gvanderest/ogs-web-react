@@ -15,11 +15,6 @@ export function fetchEvent(options: IFetchEventOptions) {
     return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
-            const state: IReduxStore = getState();
-            const existing = state.events.byId[id];
-            if (existing && !existing.fetching) {
-                return yes(existing);
-            }
 
             dispatch({ type: FETCHING_EVENT, options });
 
@@ -45,7 +40,7 @@ export function fetchEvent(options: IFetchEventOptions) {
                         id: String(rawEvent.id),
                         lateSwap: rawEvent.can_late_swap,
                         lobbySort: rawEvent.lobbysort,
-                        lobbyTab: rawEvent.lobbytab,
+                        lobbyTabs: rawEvent.lobbytab,
                         notes: rawEvent.notes,
                         passwordProtected: rawEvent.is_password_protected,
                         payout: rawEvent.payout,
@@ -103,14 +98,15 @@ export function fetchEvents(options?: IFetchEventsOptions) {
             }).then((response) => {
                 response.json().then((rawEvents) => {
                     const events: IEvent[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): IEvent => {
-                        return {
+                        const event: IEvent = {
                             adminId: String(rawEvent.adm),
                             closeTimestamp: rawEvent.ct,
                             context: rawEvent.ctx,
+                            denyGroups: rawEvent.rg ? JSON.parse(rawEvent.rg) : [],
                             description: rawEvent.d,
                             externalId: String(rawEvent.eid),
                             id: String(rawEvent.i),
-                            lobbyTab: rawEvent.lt,
+                            lobbyTabs: [],
                             payout: rawEvent.p,
                             payoutCurrency: rawEvent.pc,
                             status: rawEvent.s,
@@ -121,6 +117,12 @@ export function fetchEvents(options?: IFetchEventsOptions) {
                             ticketMaxPerUser: rawEvent.maxu,
                             ticketMin: rawEvent.min,
                         };
+                        if (rawEvent.lt instanceof String) {
+                            event.lobbyTabs = [rawEvent.lt];
+                        } else if (rawEvent.lt instanceof Array) {
+                            event.lobbyTabs = rawEvent.lt;
+                        }
+                        return event;
                     });
                     yes(events);
                 }, () => {
