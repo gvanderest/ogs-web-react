@@ -1,24 +1,5 @@
-export interface IEvent {
-    adminId: string;
-    lobbyTabs: string[];
-    denyGroups: string[];
-    id: string;
-    externalId: string;
-    description: string;
-    payout: number;
-    payoutCurrency: string;
-    status: string;
-    ticketCost: number;
-    ticketCostCurrency: string;
-    ticketMax: number;
-    ticketCount: number;
-    context: string;
-    closeTimestamp: number;
-    fetching?: boolean;
-    failed?: boolean;
-    ticketMaxPerUser: number;
-    ticketMin: number;
-}
+import Event from "./classes/Event";
+import IMinifiedFantasyEvent from "./interfaces/IMinifiedFantasyEvent";
 
 export interface IEventGamesCollectionConfig {
     id?: string;
@@ -79,6 +60,7 @@ export interface IEventGamesCollection {
     createdTimestamp?: number;
     createdOutcomes: boolean;
     config: IEventGamesCollectionConfig;
+    templateIds?: string[];
 }
 
 export interface IEventGamesCollectionConfigSettings {
@@ -126,7 +108,7 @@ export interface IGame {
 export interface ITicket {
     id: string;
     eventId: string;
-    event: IEvent;
+    event: Event;
     amountWon: number;
     templateId: string;
     position: number; // FIXME rename to rank?
@@ -204,7 +186,7 @@ export interface IReduxStore {
     };
     events: {
         byId: {
-            [key: string]: IEvent;
+            [key: string]: Event;
         },
     };
     tickets: {
@@ -262,8 +244,8 @@ export interface IReduxActions {
         fetchTickets: (options?: object) => Promise<ITicket[]>;
     };
     events: {
-        fetchEvent: (options: object) => Promise<IEvent>;
-        fetchEvents: (options: object) => Promise<IEvent[]>;
+        fetchEvent: (options: object) => Promise<Event>;
+        fetchEvents: (options: object) => Promise<Event[]>;
     };
     routing: {
         push: (url: string) => void;
@@ -339,26 +321,6 @@ export type IReduxGetState = () => IReduxStore;
 
 export type IReduxThunk = (dispatch: IReduxDispatch, getState: IReduxGetState) => any;
 
-export interface IMinifiedFantasyEvent {
-    i: number;
-    adm: number;
-    ct: number;
-    ctx: string;
-    d: string;
-    eid: number;
-    lt: string | string[];
-    p: number;
-    pc: string;
-    s: string;
-    tc: number;
-    tcc: string;
-    max: number;
-    maxu: number;
-    co: boolean;
-    min: number;
-    evgcn: string;
-    rg: any;
-}
 export interface IMinifiedEventPosition {
     i: number;
     s: string;

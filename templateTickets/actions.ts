@@ -121,24 +121,34 @@ export function fetchTemplateTickets() {
                             const modifiedTimestamp = Math.max.apply(null, rawTemplate.selections.map((selection) => {
                                 return moment.utc(selection.modifiedTs).unix();
                             }));
-                            const template: ITemplateTicket = {
-                                id: String(rawTemplate.id),
-                                modifiedTimestamp,
-                            };
-                            template.id = String(template.id);
-                            template.externalId = String(template.externalId);
-                            template.selectionIds = template.selections.map((rawSelection) => {
+                            const selectionIds = rawTemplate.selections.map((rawSelection) => {
                                 return String(rawSelection.id);
                             });
+                            const ticketIds = rawTemplate.tickets.map((uri) => {
+                                return uri.replace("/api/v1/tickets/", "").replace("/", "");
+                            });
+                            const template: ITemplateTicket = {
+                                externalId: String(rawTemplate.externalId),
+                                id: String(rawTemplate.id),
+                                modifiedTimestamp,
+                                selectionIds,
+                                selections: rawTemplate.selections,
+                                ticketIds,
+                                tickets: [],
+                            };
                             templateTickets.push(template);
                         });
 
+                        const gameIds = evg.games.map((game) => String(game.id));
+
                         const eventGamesCollection: IEventGamesCollection = {
                             closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
-                            gameIds: evg.games.map((game) => String(game.id)),
+                            context: evg.context,
+                            gameIds,
                             id: String(evg.id),
                             templateIds,
                         };
+
                         eventGamesCollections.push(eventGamesCollection);
                     });
 

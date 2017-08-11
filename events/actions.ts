@@ -5,7 +5,10 @@ export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-import { IEvent, IMinifiedFantasyEvent, IReduxDispatch } from "../interfaces";
+import Event from "../classes/Event";
+import IMinifiedFantasyEvent from "../interfaces/IMinifiedFantasyEvent";
+
+import { IReduxDispatch } from "../interfaces";
 
 interface IFetchEventOptions {
     id: string;
@@ -35,11 +38,11 @@ export function fetchEvent(options: IFetchEventOptions) {
                         description: rawEvent.description,
                         eventGamesConfigName: rawEvent.eventgamesconfig,
                         externalId: String(rawEvent.external_id),
-                        featured: rawEvent.featured,
+                        featured: rawEvent.featured === "true",
                         finalizeTimestamp: moment.utc(rawEvent.finalize_ts).unix(),
                         id: String(rawEvent.id),
                         lateSwap: rawEvent.can_late_swap,
-                        lobbySort: rawEvent.lobbysort,
+                        lobbySort: rawEvent.lobbysort ? parseInt(rawEvent.lobbysort, 10) : 0,
                         lobbyTabs: rawEvent.lobbytab,
                         notes: rawEvent.notes,
                         passwordProtected: rawEvent.is_password_protected,
@@ -91,14 +94,14 @@ export function fetchEvents(options?: IFetchEventsOptions) {
     return (dispatch: IReduxDispatch) => {
         dispatch({ type: FETCHING_EVENTS, options });
 
-        const promise: Promise<IEvent[]> = new Promise((yes, no) => {
+        const promise: Promise<Event[]> = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/fantasy/events/", {
                 credentials: "include",
                 method: "GET",
             }).then((response) => {
                 response.json().then((rawEvents) => {
-                    const events: IEvent[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): IEvent => {
-                        const event: IEvent = {
+                    const events: Event[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): Event => {
+                        const event: Event = {
                             adminId: String(rawEvent.adm),
                             closeTimestamp: rawEvent.ct,
                             context: rawEvent.ctx,
@@ -106,6 +109,7 @@ export function fetchEvents(options?: IFetchEventsOptions) {
                             description: rawEvent.d,
                             externalId: String(rawEvent.eid),
                             id: String(rawEvent.i),
+                            lobbySort: rawEvent.ls ? parseInt(rawEvent.ls, 10) : 0,
                             lobbyTabs: [],
                             payout: rawEvent.p,
                             payoutCurrency: rawEvent.pc,

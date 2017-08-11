@@ -7,11 +7,12 @@ export const DEFAULT_OVERFLOW_RECORDS = 3; // number of pre- and post- records
 
 let uniqueIdentifier = 0;
 
-interface IRecord<IUserRecord> extends IUserRecord {
+interface IRecord {
     id: any;
+    [key: string]: any;
 }
 
-interface IProps<IUserProps> extends IUserProps {
+interface IProps {
     viewportHeight?: number;
     headerComponent?: any; // FIXME
     footerComponent?: any; // FIXME
@@ -20,9 +21,10 @@ interface IProps<IUserProps> extends IUserProps {
     rowHeight?: number;
     className?: string;
     records?: any[];
+    [key: string]: any;
 }
 
-interface IState<IUserState> extends IUserState {
+interface IState {
     topIndex: number;
     viewportRecords: any[];
     rowHeight: number;
@@ -30,6 +32,7 @@ interface IState<IUserState> extends IUserState {
     resizeHandler: (event: Event) => Event;
     scrollHeight: number;
     scrollTop: number;
+    [key: string]: any;
 }
 
 interface IColumn {
@@ -41,12 +44,11 @@ interface IViewport {
     scrollHeight: number;
 }
 
-export default class InfiniteScroll<IUserRecord, IUserProps, IUserState>
-extends React.Component<IProps<IUserProps>, IState<IUserState>> {
-    public state: IState<IUserState>;
+export default class InfiniteScroll<IUserRecord extends IRecord> extends React.Component<IProps, IState> {
+    public state: IState;
     public uniqueId: number;
     protected resizeHandler: (event: Event) => Event;
-    constructor(props: IProps<IUserProps>) {
+    constructor(props: IProps) {
         super(props);
 
         this.uniqueId = ++uniqueIdentifier;
@@ -73,12 +75,12 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
 
         this.tableWillUnmount();
     }
-    public componentWillReceiveProps(nextProps: IProps<IUserProps>) {
+    public componentWillReceiveProps(nextProps: IProps) {
         this.sliceViewport(this.getRecords(nextProps));
     }
     public render() {
         let recordComponents;
-        const allRecords = (this.getRecords(this.props) || []) as Array<IRecord<IUserRecord>>;
+        const allRecords = (this.getRecords(this.props) || []) as IRecord[];
         const rowHeight = this.getRowHeight();
         const topIndex = this.state.topIndex;
         const anchorTop = topIndex * rowHeight;
@@ -157,7 +159,7 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
         return this.props.viewportHeight || DEFAULT_VIEWPORT_HEIGHT;
 
     }
-    protected getRecords(props: IProps<IUserProps>) {
+    protected getRecords(props: IProps) {
         return props.records;
     }
     protected handleWindowResize() {
@@ -170,7 +172,7 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
     protected tableWillUnmount(): void {
         return;
     }
-    protected sliceViewport(records: Array<IRecord<IUserRecord>>) {
+    protected sliceViewport(records: IRecord[]) {
         if (!records) {
             records = [];
         }
@@ -278,7 +280,7 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
             width: this.props.width || "100%",
         };
     }
-    protected renderHeader(records: Array<IRecord<IUserRecord>>) {
+    protected renderHeader(records: IRecord[]) {
         if (!this.props.headerComponent) {
             return null;
         }
@@ -288,7 +290,7 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
             </thead>
         );
     }
-    protected renderFooter(records: Array<IRecord<IUserRecord>>) {
+    protected renderFooter(records: IRecord[]) {
         if (!this.props.footerComponent) {
             return null;
         }
@@ -304,13 +306,13 @@ extends React.Component<IProps<IUserProps>, IState<IUserState>> {
         }
         return React.createElement(this.props.emptyComponent, this.props);
     }
-    protected renderRecords(records?: Array<IRecord<IUserRecord>>) {
+    protected renderRecords(records?: IRecord[]) {
         const self = this;
-        return records.map((record: IRecord<IUserRecord>) => {
+        return records.map((record: IRecord) => {
             return this.renderRecord.call(self, record);
         });
     }
-    protected renderRecord(record: IRecord<IUserRecord>) {
+    protected renderRecord(record: IRecord) {
         return (
             <tr key={ record.id }>
                 <td>{ record.id }</td>
