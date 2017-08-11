@@ -63,7 +63,9 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
         };
     }
     public componentDidMount() {
-        this.sliceViewport(this.getRecords(this.props));
+        window.requestAnimationFrame(() => {
+            this.sliceViewport(this.getRecords(this.props));
+        });
 
         this.resizeHandler = this.handleWindowResize.bind(this);
         window.addEventListener("resize", this.resizeHandler);
@@ -76,7 +78,9 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
         this.tableWillUnmount();
     }
     public componentWillReceiveProps(nextProps: IProps) {
-        this.sliceViewport(this.getRecords(nextProps));
+        window.requestAnimationFrame(() => {
+            this.sliceViewport(this.getRecords(nextProps));
+        });
     }
     public render() {
         let recordComponents;
@@ -144,13 +148,16 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
         return result;
     }
     public componentDidUpdate() {
-        this.queueUpdateExternals();
-        this.updateRowHeight();
-        const { state } = this;
-        const viewport = this.refs.viewport as HTMLElement;
-        if (viewport.scrollHeight !== state.scrollHeight) {
-            this.sliceViewport(this.getRecords(this.props));
-        }
+        window.requestAnimationFrame(() => {
+            this.updateExternals();
+            this.updateRowHeight();
+
+            const { state } = this;
+            const viewport = this.refs.viewport as HTMLElement;
+            if (viewport.scrollHeight !== state.scrollHeight) {
+                this.sliceViewport(this.getRecords(this.props));
+            }
+        });
     }
     protected getRowHeight() {
         return this.state.rowHeight || this.state.detectedRowHeight || DEFAULT_ROW_HEIGHT;
@@ -202,9 +209,6 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
             topIndex,
             viewportRecords,
         });
-    }
-    protected queueUpdateExternals() {
-        this.updateExternals();
     }
     protected updateExternals() {
         // TODO check header and footer exist first
@@ -273,7 +277,9 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
 
     }
     protected handleScroll() {
-        this.sliceViewport(this.getRecords(this.props));
+        window.requestAnimationFrame(() => {
+            this.sliceViewport(this.getRecords(this.props));
+        });
     }
     protected getBodyStyle() {
         return {
@@ -308,9 +314,10 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
     }
     protected renderRecords(records?: IRecord[]) {
         const self = this;
-        return records.map((record: IRecord) => {
-            return this.renderRecord.call(self, record);
+        const rendered = records.map((record: IRecord) => {
+            return this.renderRecord(record);
         });
+        return rendered;
     }
     protected renderRecord(record: IRecord) {
         return (
