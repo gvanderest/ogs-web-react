@@ -3,7 +3,7 @@ import * as React from "react";
 
 export const DEFAULT_ROW_HEIGHT = 20; // pixels
 export const DEFAULT_VIEWPORT_HEIGHT = 400; // pixels
-export const DEFAULT_OVERFLOW_RECORDS = 3; // number of pre- and post- records
+export const DEFAULT_OVERFLOW_RECORDS = 10; // number of pre- and post- records
 
 let uniqueIdentifier = 0;
 
