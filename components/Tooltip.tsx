@@ -137,7 +137,7 @@ export default class Tooltip extends React.Component {
 Tooltip.propTypes = {
     htmlOrText: (props) => {
         if (!props.text && !props.html) {
-            throw new Error("Invalid prop: "message" or "text" prop must be provided");
+            throw new Error("Invalid prop: 'message' or 'text' prop must be provided");
         }
     },
 };
