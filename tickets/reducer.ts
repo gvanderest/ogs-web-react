@@ -1,8 +1,8 @@
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 
+import ReduxAction from "../classes/ReduxAction";
 import Ticket from "../classes/Ticket";
-import { IReduxAction } from "../interfaces";
 
 import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "./actions";
 
@@ -19,8 +19,12 @@ function handleFetchingTickets(state: ITicketsState) {
     };
 }
 
-function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
-    const tickets: Ticket[] = action.tickets;
+interface IHandleFetchedTicketsAction extends ReduxAction {
+    tickets: Ticket[];
+}
+
+function handleFetchedTickets(state: ITicketsState, action: IHandleFetchedTicketsAction) {
+    const tickets = action.tickets;
     const newState = {
         ...state,
         byId: {
@@ -38,8 +42,12 @@ function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
     return newState;
 }
 
-function handleFetchedTicket(state: ITicketsState, action: IReduxAction) {
-    const ticket: Ticket = action.ticket;
+interface IHandleFetchedTicketAction extends ReduxAction {
+    ticket: Ticket;
+}
+
+function handleFetchedTicket(state: ITicketsState, action: IHandleFetchedTicketAction) {
+    const ticket = action.ticket;
     return reduceRecord(state, ticket);
 }
 

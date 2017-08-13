@@ -87,7 +87,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
         });
 
         dispatch({ type: FETCHING_TICKET, options });
-        promise.then((ticket) => {
+        promise.then((ticket: Ticket) => {
             dispatch({ type: FETCHED_EVENT, event: ticket.event });
             dispatch({ type: FETCHED_TICKET, options, ticket });
         }, (errors) => {

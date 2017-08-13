@@ -10,7 +10,7 @@
         "allowSyntheticDefaultImports": true
     },
     "include": [
-        "./src/**/*"
+        "**/*"
     ],
     "typeRoots": [
         "./node_modules/@types",

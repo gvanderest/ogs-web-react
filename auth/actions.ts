@@ -1,7 +1,7 @@
 import * as Promise from "promise";
-import { IReduxDispatch, IReduxThunk } from "../interfaces";
-import { ICustomer } from "../interfaces";
-import { IUser } from "../interfaces";
+
+import Customer from "../classes/Customer";
+import User from "../classes/User";
 
 export const AUTHENTICATING_CUSTOMER = "AUTHENTICATING_CUSTOMER";
 export const AUTHENTICATED_CUSTOMER = "AUTHENTICATED_CUSTOMER";
@@ -21,8 +21,8 @@ interface ILoginOptions {
     captcha?: string;
 }
 
-export function logout(): IReduxThunk {
-    return (dispatch: IReduxDispatch): Promise<void> => {
+export function logout() {
+    return (dispatch) => {
         dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
             credentials: "include",
@@ -35,9 +35,9 @@ export function logout(): IReduxThunk {
     };
 }
 
-export function login(options: ILoginOptions): IReduxThunk {
-    return (dispatch: IReduxDispatch): Promise<ICustomer> => {
-        const promise: Promise<ICustomer> = new Promise((yes, no) => {
+export function login(options: ILoginOptions) {
+    return (dispatch) => {
+        const promise: Promise<Customer> = new Promise((yes, no) => {
             const { captcha, username, password } = options;
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
                 body: JSON.stringify({
@@ -54,7 +54,7 @@ export function login(options: ILoginOptions): IReduxThunk {
             }).then((response) => {
                 if (response.ok) {
                     response.json().then(() => {
-                        dispatch(fetchAuthenticatedCustomer()).then((customer: ICustomer) => {
+                        dispatch(fetchAuthenticatedCustomer()).then((customer: Customer) => {
                             yes(customer);
                         }, no);
                     }, no);
@@ -105,9 +105,9 @@ interface IRawCustomer {
     };
 }
 
-export function fetchAuthenticatedCustomer(): IReduxThunk {
-    return (dispatch: IReduxDispatch): Promise<ICustomer> => {
-        const promise = new Promise<ICustomer>((yes, no) => {
+export function fetchAuthenticatedCustomer() {
+    return (dispatch) => {
+        const promise = new Promise<Customer>((yes, no) => {
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
                 credentials: "include",
                 method: "GET",
@@ -124,7 +124,7 @@ export function fetchAuthenticatedCustomer(): IReduxThunk {
                         mode: "cors",
                     }).then((cxResponse) => {
                         cxResponse.json().then((cx: IRawCustomer) => {
-                            const user: IUser = {
+                            const user: User = {
                                 email: cx.user.email,
                                 firstName: cx.user.first_name,
                                 id: String(cx.user.id),
@@ -136,7 +136,7 @@ export function fetchAuthenticatedCustomer(): IReduxThunk {
                                 return cx.experience_groups[id].name;
                             });
 
-                            const customer: ICustomer = {
+                            const customer: Customer = {
                                 account: {
                                     accounts: {
                                         ...cx.account.accounts,

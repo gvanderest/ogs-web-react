@@ -1,8 +1,10 @@
-const STATUS_OPEN = "o";
-const STATUS_CLOSED = "c";
-const STATUS_FINALIZED = "f";
+import Entity from "./Entity";
 
-export default class Event {
+export default class Event extends Entity<Event> {
+    public static readonly STATUS_OPEN = "o";
+    public static readonly STATUS_CLOSED = "c";
+    public static readonly STATUS_FINALIZED = "f";
+
     public adminId: string;
     public lobbySort: number;
     public lobbyTabs: string[];
@@ -25,22 +27,14 @@ export default class Event {
     public ticketMaxPerUser: number;
     public ticketMin: number;
 
-    public constructor(data?: Event) {
-        if (data) {
-            for (const key of Object.keys(data)) {
-                this[key] = data[key];
-            }
-        }
-    }
-
     public isOpen() {
-        return this.status === STATUS_OPEN;
+        return this.status === Event.STATUS_OPEN;
     }
     public isClosed() {
-        return this.status === STATUS_CLOSED;
+        return this.status === Event.STATUS_CLOSED;
     }
     public isFinalized() {
-        return this.status === STATUS_FINALIZED;
+        return this.status === Event.STATUS_FINALIZED;
     }
     public isGuaranteed() {
         return this.ticketMin === 1;
