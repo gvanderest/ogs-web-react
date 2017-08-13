@@ -13,7 +13,7 @@ export default class Team {
             alias: string;
             category: string;
             rank: number;
-            state: string;
+            stat: string;
         };
     };
     season?: number;
