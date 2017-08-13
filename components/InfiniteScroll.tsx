@@ -14,10 +14,6 @@ interface IRecord {
 
 interface IProps {
     viewportHeight?: number;
-    headerComponent?: any; // FIXME
-    footerComponent?: any; // FIXME
-    recordComponent?: any; // FIXME
-    emptyComponent?: any; // FIXME
     rowHeight?: number;
     className?: string;
     records?: any[];
@@ -287,30 +283,13 @@ export default class InfiniteScroll<IUserRecord extends IRecord> extends React.C
         };
     }
     protected renderHeader(records: IRecord[]) {
-        if (!this.props.headerComponent) {
-            return null;
-        }
-        return (
-            <thead>
-                { React.createElement(this.props.headerComponent, this.props) }
-            </thead>
-        );
+        return null;
     }
     protected renderFooter(records: IRecord[]) {
-        if (!this.props.footerComponent) {
-            return null;
-        }
-        return (
-            <tfoot>
-                { React.createElement(this.props.footerComponent, this.props) }
-            </tfoot>
-        );
+        return null;
     }
     protected renderEmpty() {
-        if (!this.props.emptyComponent) {
-            return null;
-        }
-        return React.createElement(this.props.emptyComponent, this.props);
+        return null;
     }
     protected renderRecords(records?: IRecord[]) {
         const self = this;
