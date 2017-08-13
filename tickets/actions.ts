@@ -1,11 +1,10 @@
 import * as Promise from "promise";
 
+import ReduxDispatch from "../classes/ReduxDispatch";
 import Ticket from "../classes/Ticket";
 
 import { FETCHED_EVENT } from "../events/actions";
 import { FETCHED_EVENTS } from "../events/actions";
-import { IRawTicket } from "../interfaces";
-import { IReduxDispatch } from "../interfaces";
 
 export const FETCHING_TICKET = "FETCHING_TICKET";
 export const FETCHED_TICKET = "FETCHED_TICKET";
@@ -17,12 +16,24 @@ export const ERROR_FETCHING_TICKETS = "ERROR_FETCHING_TICKETS";
 
 import API from "../api";
 
+interface IRawEvent {
+    id: number;
+    ticket_cost: number;
+}
+
+interface IRawTicket {
+    amount_won: number;
+    event_id: number;
+    event: IRawEvent;
+    template_id: number;
+}
+
 interface ITicketsResponse {
     objects: IRawTicket[];
 }
 
 export function fetchTickets(options: { [key: string]: string } = {}) {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             API.get("v1/tickets", { event__status__in: "o,c" }).then((response: ITicketsResponse) => {
                 const tickets = response.objects.map((rawTicket) => {
@@ -64,7 +75,7 @@ interface IFetchTicketOptions {
 }
 
 export function fetchTicket(options: IFetchTicketOptions) {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
             fetch(`https://qa7.fantasydraft.com/api/v1/tickets/${ id }/`, {
