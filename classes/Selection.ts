@@ -7,6 +7,6 @@ export default class Selection {
     public outcomeId: string;
     public eventPosition?: EventPosition;
     public eventPositionId: string;
-    public earnedPoints: number;
+    public earnedPoints?: number;
     public modifiedTimestamp?: number;
 }
