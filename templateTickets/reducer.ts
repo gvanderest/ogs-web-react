@@ -1,12 +1,12 @@
 import generateReducer from "../utils/generateReducer";
 import reduceRecords from "../utils/reduceRecords";
+import TemplateTicket from "../classes/TemplateTicket";
 
-import { ITemplateTicket } from "../interfaces";
 import { FETCHED_TEMPLATE_TICKETS } from "./actions";
 
 interface IState {
     byId: {
-        [key: string]: ITemplateTicket;
+        [key: string]: TemplateTicket;
     };
 }
 
@@ -16,7 +16,7 @@ const initialState: IState = {
 
 interface IHandleFetchedTemplateTicketsAction {
     type: string;
-    templateTickets: ITemplateTicket[];
+    templateTickets: TemplateTicket[];
 }
 
 function handleFetchedTemplateTickets(state: IState, action: IHandleFetchedTemplateTicketsAction) {
