@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "moment": "^2.18.1",
-    "react": "next",
+    "react": "15.6.2",
     "react-dom": "next",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.2",
