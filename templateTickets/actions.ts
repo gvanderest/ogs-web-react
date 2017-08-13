@@ -1,13 +1,11 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
+import EventGamesCollection from "../classes/EventGamesCollection";
+import ReduxDispatch from "../classes/ReduxDispatch";
 import TemplateTicket from "../classes/TemplateTicket";
 
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
-import {
-    IEventGamesCollection,
-    IReduxDispatch,
-} from "../interfaces";
 
 export const FETCHING_TEMPLATE_TICKETS = "FETCHING_TEMPLATE_TICKETS";
 export const FETCHED_TEMPLATE_TICKETS = "FETCHED_TEMPLATE_TICKETS";
@@ -101,7 +99,7 @@ interface IRawResults {
 }
 
 export function fetchTemplateTickets() {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/tickets/sportstemplates/", {
                 credentials: "include",
@@ -110,7 +108,7 @@ export function fetchTemplateTickets() {
             }).then((response) => {
                 response.json().then((results: IRawResults) => {
                     const templateTickets: TemplateTicket[] = [];
-                    const eventGamesCollections: IEventGamesCollection[] = [];
+                    const eventGamesCollections: EventGamesCollection[] = [];
 
                     results.objects.map((result: IRawResult) => {
                         const evg: IRawEventGamesCollection = result.eventGamesCollection;
@@ -142,7 +140,7 @@ export function fetchTemplateTickets() {
 
                         const gameIds = evg.games.map((game) => String(game.id));
 
-                        const eventGamesCollection: IEventGamesCollection = {
+                        const eventGamesCollection: EventGamesCollection = {
                             closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
                             context: evg.context,
                             gameIds,
