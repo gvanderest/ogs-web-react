@@ -5,24 +5,29 @@ import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
-import { IGame } from "../interfaces";
-import { IReduxAction } from "../interfaces";
-import { IReduxState } from "../interfaces";
+import Game from "../classes/Game";
+import ReduxAction from "../classes/ReduxAction";
 
-interface IHandleFetchedGamesAction extends IReduxAction {
-    games: IGame[];
+interface IGamesStoreState {
+    byId: {
+        [key: string]: Game;
+    };
 }
 
-function handleFetchedGames(state: IReduxState, action: IHandleFetchedGamesAction) {
+interface IHandleFetchedGamesAction extends ReduxAction {
+    games: Game[];
+}
+
+function handleFetchedGames(state: IGamesStoreState, action: IHandleFetchedGamesAction) {
     const { games } = action;
     return reduceRecords(state, games);
 }
 
-interface IHandleFetchedGameAction extends IReduxAction {
-    game: IGame;
+interface IHandleFetchedGameAction extends ReduxAction {
+    game: Game;
 }
 
-function handleFetchedGame(state: IReduxState, action: IHandleFetchedGameAction) {
+function handleFetchedGame(state: IGamesStoreState, action: IHandleFetchedGameAction) {
     const { game } = action;
     return reduceRecord(state, game);
 }

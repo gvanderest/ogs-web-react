@@ -4,16 +4,21 @@ import reduceRecords from "../utils/reduceRecords";
 
 import Outcome from "../classes/Outcome";
 import ReduxAction from "../classes/ReduxAction";
-import ReduxState from "../classes/ReduxState";
+
+interface IOutcomesStoreState {
+    byId: {
+        [key: string]: Outcome;
+    };
+}
 
 import { FETCHED_OUTCOME, FETCHED_OUTCOMES } from "./actions";
 
-function handleFetchedOutcomes(state: ReduxState, action: ReduxAction) {
+function handleFetchedOutcomes(state: IOutcomesStoreState, action: ReduxAction) {
     const outcomes: Outcome[] = action.outcomes;
     return reduceRecords(state, outcomes);
 }
 
-function handleFetchedOutcome(state: ReduxState, action: ReduxAction) {
+function handleFetchedOutcome(state: IOutcomesStoreState, action: ReduxAction) {
     const outcome: Outcome = action.outcome;
     return reduceRecord(state, outcome);
 }
