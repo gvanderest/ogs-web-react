@@ -8,7 +8,14 @@ export default class Team {
     externalId?: string;
     league: string;
     provider?: string;
-    ranks: object;
+    ranks: {
+        [key: string]: {
+            alias: string;
+            category: string;
+            rank: number;
+            state: string;
+        };
+    };
     season?: number;
     settings?: string;
     teamCodeGlobalId?: string;
