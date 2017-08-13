@@ -1,11 +1,12 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
+import TemplateTicket from "../classes/TemplateTicket";
+
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
 import {
     IEventGamesCollection,
     IReduxDispatch,
-    ITemplateTicket,
 } from "../interfaces";
 
 export const FETCHING_TEMPLATE_TICKETS = "FETCHING_TEMPLATE_TICKETS";
@@ -108,7 +109,7 @@ export function fetchTemplateTickets() {
                 mode: "cors",
             }).then((response) => {
                 response.json().then((results: IRawResults) => {
-                    const templateTickets: ITemplateTicket[] = [];
+                    const templateTickets: TemplateTicket[] = [];
                     const eventGamesCollections: IEventGamesCollection[] = [];
 
                     results.objects.map((result: IRawResult) => {
@@ -127,7 +128,7 @@ export function fetchTemplateTickets() {
                             const ticketIds = rawTemplate.tickets.map((uri) => {
                                 return uri.replace("/api/v1/tickets/", "").replace("/", "");
                             });
-                            const template: ITemplateTicket = {
+                            const template: TemplateTicket = {
                                 externalId: String(rawTemplate.externalId),
                                 id: String(rawTemplate.id),
                                 modifiedTimestamp,

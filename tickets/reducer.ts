@@ -1,13 +1,14 @@
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 
-import { IReduxAction, ITicket } from "../interfaces";
+import Ticket from "../classes/Ticket";
+import { IReduxAction } from "../interfaces";
 
 import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "./actions";
 
 interface ITicketsState {
     byId: {
-        [key: string]: ITicket;
+        [key: string]: Ticket;
     };
 }
 
@@ -19,7 +20,7 @@ function handleFetchingTickets(state: ITicketsState) {
 }
 
 function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
-    const tickets: ITicket[] = action.tickets;
+    const tickets: Ticket[] = action.tickets;
     const newState = {
         ...state,
         byId: {
@@ -27,7 +28,7 @@ function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
         },
     };
 
-    tickets.forEach((ticket: ITicket) => {
+    tickets.forEach((ticket: Ticket) => {
         newState.byId[ticket.id] = {
             ...newState.byId[ticket.id],
             ...ticket,
@@ -38,7 +39,7 @@ function handleFetchedTickets(state: ITicketsState, action: IReduxAction) {
 }
 
 function handleFetchedTicket(state: ITicketsState, action: IReduxAction) {
-    const ticket: ITicket = action.ticket;
+    const ticket: Ticket = action.ticket;
     return reduceRecord(state, ticket);
 }
 

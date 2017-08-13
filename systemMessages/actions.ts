@@ -1,12 +1,22 @@
 import * as moment from "moment";
 import * as Promise from "promise";
-import { IReduxDispatch } from "../interfaces";
-import { ISystemMessage } from "../interfaces";
-import { IRawSystemMessage } from "../interfaces";
+
+import SystemMessage from "../classes/SystemMessage";
+import ReduxDispatch from "../types/ReduxDispatch";
 
 export const FETCHING_SYSTEM_MESSAGES = "FETCHING_SYSTEM_MESSAGES";
 export const FETCHED_SYSTEM_MESSAGES = "FETCHED_SYSTEM_MESSAGES";
-export const ERROR_FETCHING_SYSTEM_MESSAGES = "ERROR_FETCHING_SYSTEM_MESSAGES"
+export const ERROR_FETCHING_SYSTEM_MESSAGES = "ERROR_FETCHING_SYSTEM_MESSAGES";
+
+interface IRawSystemMessage {
+    end_ts: string;
+    id: number;
+    message: string;
+    settings: {
+        [key: string]: string;
+    };
+    start_ts: string;
+}
 
 interface IRawSystemMessagesResponse {
     meta: any;
@@ -14,18 +24,12 @@ interface IRawSystemMessagesResponse {
 }
 
 export function fetchSystemMessages() {
-    return (dispatch: IReduxDispatch): Promise<ISystemMessage[]> => {
-        const promise: Promise<ISystemMessage[]> = new Promise((yes, no) => {
+    return (dispatch: ReduxDispatch): Promise<SystemMessage[]> => {
+        const promise: Promise<SystemMessage[]> = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/systemmessages/", {
                 method: "GET",
                 mode: "cors",
             }).then((response) => {
-                response.json().then((hey: IRawSystemMessagesResponse) => {
-                    console.log("RESULTS", hey);
-                }, () => {
-                    console.log("BAD");
-                });
-
                 const results: IRawSystemMessagesResponse = {
                     meta: {},
                     objects: [
@@ -40,7 +44,7 @@ export function fetchSystemMessages() {
                         // },
                     ],
                 };
-                const messages: ISystemMessage[] = results.objects.map((msg: IRawSystemMessage) => {
+                const messages: SystemMessage[] = results.objects.map((msg: IRawSystemMessage) => {
                     const { id, message, settings, end_ts, start_ts } = msg;
                     return {
                         endTimestamp: moment.utc(end_ts).unix(),

@@ -1,9 +1,10 @@
 import * as Promise from "promise";
 
+import Ticket from "../classes/Ticket";
+
 import { FETCHED_EVENT } from "../events/actions";
 import { FETCHED_EVENTS } from "../events/actions";
 import { IRawTicket } from "../interfaces";
-import { ITicket } from "../interfaces";
 import { IReduxDispatch } from "../interfaces";
 
 export const FETCHING_TICKET = "FETCHING_TICKET";
@@ -73,7 +74,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
             }).then((response) => {
                 response.json().then((raw) => {
                     // FIXME Parse this information into normalized format
-                    const ticket: ITicket = { ...raw };
+                    const ticket: Ticket = { ...raw };
                     ticket.id = String(ticket.id);
                     ticket.eventId = String(ticket.event.id);
                     return yes(ticket);

@@ -11,9 +11,6 @@
     "test": "yarn jest"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.71",
-    "@types/react-redux": "^4.4.47",
-    "@types/react-router-redux": "^5.0.4",
     "moment": "^2.18.1",
     "react": "next",
     "react-dom": "next",
@@ -22,6 +19,5 @@
     "react-router-redux": "next",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"
-  },
-  "devDependencies": {}
+  }
 }

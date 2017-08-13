@@ -1,10 +1,11 @@
-import { FETCHED_SYSTEM_MESSAGES } from "./actions";
-import { ISystemMessage } from "../interfaces";
+import SystemMessage from "../classes/SystemMessage";
 import generateReducer from "../utils/generateReducer";
 
+import { FETCHED_SYSTEM_MESSAGES } from "./actions";
+
 interface IState {
-    fetching: false,
-    messages: ISystemMessage[];
+    fetching: boolean;
+    messages: SystemMessage[];
 }
 
 const initialState: IState = {
@@ -14,7 +15,7 @@ const initialState: IState = {
 
 interface IHandleFetchedSystemMessagesAction {
     type: string;
-    messages: ISystemMessage[];
+    messages: SystemMessage[];
 }
 
 function handleFetchedSystemMessages(state: IState, action: IHandleFetchedSystemMessagesAction) {
@@ -22,7 +23,7 @@ function handleFetchedSystemMessages(state: IState, action: IHandleFetchedSystem
     return {
         ...state,
         fetching: false,
-        messages
+        messages,
     };
 }
 

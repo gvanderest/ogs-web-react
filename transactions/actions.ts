@@ -1,12 +1,23 @@
-import * as Promise from "promise";
 import * as moment from "moment";
-import { IReduxDispatch } from "../interfaces";
-import { ITransaction } from "../interfaces";
-import { IRawTransaction } from "../interfaces";
+import * as Promise from "promise";
+
+import Transaction from "../classes/Transaction";
 
 export const FETCHING_TRANSACTIONS = "FETCHING_TRANSACTIONS";
 export const FETCHED_TRANSACTIONS = "FETCHED_TRANSACTION";
-export const ERROR_FETCHING_TRANSACTIONS = "ERROR_FETCHING_TRANSACTIONS"
+export const ERROR_FETCHING_TRANSACTIONS = "ERROR_FETCHING_TRANSACTIONS";
+
+interface IRawTransaction {
+    amount: number;
+    closed: boolean;
+    created_ts: string;
+    currency: string;
+    description: string;
+    external_id: string;
+    id: number;
+    name: string;
+    paid: boolean;
+}
 
 interface IRawTransactionsResults {
     meta: any;
@@ -14,15 +25,15 @@ interface IRawTransactionsResults {
 }
 
 export function fetchTransactions() {
-    return (dispatch: IReduxDispatch): Promise<ITransaction[]> => {
-        const promise: Promise<ITransaction[]> = new Promise((yes, no) => {
+    return (dispatch: any): Promise<Transaction[]> => {
+        const promise: Promise<Transaction[]> = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/transactions/", {
                 credentials: "include",
                 method: "GET",
                 mode: "cors",
             }).then((response) => {
                 response.json().then((results: IRawTransactionsResults) => {
-                    const transactions: ITransaction[] = results.objects.map((tx: IRawTransaction) => {
+                    const transactions: Transaction[] = results.objects.map((tx: IRawTransaction) => {
                         const { amount, closed, currency, description, id,
                             external_id, paid, created_ts } = tx;
                         return {
@@ -35,7 +46,7 @@ export function fetchTransactions() {
                             id: String(id),
                             name,
                             paid,
-                        }
+                        };
                     });
                     yes(transactions);
                 }, no);

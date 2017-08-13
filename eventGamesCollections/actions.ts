@@ -1,6 +1,15 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
+import EventGamesCollection from "../classes/EventGamesCollection";
+import EventGamesCollectionConfigSettings from "../classes/EventGamesCollectionConfigSettings";
+import EventGamesCollectionSettings from "../classes/EventGamesCollectionSettings";
+import EventPosition from "../classes/EventPosition";
+import Game from "../classes/Game";
+import Outcome from "../classes/Outcome";
+import Player from "../classes/Player";
+import Team from "../classes/Team";
+
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
 import { FETCHED_GAMES } from "../games/actions";
 import { FETCHED_OUTCOMES } from "../outcomes/actions";
@@ -15,33 +24,105 @@ export const FETCHING_EVENT_GAMES_COLLECTIONS = "FETCHING_EVENT_GAMES_COLLECTION
 export const FETCHED_EVENT_GAMES_COLLECTIONS = "FETCHED_EVENT_GAMES_COLLECTIONS";
 export const ERROR_FETCHING_EVENT_GAMES_COLLECTIONS = "ERROR_FETCHING_EVENT_GAMES_COLLECTIONS";
 
-import {
-    IEventGamesCollection,
-    IEventGamesCollectionConfigSettings,
-    IEventGamesCollectionSettings,
-    IEventPosition,
-    IGame,
-    IMinifiedEventGamesCollection,
-    IMinifiedGame,
-    IMinifiedOutcome,
-    IMinifiedPlayer,
-    IOutcome,
-    IPlayer,
-    IReduxDispatch,
-    IReduxGetState,
-    IReduxState,
-    IReduxThunk,
-    ITeam,
-} from "../interfaces";
+export interface IRawTransaction {
+    amount: number;
+    closed: boolean;
+    created_ts: string;
+    currency: string;
+    description: string;
+    external_id: string;
+    id: number;
+    name: string;
+    paid: boolean;
+}
 
 interface IFetchEventGamesCollectionOptions {
     id: string;
 }
+export interface IMinifiedPlayer {
+    ei: number;
+    h: string;
+    is: boolean;
+    bh: string;
+    t: number;
+    inj: string;
+}
 
-export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): IReduxThunk {
-    return (dispatch: IReduxDispatch, getState: IReduxGetState): Promise<IEventGamesCollection> => {
-        const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
-            const state: IReduxState = getState();
+export interface IMinifiedGame {
+    f: boolean;
+    i: string;
+    hti: number;
+    hta: string;
+    htn: string;
+    hts: number;
+    vti: number;
+    vta: string;
+    vtn: string;
+    vts: number;
+    gu: string;
+    gt: string;
+    gs: string;
+    gi: string;
+    wdh: boolean;
+    wc: string;
+    s: string;
+    wj: string;
+    ws: string;
+    d: string;
+    l: string;
+    p: {
+        [key: string]: IMinifiedPlayer;
+    };
+    htstd: string;
+    htrj: object;
+    vtrj: object;
+}
+
+export interface IMinifiedOutcome {
+    c: string;
+    ei: string;
+    i: number;
+    pp: number;
+    n: string;
+    si: string;
+    pa: number;
+    t: string;
+    sc: number;
+}
+
+export interface IMinifiedEventPosition {
+    i: number;
+    s: string;
+    o: string[];
+    n: string;
+    so: number;
+}
+
+export interface IMinifiedEventGamesCollection {
+    c: string;
+    cxt: string;
+    i: number;
+    cfg: string;
+    evgsj: string;
+    g: {
+        [key: string]: IMinifiedGame;
+    };
+    o: {
+        [key: string]: IMinifiedOutcome;
+    };
+    sc: number;
+    exu: string;
+    evp: {
+        [key: string]: IMinifiedEventPosition;
+    };
+    co: boolean;
+    evt: IMinifiedFantasyEvent;
+}
+
+export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): any {
+    return (dispatch: any, getState: any): Promise<EventGamesCollection> => {
+        const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
+            const state: EventGamesCollectionState = getState();
             const { id } = options;
             const existing = state.eventGamesCollections.byId[id];
             if (existing && !existing.fetching) {
@@ -56,12 +137,12 @@ export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOpt
             }).then((response) => {
                 response.json().then((raw: IRawEventGamesCollection) => {
                     const eventGamesSettings = JSON.parse(raw.settings_json) as
-                        IEventGamesCollectionSettings;
+                        EventGamesCollectionSettings;
                     const gameIds = Object.keys(raw.games);
                     const configSettings = JSON.parse(raw.config.settings_json) as
-                        IEventGamesCollectionConfigSettings;
+                        EventGamesCollectionConfigSettings;
 
-                    const eventGames: IEventGamesCollection = {
+                    const eventGames: EventGamesCollection = {
                         addOutcomesAfterOpen: eventGamesSettings.add_outcomes_after_open,
                         checkTimestamp: moment.utc(raw.check_event).unix(),
                         closeEventTimestamp: moment.utc(raw.close_event).unix(),
@@ -100,7 +181,7 @@ export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOpt
             });
         });
 
-        promise.then((eventGamesCollection: IEventGamesCollection) => {
+        promise.then((eventGamesCollection: EventGamesCollection) => {
             dispatch({ type: FETCHED_EVENT_GAMES_COLLECTION, options, eventGamesCollection });
         }, (error) => {
             dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTION, options, error });
@@ -126,7 +207,7 @@ interface IRawTeam {
     team_code_global_id: number;
 }
 
-function transformTeam(raw: IRawTeam): ITeam {
+function transformTeam(raw: IRawTeam): Team {
     if (!raw) {
         return null;
     }
@@ -203,7 +284,7 @@ interface IRawEventGamesCollection {
 }
 
 export function fetchEventGamesCollections() {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: any) => {
         const promise = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS });
 
@@ -212,15 +293,15 @@ export function fetchEventGamesCollections() {
                 mode: "cors",
             }).then((response) => {
                 response.json().then(({ objects }) => {
-                    const gamesById: { [key: string]: IGame } = {};
-                    const teamsById: { [key: string]: ITeam } = {};
+                    const gamesById: { [key: string]: Game } = {};
+                    const teamsById: { [key: string]: Team } = {};
 
-                    const eventGamesCollections: IEventGamesCollection[] = objects.map((
+                    const eventGamesCollections: EventGamesCollection[] = objects.map((
                         raw: IRawEventGamesCollection,
                     ) => {
                         raw.games.forEach((rawGame: IRawGame) => {
                             const label: string = `${rawGame.visiting_team.alias} @ ${rawGame.home_team.alias}`;
-                            const game: IGame = {
+                            const game: Game = {
                                 externalId: String(rawGame.game_code_global_id),
                                 finalized: rawGame.finalized,
                                 id: String(rawGame.id),
@@ -242,12 +323,12 @@ export function fetchEventGamesCollections() {
                             };
 
                             if (rawGame.home_team) {
-                                const homeTeam: ITeam = transformTeam(rawGame.home_team);
+                                const homeTeam: Team = transformTeam(rawGame.home_team);
                                 teamsById[homeTeam.id] = homeTeam;
                                 game.homeTeamId = homeTeam.id;
                             }
                             if (rawGame.visiting_team) {
-                                const visitingTeam: ITeam = transformTeam(rawGame.visiting_team);
+                                const visitingTeam: Team = transformTeam(rawGame.visiting_team);
                                 teamsById[visitingTeam.id] = visitingTeam;
                                 game.visitingTeamId = visitingTeam.id;
                             }
@@ -257,11 +338,11 @@ export function fetchEventGamesCollections() {
 
                         const { config } = raw;
                         const configSettings = JSON.parse(config.settings_json) as
-                            IEventGamesCollectionConfigSettings;
+                            EventGamesCollectionConfigSettings;
 
-                        const settings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettings;
+                        const settings = JSON.parse(raw.settings_json) as EventGamesCollectionSettings;
 
-                        const eventGamesCollection: IEventGamesCollection = {
+                        const eventGamesCollection: EventGamesCollection = {
                             addOutcomesAfterOpen: settings.add_outcomes_after_open,
                             checkEventTimestamp: moment.utc(raw.check_event).unix(),
                             closeEventTimestamp: moment.utc(raw.close_event).unix(),
@@ -331,10 +412,10 @@ interface IFetchFantasyEventGamesCollectionOptions {
 
 export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGamesCollectionOptions) {
     return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
-        const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
+        const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
             const { id, eventId } = options;
             const state = getState();
-            const existing: IEventGamesCollection = state.eventGamesCollections.byId[id];
+            const existing: EventGamesCollection = state.eventGamesCollections.byId[id];
 
             if (existing) {
                 return yes(existing);
@@ -350,16 +431,16 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                 mode: "cors",
             }).then((response) => {
                 response.json().then((rawEventGames: IMinifiedEventGamesCollection) => {
-                    const teamsById: { [key: string]: ITeam } = {};
-                    const gamesById: { [key: string]: IGame } = {};
-                    const outcomesById: { [key: string]: IOutcome } = {};
-                    const eventPositionsById: { [key: string]: IEventPosition } = {};
-                    const playersById: { [key: string]: IPlayer } = {};
+                    const teamsById: { [key: string]: Team } = {};
+                    const gamesById: { [key: string]: Game } = {};
+                    const outcomesById: { [key: string]: Outcome } = {};
+                    const eventPositionsById: { [key: string]: EventPosition } = {};
+                    const playersById: { [key: string]: Player } = {};
 
                     Object.keys(rawEventGames.g).forEach((rawGameId: string) => {
                         const rawGame: IMinifiedGame = rawEventGames.g[rawGameId];
                         const label: string = `${rawGame.vta} @ ${rawGame.hta}`;
-                        const game: IGame = {
+                        const game: Game = {
                             finalized: rawGame.f,
                             gameInfo: JSON.parse(rawGame.gi) as object,
                             id: String(rawGame.i),
@@ -371,7 +452,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         };
 
                         if (rawGame.hti) {
-                            const homeTeam: ITeam = {
+                            const homeTeam: Team = {
                                 alias: rawGame.hta,
                                 id: String(rawGame.hti),
                                 league: rawGame.l,
@@ -384,7 +465,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                             game.homeTeamScore = rawGame.hts;
                         }
                         if (rawGame.vti) {
-                            const visitingTeam: ITeam = {
+                            const visitingTeam: Team = {
                                 alias: rawGame.vta,
                                 id: String(rawGame.vti),
                                 league: rawGame.l,
@@ -400,7 +481,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         Object.keys(rawGame.p).forEach((rawPlayerId: string) => {
                             const rawPlayer: IMinifiedPlayer = rawGame.p[rawPlayerId];
                             const teamId = String(rawPlayer.t);
-                            const player: IPlayer = {
+                            const player: Player = {
                                 batterHandedness: rawPlayer.bh,
                                 externalId: String(rawPlayer.ei),
                                 handedness: rawPlayer.h,
@@ -421,7 +502,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
                     Object.keys(rawEventGames.o).forEach((rawOutcomeId) => {
                         const rawOutcome: IMinifiedOutcome = rawEventGames.o[rawOutcomeId];
-                        const outcome: IOutcome = {
+                        const outcome: Outcome = {
                             availablePoints: rawOutcome.pa,
                             closeTimestamp: moment.utc(rawOutcome.c).unix(),
                             externalId: rawOutcome.ei,
@@ -438,7 +519,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
                     Object.keys(rawEventGames.evp).forEach((evpId) => {
                         const evp = rawEventGames.evp[evpId];
-                        const eventPosition: IEventPosition = {
+                        const eventPosition: EventPosition = {
                             id: String(evp.i),
                             name: evp.n,
                             outcomeTypeNames: evp.o,
@@ -449,9 +530,9 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         eventPositionsById[eventPosition.id] = eventPosition;
                     });
 
-                    const settings = JSON.parse(rawEventGames.evgsj) as IEventGamesCollectionSettings;
+                    const settings = JSON.parse(rawEventGames.evgsj) as EventGamesCollectionSettings;
 
-                    const eventGamesCollection: IEventGamesCollection = {
+                    const eventGamesCollection: EventGamesCollection = {
                         addOutcomesAfterOpen: settings.add_outcomes_after_open,
                         closeEventTimestamp: moment.utc(rawEventGames.c).unix(),
                         config: {
@@ -462,11 +543,13 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         },
                         context: rawEventGames.cxt,
                         createdOutcomes: rawEventGames.co,
+                        eventPositionIds: Object.keys(rawEventGames.evp),
                         exportUrl: rawEventGames.exu,
                         gameIds: Object.keys(rawEventGames.g),
                         hideSelections: settings.hide_selections,
                         id: String(rawEventGames.i),
                         lineupsUrl: settings.lineups_url,
+                        outcomeIds: Object.keys(rawEventGames.o),
                         scoring: settings.scoring,
                     };
 
