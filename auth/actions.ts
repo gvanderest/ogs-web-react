@@ -1,6 +1,9 @@
 import * as Promise from "promise";
 
 import Customer from "../classes/Customer";
+import ReduxAction from "../classes/ReduxAction";
+import ReduxDispatch from "../classes/ReduxDispatch";
+import ReduxThunk from "../classes/ReduxThunk";
 import User from "../classes/User";
 
 export const AUTHENTICATING_CUSTOMER = "AUTHENTICATING_CUSTOMER";
@@ -21,8 +24,8 @@ interface ILoginOptions {
     captcha?: string;
 }
 
-export function logout() {
-    return (dispatch) => {
+export function logout(): ReduxThunk {
+    return (dispatch: ReduxDispatch) => {
         dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
             credentials: "include",
@@ -36,7 +39,7 @@ export function logout() {
 }
 
 export function login(options: ILoginOptions) {
-    return (dispatch) => {
+    return (dispatch: ReduxDispatch) => {
         const promise: Promise<Customer> = new Promise((yes, no) => {
             const { captcha, username, password } = options;
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
@@ -105,8 +108,8 @@ interface IRawCustomer {
     };
 }
 
-export function fetchAuthenticatedCustomer() {
-    return (dispatch) => {
+export function fetchAuthenticatedCustomer(): ReduxThunk {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise<Customer>((yes, no) => {
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
                 credentials: "include",
