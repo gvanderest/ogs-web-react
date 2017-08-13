@@ -1,4 +1,5 @@
 import Customer from "./Customer";
+import Event from "./Event";
 import EventGamesCollection from "./EventGamesCollection";
 import Ticket from "./Ticket";
 import Outcome from "./Outcome";
