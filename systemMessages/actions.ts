@@ -29,7 +29,7 @@ export function fetchSystemMessages() {
             fetch("https://qa7.fantasydraft.com/api/v1/systemmessages/", {
                 method: "GET",
                 mode: "cors",
-            }).then((response) => {
+            }).then(() => {
                 const results: IRawSystemMessagesResponse = {
                     meta: {},
                     objects: [

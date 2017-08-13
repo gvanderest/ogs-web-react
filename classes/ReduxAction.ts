@@ -1,4 +1,4 @@
 export default class ReduxAction {
-    type: string;
+    public type: string;
     [key: string]: any;
 }

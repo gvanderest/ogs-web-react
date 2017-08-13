@@ -1,13 +1,12 @@
+import EventPosition from "../classes/EventPosition";
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
 import { FETCHED_EVENT_POSITION, FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
 
-import { IEventPosition } from "../interfaces";
-
 interface IHandleFetchedEventPositionAction {
-    eventPositions: IEventPosition[];
+    eventPositions: EventPosition[];
 }
 
 function handleFetchedEventPositions(
@@ -20,7 +19,7 @@ function handleFetchedEventPositions(
 
 interface IHandleFetchedEventPositionAction {
     type: string;
-    eventPosition: IEventPosition;
+    eventPosition: EventPosition;
 }
 
 function handleFetchedEventPosition(
@@ -33,7 +32,7 @@ function handleFetchedEventPosition(
 
 interface IEventPositionsState {
     byId: {
-        [key: string]: IEventPosition;
+        [key: string]: EventPosition;
     };
 }
 

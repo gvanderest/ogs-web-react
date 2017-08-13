@@ -1,20 +1,20 @@
-import { IReduxAction, IReduxState } from "../interfaces";
+import ReduxAction from "../classes/ReduxAction";
 
-type IHandler = (state: IReduxState, action: IReduxAction) => IReduxState;
+type ReduxHandler = (state: any, action: ReduxAction) => any;
 
-type IGeneratedReducer = (state: IReduxState, action: IReduxAction) => IReduxState;
+type IGeneratedReducer = (state: any, action: ReduxAction) => any;
 
-const defaultAction: IReduxAction = { type: null };
+const defaultAction: ReduxAction = { type: null };
 
 export default function generateReducer(
-    initialState: IReduxState,
-    handlers: { [key: string]: IHandler },
+    initialState: any,
+    handlers: { [key: string]: ReduxHandler },
 ): IGeneratedReducer {
     return function generatedReducer(
-        state: IReduxState = initialState,
-        action: IReduxAction = defaultAction,
-    ): IReduxState {
-        const handler: IHandler = handlers[action.type];
+        state: any = initialState,
+        action: ReduxAction = defaultAction,
+    ): any {
+        const handler: ReduxHandler = handlers[action.type];
 
         if (typeof handler === "function") {
             return handler(state, action);
