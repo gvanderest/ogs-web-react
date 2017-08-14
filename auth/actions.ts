@@ -37,7 +37,7 @@ export function logout(): ReduxThunk {
     };
 }
 
-export function login(options: ILoginOptions) {
+export function login(options: ILoginOptions): ReduxThunk {
     return (dispatch: ReduxDispatch) => {
         const promise: Promise<Customer> = new Promise((yes, no) => {
             const { captcha, username, password } = options;

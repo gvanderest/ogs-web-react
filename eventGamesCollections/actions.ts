@@ -9,6 +9,8 @@ import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
 import Player from "../classes/Player";
 import ReduxDispatch from "../classes/ReduxDispatch";
+import ReduxGetState from "../classes/ReduxGetState";
+import ReduxStore from "../classes/ReduxStore";
 import Team from "../classes/Team";
 
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
@@ -145,12 +147,8 @@ interface IMinifiedEventGamesCollection {
 export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): any {
     return (dispatch: any, getState: any): Promise<EventGamesCollection> => {
         const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
-            const state: IEventGamesCollectionState = getState();
+            const state: ReduxStore = getState();
             const { id } = options;
-            const existing = state.eventGamesCollections.byId[id];
-            if (existing && !existing.fetching) {
-                return yes(existing);
-            }
 
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTION, options });
 

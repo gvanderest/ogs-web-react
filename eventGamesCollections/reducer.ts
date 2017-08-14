@@ -8,7 +8,7 @@ import {
     FETCHING_EVENT_GAMES_COLLECTION,
 } from "./actions";
 
-interface IEventGamesCollectionState {
+export interface IEventGamesCollectionState {
     byId: {
         [key: string]: EventGamesCollection;
     };

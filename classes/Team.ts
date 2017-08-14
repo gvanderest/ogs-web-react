@@ -1,14 +1,14 @@
 import Game from "./Game";
 
 export default class Team {
-    alias: string;
-    city?: string;
-    conference?: string;
-    division?: string;
-    externalId?: string;
-    league: string;
-    provider?: string;
-    ranks: {
+    public alias: string;
+    public city?: string;
+    public conference?: string;
+    public division?: string;
+    public externalId?: string;
+    public league: string;
+    public provider?: string;
+    public ranks?: {
         [key: string]: {
             alias: string;
             category: string;
@@ -16,13 +16,13 @@ export default class Team {
             stat: string;
         };
     };
-    season?: number;
-    settings?: string;
-    teamCodeGlobalId?: string;
-    id: string;
-    name: string;
-    playerIds?: string[];
-    gameId?: string;
-    game?: Game;
-    opponent?: Team;
+    public season?: number;
+    public settings?: string;
+    public teamCodeGlobalId?: string;
+    public id: string;
+    public name: string;
+    public playerIds?: string[];
+    public gameId?: string;
+    public game?: Game;
+    public opponent?: Team;
 }

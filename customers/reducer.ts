@@ -1,11 +1,12 @@
-import { FETCHED_AUTHENTICATED_CUSTOMER } from "../auth/actions";
-import { ICustomer } from "../interfaces";
+import Customer from "../classes/Customer";
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
 
+import { FETCHED_AUTHENTICATED_CUSTOMER } from "../auth/actions";
+
 interface IState {
     byId: {
-        [key: string]: ICustomer;
+        [key: string]: Customer;
     };
 }
 
@@ -15,7 +16,7 @@ const initialState: IState = {
 
 interface IHandleFetchedCustomerState {
     type: string;
-    customer: ICustomer;
+    customer: Customer;
 }
 
 function handleFetchedCustomer(state: IState, action: IHandleFetchedCustomerState) {
