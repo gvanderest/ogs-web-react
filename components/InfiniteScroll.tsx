@@ -284,10 +284,10 @@ extends React.Component<IProps, IState> {
         };
     }
     protected renderHeader(records: IRecord[]): React.ReactElement<any> {
-        return null;
+        return records ? null : null;
     }
     protected renderFooter(records: IRecord[]): React.ReactElement<any> {
-        return null;
+        return records ? null : null;
     }
     protected renderEmpty(): React.ReactElement<any> {
         return null;
