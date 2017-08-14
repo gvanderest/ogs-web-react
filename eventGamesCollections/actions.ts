@@ -10,7 +10,7 @@ import Outcome from "../classes/Outcome";
 import Player from "../classes/Player";
 import ReduxDispatch from "../classes/ReduxDispatch";
 import ReduxGetState from "../classes/ReduxGetState";
-import ReduxStore from "../classes/ReduxStore";
+import ReduxThunk from "../classes/ReduxThunk";
 import Team from "../classes/Team";
 
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
@@ -46,7 +46,7 @@ export interface IMinifiedFantasyEvent {
     co: boolean;
     min: number;
     evgcn: string;
-    rg: any;
+    rg: string[];
 }
 
 export interface IRawTransaction {
@@ -144,10 +144,11 @@ interface IMinifiedEventGamesCollection {
     evt: IMinifiedFantasyEvent;
 }
 
-export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): any {
-    return (dispatch: any, getState: any): Promise<EventGamesCollection> => {
+export function fetchEventGamesCollection(
+    options: IFetchEventGamesCollectionOptions,
+): ReduxThunk<Promise<EventGamesCollection>> {
+    return (dispatch: ReduxDispatch): Promise<EventGamesCollection> => {
         const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
-            const state: ReduxStore = getState();
             const { id } = options;
 
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTION, options });
@@ -304,8 +305,8 @@ interface IRawEventGamesCollection {
     suffix: string;
 }
 
-export function fetchEventGamesCollections() {
-    return (dispatch: any) => {
+export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesCollection>> {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS });
 

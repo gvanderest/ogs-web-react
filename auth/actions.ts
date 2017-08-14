@@ -134,7 +134,7 @@ export function fetchAuthenticatedCustomer(): ReduxThunk<Promise<Customer>> {
                                 username: cx.user.username,
                             };
 
-                            const experienceGroups = Object.keys(cx.experience_groups).map((id) => {
+                            const experienceGroups = Object.keys(cx.experience_groups).map((id: string) => {
                                 return cx.experience_groups[id].name;
                             });
 
