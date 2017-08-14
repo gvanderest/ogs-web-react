@@ -1,6 +1,6 @@
 {
   "name": "ogs-web-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "OGS Web Framework in React",
   "main": "index.ts",
   "repository": "https://bitbucket.org/gvanderest/ogs-web-react",
