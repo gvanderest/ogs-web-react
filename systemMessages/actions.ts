@@ -1,8 +1,8 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
+import ReduxDispatch from "../classes/ReduxDispatch";
 import SystemMessage from "../classes/SystemMessage";
-import ReduxDispatch from "../types/ReduxDispatch";
 
 export const FETCHING_SYSTEM_MESSAGES = "FETCHING_SYSTEM_MESSAGES";
 export const FETCHED_SYSTEM_MESSAGES = "FETCHED_SYSTEM_MESSAGES";

@@ -6,16 +6,36 @@ export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
 import Event from "../classes/Event";
-import IMinifiedFantasyEvent from "../interfaces/IMinifiedFantasyEvent";
+import ReduxDispatch from "../classes/ReduxDispatch";
 
-import { IReduxDispatch } from "../interfaces";
+export interface IMinifiedFantasyEvent {
+    i: number;
+    adm: number;
+    ct: number;
+    ctx: string;
+    d: string;
+    eid: number;
+    ls: string;
+    lt: string | string[];
+    p: number;
+    pc: string;
+    s: string;
+    tc: number;
+    tcc: string;
+    max: number;
+    maxu: number;
+    co: boolean;
+    min: number;
+    evgcn: string;
+    rg: any;
+}
 
 interface IFetchEventOptions {
     id: string;
 }
 
 export function fetchEvent(options: IFetchEventOptions) {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             const { id } = options;
 
@@ -91,7 +111,7 @@ interface IFetchEventsOptions {
 }
 
 export function fetchEvents(options?: IFetchEventsOptions) {
-    return (dispatch: IReduxDispatch) => {
+    return (dispatch: ReduxDispatch) => {
         dispatch({ type: FETCHING_EVENTS, options });
 
         const promise: Promise<Event[]> = new Promise((yes, no) => {
