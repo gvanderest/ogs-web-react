@@ -322,7 +322,10 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
                         raw: IRawEventGamesCollection,
                     ) => {
                         raw.games.forEach((rawGame: IRawGame) => {
-                            const label: string = `${rawGame.visiting_team.alias} @ ${rawGame.home_team.alias}`;
+                            let label: string = "";
+                            if (rawGame.visiting_team && rawGame.home_team) {
+                                label = `${rawGame.visiting_team.alias} @ ${rawGame.home_team.alias}`;
+                            }
                             const game: Game = {
                                 externalId: String(rawGame.game_code_global_id),
                                 finalized: rawGame.finalized,
