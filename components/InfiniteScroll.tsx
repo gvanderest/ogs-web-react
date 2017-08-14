@@ -283,17 +283,16 @@ extends React.Component<IProps, IState> {
             width: this.props.width || "100%",
         };
     }
-    protected renderHeader(records: IRecord[]) {
+    protected renderHeader(records: IRecord[]): React.ReactElement<any> {
         return null;
     }
-    protected renderFooter(records: IRecord[]) {
+    protected renderFooter(records: IRecord[]): React.ReactElement<any> {
         return null;
     }
-    protected renderEmpty() {
+    protected renderEmpty(): React.ReactElement<any> {
         return null;
     }
     protected renderRecords(records?: IRecord[]) {
-        const self = this;
         const rendered = records.map((record: IRecord) => {
             return this.renderRecord(record);
         });
