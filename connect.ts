@@ -1,7 +1,8 @@
+import actions from "./actions";
+import ReduxStore from "./classes/ReduxStore";
+
 import { connect as reactReduxConnect } from "react-redux";
 import { bindActionCreators } from "redux";
-import actions from "./actions";
-import { IReduxStore } from "./interfaces";
 
 interface IProps {
     actions: {
@@ -10,7 +11,7 @@ interface IProps {
     dispatch: any;
 }
 
-const connect = reactReduxConnect((store: IReduxStore, ownProps: any) => {
+const connect = reactReduxConnect((store: ReduxStore, ownProps: any) => {
     return {
         store,
         ...ownProps,

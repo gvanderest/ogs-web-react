@@ -7,12 +7,12 @@ export const DEFAULT_OVERFLOW_RECORDS = 10; // number of pre- and post- records
 
 let uniqueIdentifier = 0;
 
-interface IRecord {
+interface IBaseRecord {
     id: any;
     [key: string]: any;
 }
 
-interface IProps {
+interface IBaseProps {
     viewportHeight?: number;
     rowHeight?: number;
     className?: string;
@@ -40,7 +40,8 @@ interface IViewport {
     scrollHeight: number;
 }
 
-export default class InfiniteScroll<IUserRecord extends IRecord> extends React.Component<IProps, IState> {
+export default class InfiniteScroll<IRecord extends IBaseRecord>
+extends React.Component<IProps, IState> {
     public state: IState;
     public uniqueId: number;
     protected resizeHandler: (event: Event) => Event;
