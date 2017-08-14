@@ -1,5 +1,6 @@
-import { ICustomer } from "../interfaces";
+import Customer from "../classes/Customer";
 import generateReducer from "../utils/generateReducer";
+
 import { FETCHED_AUTHENTICATED_CUSTOMER } from "./actions";
 import { FETCHING_AUTHENTICATED_CUSTOMER } from "./actions";
 import { NO_AUTHENTICATED_CUSTOMER } from "./actions";
@@ -26,7 +27,7 @@ function handleNotAuthenticated(state: IState): IState {
 
 interface IHandleFetchedAuthenticatedCustomer {
     type: string;
-    customer: ICustomer;
+    customer: Customer;
 }
 
 function handleFetchedAuthenticatedCustomer(state: IState, action: IHandleFetchedAuthenticatedCustomer) {

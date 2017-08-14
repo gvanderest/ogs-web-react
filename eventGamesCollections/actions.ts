@@ -8,6 +8,7 @@ import EventPosition from "../classes/EventPosition";
 import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
 import Player from "../classes/Player";
+import ReduxDispatch from "../classes/ReduxDispatch";
 import Team from "../classes/Team";
 
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
@@ -39,7 +40,7 @@ export interface IRawTransaction {
 interface IFetchEventGamesCollectionOptions {
     id: string;
 }
-export interface IMinifiedPlayer {
+interface IMinifiedPlayer {
     ei: number;
     h: string;
     is: boolean;
@@ -48,7 +49,7 @@ export interface IMinifiedPlayer {
     inj: string;
 }
 
-export interface IMinifiedGame {
+interface IMinifiedGame {
     f: boolean;
     i: string;
     hti: number;
@@ -78,7 +79,7 @@ export interface IMinifiedGame {
     vtrj: object;
 }
 
-export interface IMinifiedOutcome {
+interface IMinifiedOutcome {
     c: string;
     ei: string;
     i: number;
@@ -90,7 +91,7 @@ export interface IMinifiedOutcome {
     sc: number;
 }
 
-export interface IMinifiedEventPosition {
+interface IMinifiedEventPosition {
     i: number;
     s: string;
     o: string[];
@@ -98,7 +99,7 @@ export interface IMinifiedEventPosition {
     so: number;
 }
 
-export interface IMinifiedEventGamesCollection {
+interface IMinifiedEventGamesCollection {
     c: string;
     cxt: string;
     i: number;
@@ -122,7 +123,7 @@ export interface IMinifiedEventGamesCollection {
 export function fetchEventGamesCollection(options: IFetchEventGamesCollectionOptions): any {
     return (dispatch: any, getState: any): Promise<EventGamesCollection> => {
         const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
-            const state: EventGamesCollectionState = getState();
+            const state: IEventGamesCollectionState = getState();
             const { id } = options;
             const existing = state.eventGamesCollections.byId[id];
             if (existing && !existing.fetching) {
@@ -411,7 +412,7 @@ interface IFetchFantasyEventGamesCollectionOptions {
 }
 
 export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGamesCollectionOptions) {
-    return (dispatch: IReduxDispatch, getState: IReduxGetState) => {
+    return (dispatch: ReduxDispatch, getState: ReduxGetState) => {
         const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
             const { id, eventId } = options;
             const state = getState();

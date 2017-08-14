@@ -1,7 +1,7 @@
+import EventGamesCollection from "../classes/EventGamesCollection";
 import generateReducer from "../utils/generateReducer";
 import reduceRecords from "../utils/reduceRecords";
 
-import { IEventGamesCollection } from "../interfaces";
 import {
     FETCHED_EVENT_GAMES_COLLECTION,
     FETCHED_EVENT_GAMES_COLLECTIONS,
@@ -10,13 +10,13 @@ import {
 
 interface IEventGamesCollectionState {
     byId: {
-        [key: string]: IEventGamesCollection;
+        [key: string]: EventGamesCollection;
     };
 }
 
 interface IHandleFetchedEventGamesCollectionAction {
     type: string;
-    eventGamesCollection: IEventGamesCollection;
+    eventGamesCollection: EventGamesCollection;
 }
 
 function handleFetchedEventGamesCollection(
@@ -60,7 +60,7 @@ function handleFetchingEventGamesCollection(
 
 interface IHandleFetchedEventGamesCollectionsAction {
     type: string;
-    eventGamesCollections: IEventGamesCollection[];
+    eventGamesCollections: EventGamesCollection[];
 }
 
 function handleFetchedEventGamesCollections(
