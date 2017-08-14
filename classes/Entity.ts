@@ -4,7 +4,7 @@ interface IBaseEntity {
 
 export default class Entity<T extends IBaseEntity> {
     public constructor(data?: T) {
-        if (data) {
+        if (typeof data === "object") {
             for (const key of Object.keys(data)) {
                 this[key] = data[key];
             }
