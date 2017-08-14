@@ -1,11 +1,11 @@
-import Event from "../classes/Event";
+import IEvent from "../interfaces/IEvent";
 import generateReducer from "../utils/generateReducer";
 import { ERROR_FETCHING_EVENT, FETCHED_EVENT, FETCHING_EVENT} from "./actions";
 import { FETCHED_EVENTS, FETCHING_EVENTS } from "./actions";
 
 interface IEventsState {
     byId: {
-        [key: string]: Event;
+        [key: string]: IEvent;
     };
     fetchingAll: boolean;
 }
@@ -17,11 +17,11 @@ const initialState: IEventsState = {
 
 interface IHandleFetchedEventAction {
     type: string;
-    event: Event;
+    event: IEvent;
 }
 
 function handleFetchedEvent(state: IEventsState, action: IHandleFetchedEventAction) {
-    const event: Event = action.event;
+    const event: IEvent = action.event;
     return {
         ...state,
         byId: {
@@ -37,11 +37,11 @@ function handleFetchedEvent(state: IEventsState, action: IHandleFetchedEventActi
 
 interface IHandleFetchedEventsAction {
     type: string;
-    events: Event[];
+    events: IEvent[];
 }
 
 function handleFetchedEvents(state: IEventsState, action: IHandleFetchedEventsAction) {
-    const events: Event[] = action.events;
+    const events: IEvent[] = action.events;
 
     state = {
         ...state,
@@ -53,7 +53,7 @@ function handleFetchedEvents(state: IEventsState, action: IHandleFetchedEventsAc
 
     events.forEach((event) => {
         const id: string = event.id;
-        const existing: Event = state.byId[id];
+        const existing: IEvent = state.byId[id];
         state.byId[id] = {
             ...existing,
             ...event,
@@ -72,7 +72,7 @@ interface IHandleFetchingEventAction {
 
 function handleFetchingEvent(state: IEventsState, action: IHandleFetchingEventAction) {
     const id: string = action.options.id;
-    const existing: Event = state.byId[id];
+    const existing: IEvent = state.byId[id];
     return {
         ...state,
         byId: {

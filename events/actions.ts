@@ -5,8 +5,8 @@ export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-import Event from "../classes/Event";
 import ReduxDispatch from "../classes/ReduxDispatch";
+import IEvent from "../interfaces/IEvent";
 
 export interface IMinifiedFantasyEvent {
     i: number;
@@ -15,6 +15,7 @@ export interface IMinifiedFantasyEvent {
     ctx: string;
     d: string;
     eid: number;
+    f: string;
     ls: string;
     lt: string | string[];
     p: number;
@@ -114,20 +115,21 @@ export function fetchEvents(options?: IFetchEventsOptions) {
     return (dispatch: ReduxDispatch) => {
         dispatch({ type: FETCHING_EVENTS, options });
 
-        const promise: Promise<Event[]> = new Promise((yes, no) => {
+        const promise: Promise<IEvent[]> = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/fantasy/events/", {
                 credentials: "include",
                 method: "GET",
             }).then((response) => {
                 response.json().then((rawEvents) => {
-                    const events: Event[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): Event => {
-                        const event: Event = {
+                    const events: IEvent[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): IEvent => {
+                        const event: IEvent = {
                             adminId: String(rawEvent.adm),
                             closeTimestamp: rawEvent.ct,
                             context: rawEvent.ctx,
                             denyGroups: rawEvent.rg ? JSON.parse(rawEvent.rg) : [],
                             description: rawEvent.d,
                             externalId: String(rawEvent.eid),
+                            featured: rawEvent.f === "true",
                             id: String(rawEvent.i),
                             lobbySort: rawEvent.ls ? parseInt(rawEvent.ls, 10) : 0,
                             lobbyTabs: [],

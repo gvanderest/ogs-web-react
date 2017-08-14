@@ -1,6 +1,7 @@
+import IEvent from "../interfaces/IEvent";
 import Entity from "./Entity";
 
-export default class Event extends Entity<Event> {
+export default class Event extends Entity<IEvent> implements IEvent {
     public static readonly STATUS_OPEN = "o";
     public static readonly STATUS_CLOSED = "c";
     public static readonly STATUS_FINALIZED = "f";
@@ -27,7 +28,7 @@ export default class Event extends Entity<Event> {
     public ticketMaxPerUser: number;
     public ticketMin: number;
 
-    public isOpen() {
+    public isOpen?() {
         return this.status === Event.STATUS_OPEN;
     }
     public isClosed() {
