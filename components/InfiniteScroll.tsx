@@ -12,7 +12,7 @@ interface IBaseRecord {
     [key: string]: any;
 }
 
-interface IBaseProps {
+interface IProps {
     viewportHeight?: number;
     rowHeight?: number;
     className?: string;
