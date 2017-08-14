@@ -7,13 +7,26 @@
         "target": "es5",
         "jsx": "react",
         "allowJs": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "pretty": true,
+        "preserveConstEnums": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "suppressExcessPropertyErrors": false,
+        "noFallthroughCasesInSwitch": true,
+        "allowUnreachableCode": false,
+        "forceConsistentCasingInFileNames": true,
+        "checkJs": true
     },
+    "exclude": [
+        "node_modules/**/*",
+        "**/*.spec.tsx?",
+        "dist/**/*"
+    ],
     "include": [
         "**/*"
     ],
     "typeRoots": [
-        "./node_modules/@types",
-        "./src/interfaces"
+        "./node_modules/@types"
     ]
 }
