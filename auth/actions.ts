@@ -1,7 +1,6 @@
 import * as Promise from "promise";
 
 import Customer from "../classes/Customer";
-import ReduxAction from "../classes/ReduxAction";
 import ReduxDispatch from "../classes/ReduxDispatch";
 import ReduxThunk from "../classes/ReduxThunk";
 import User from "../classes/User";
