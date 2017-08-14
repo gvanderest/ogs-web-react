@@ -1,4 +1,4 @@
 import ReduxDispatch from "./ReduxDispatch";
 
-type ReduxThunk = (dispatch: ReduxDispatch) => any;
+type ReduxThunk<R> = (dispatch: ReduxDispatch) => R;
 export default ReduxThunk;

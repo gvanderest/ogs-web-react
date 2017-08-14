@@ -23,7 +23,7 @@ interface ILoginOptions {
     captcha?: string;
 }
 
-export function logout(): ReduxThunk {
+export function logout(): ReduxThunk<Promise<{}>> {
     return (dispatch: ReduxDispatch) => {
         dispatch({ type: NO_AUTHENTICATED_CUSTOMER });
         fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
@@ -37,7 +37,7 @@ export function logout(): ReduxThunk {
     };
 }
 
-export function login(options: ILoginOptions): ReduxThunk {
+export function login(options: ILoginOptions): ReduxThunk<Promise<Customer>> {
     return (dispatch: ReduxDispatch) => {
         const promise: Promise<Customer> = new Promise((yes, no) => {
             const { captcha, username, password } = options;
@@ -107,7 +107,7 @@ interface IRawCustomer {
     };
 }
 
-export function fetchAuthenticatedCustomer(): ReduxThunk {
+export function fetchAuthenticatedCustomer(): ReduxThunk<Promise<Customer>> {
     return (dispatch: ReduxDispatch) => {
         const promise = new Promise<Customer>((yes, no) => {
             fetch(`https://qa7.fantasydraft.com/api/v1/auth/`, {
