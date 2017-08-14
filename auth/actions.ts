@@ -99,7 +99,7 @@ interface IRawCustomer {
     };
     id: number;
     experience_groups: {
-        [key: number]: {
+        [key: string]: {
             id: number;
             is_member: boolean;
             name: string;
