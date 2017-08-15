@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 import EventGamesCollection from "../classes/EventGamesCollection";
 import generateReducer from "../utils/generateReducer";
 import reduceRecords from "../utils/reduceRecords";
@@ -24,14 +26,20 @@ function handleFetchedEventGamesCollection(
     action: IHandleFetchedEventGamesCollectionAction,
 ) {
     const { eventGamesCollection } = action;
+    const { id } = eventGamesCollection;
+    const existing: EventGamesCollection = state.byId[id] || eventGamesCollection;
     return {
         ...state,
         byId: {
             ...state.byId,
             [eventGamesCollection.id]: {
-                ...state.byId[eventGamesCollection.id],
+                ...existing,
                 ...eventGamesCollection,
                 fetching: false,
+                outcomeIds: _.uniq([
+                    ...existing.outcomeIds,
+                    ...eventGamesCollection.outcomeIds,
+                ]),
             },
         },
     };
