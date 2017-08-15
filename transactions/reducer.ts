@@ -1,22 +1,20 @@
-import { FETCHED_TRANSACTIONS } from "./actions";
-// import { ITransaction } from "../interfaces";
+import ITransaction from "../interfaces/ITransaction";
 import generateReducer from "../utils/generateReducer";
 import reduceRecords from "../utils/reduceRecords";
 
+import { FETCHED_TRANSACTIONS } from "./actions";
+
 interface IState {
-    fetching: false,
+    fetching: false;
     byId: {
         [key: string]: ITransaction;
     };
 }
 
 const initialState: IState = {
-    fetching: false,
     byId: {},
+    fetching: false,
 };
-
-interface ITransaction {
-}
 
 interface IHandleFetchedTransactionsAction {
     type: string;

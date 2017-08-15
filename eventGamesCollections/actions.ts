@@ -2,7 +2,6 @@ import * as moment from "moment";
 import * as Promise from "promise";
 
 import EventGamesCollection from "../classes/EventGamesCollection";
-import EventGamesCollectionConfigSettings from "../classes/EventGamesCollectionConfigSettings";
 import EventPosition from "../classes/EventPosition";
 import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
@@ -147,6 +146,11 @@ interface IMinifiedEventGamesCollection {
     vtrj: object;
 }
 
+interface IRawEventGamesCollectionSettings {
+    add_outcomes_after_open: boolean;
+    hide_selections: boolean;
+}
+
 export function fetchEventGamesCollection(
     options: IFetchEventGamesCollectionOptions,
 ): ReduxThunk<Promise<EventGamesCollection>> {
@@ -165,7 +169,7 @@ export function fetchEventGamesCollection(
                         IEventGamesCollectionSettings;
                     const gameIds = Object.keys(raw.games);
                     const configSettings = JSON.parse(raw.config.settings_json) as
-                        EventGamesCollectionConfigSettings;
+                        IRawEventGamesCollectionSettings;
 
                     const settings = JSON.parse(raw.settings_json);
 
@@ -284,6 +288,11 @@ interface IRawEventGamesCollectionConfig {
     settings_json: string;
 }
 
+interface IRawEventGamesCollectionConfigSettings {
+    add_outcomes_after_open: boolean;
+    hide_selections: boolean;
+}
+
 interface IRawEventGamesCollection {
     id: number;
     external_id: number;
@@ -365,7 +374,7 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
 
                         const { config } = raw;
                         const configSettings = JSON.parse(config.settings_json) as
-                            EventGamesCollectionConfigSettings;
+                            IRawEventGamesCollectionConfigSettings;
 
                         const settings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettings;
 
