@@ -1,3 +1,4 @@
+import ITeamRanks from "../interfaces/ITeamRanks";
 import Game from "./Game";
 
 export default class Team {
@@ -8,14 +9,7 @@ export default class Team {
     public externalId?: string;
     public league: string;
     public provider?: string;
-    public ranks?: {
-        [key: string]: {
-            alias: string;
-            category: string;
-            rank: number;
-            stat: string;
-        };
-    };
+    public ranks?: ITeamRanks;
     public season?: number;
     public settings?: string;
     public teamCodeGlobalId?: string;

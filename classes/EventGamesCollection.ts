@@ -1,7 +1,9 @@
+import IEventGamesCollection from "../interfaces/IEventGamesCollection";
+import IEventGamesCollectionSettings from "../interfaces/IEventGamesCollectionSettings";
+import Entity from "./Entity";
 import EventGamesCollectionConfig from "./EventGamesCollectionConfig";
-import EventGamesCollectionScoring from "./EventGamesCollectionScoring";
 
-export default class EventGamesCollection {
+export default class EventGamesCollection extends Entity<IEventGamesCollection> implements IEventGamesCollection {
     public checkEventTimestamp?: number;
     public closeEventTimestamp: number;
     public createOutcomesTimestamp?: number;
@@ -13,13 +15,9 @@ export default class EventGamesCollection {
     public addOutcomesAfterOpen?: boolean;
     public id: string;
     public context: string;
-    public hideSelections: boolean;
-    public lineupsUrl: string;
     public name?: string;
     public prefix?: string;
     public suffix?: string;
-    public scoring?: EventGamesCollectionScoring;
-    public exportUrl: string;
     public outcomeIds: string[];
     public eventPositionIds: string[];
     public createdGml?: boolean;
@@ -27,6 +25,7 @@ export default class EventGamesCollection {
     public checkTimestamp?: number;
     public createdTimestamp?: number;
     public createdOutcomes: boolean;
-    public config: EventGamesCollectionConfig;
+    public config?: EventGamesCollectionConfig;
     public templateIds?: string[];
+    public settings: IEventGamesCollectionSettings;
 }

@@ -3,7 +3,8 @@ import * as Promise from "promise";
 
 import EventGamesCollection from "../classes/EventGamesCollection";
 import ReduxDispatch from "../classes/ReduxDispatch";
-import TemplateTicket from "../classes/TemplateTicket";
+import ISelection from "../interfaces/ISelection";
+import ITemplateTicket from "../interfaces/ITemplateTicket";
 
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
 
@@ -107,7 +108,7 @@ export function fetchTemplateTickets() {
                 mode: "cors",
             }).then((response) => {
                 response.json().then((results: IRawResults) => {
-                    const templateTickets: TemplateTicket[] = [];
+                    const templateTickets: ITemplateTicket[] = [];
                     const eventGamesCollections: EventGamesCollection[] = [];
 
                     results.objects.map((result: IRawResult) => {
@@ -120,18 +121,24 @@ export function fetchTemplateTickets() {
                             const modifiedTimestamp = Math.max.apply(null, rawTemplate.selections.map((selection) => {
                                 return moment.utc(selection.modifiedTs).unix();
                             }));
+                            const selections: ISelection[] = [];
                             const selectionIds = rawTemplate.selections.map((rawSelection) => {
+                                selections.push({
+                                    eventPositionId: String(rawSelection.eventPositionId),
+                                    id: String(rawSelection.id),
+                                    outcomeId: String(rawSelection.outcomeId),
+                                });
                                 return String(rawSelection.id);
                             });
                             const ticketIds = rawTemplate.tickets.map((uri) => {
                                 return uri.replace("/api/v1/tickets/", "").replace("/", "");
                             });
-                            const template: TemplateTicket = {
+                            const template: ITemplateTicket = {
                                 externalId: String(rawTemplate.externalId),
                                 id: String(rawTemplate.id),
                                 modifiedTimestamp,
                                 selectionIds,
-                                selections: rawTemplate.selections,
+                                selections,
                                 ticketIds,
                                 tickets: [],
                             };
@@ -140,11 +147,17 @@ export function fetchTemplateTickets() {
 
                         const gameIds = evg.games.map((game) => String(game.id));
 
+                        const settings = JSON.parse(evg.settingsJson);
+
                         const eventGamesCollection: EventGamesCollection = {
                             closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
                             context: evg.context,
+                            createdOutcomes: true,
+                            eventPositionIds: [],
                             gameIds,
                             id: String(evg.id),
+                            outcomeIds: [],
+                            settings,
                             templateIds,
                         };
 

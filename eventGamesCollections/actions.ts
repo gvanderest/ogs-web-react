@@ -3,7 +3,6 @@ import * as Promise from "promise";
 
 import EventGamesCollection from "../classes/EventGamesCollection";
 import EventGamesCollectionConfigSettings from "../classes/EventGamesCollectionConfigSettings";
-import EventGamesCollectionSettings from "../classes/EventGamesCollectionSettings";
 import EventPosition from "../classes/EventPosition";
 import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
@@ -12,6 +11,8 @@ import ReduxDispatch from "../classes/ReduxDispatch";
 import ReduxGetState from "../classes/ReduxGetState";
 import ReduxThunk from "../classes/ReduxThunk";
 import Team from "../classes/Team";
+import IEventGamesCollectionSettings from "../interfaces/IEventGamesCollectionSettings";
+import ITeamRanks from "../interfaces/ITeamRanks";
 
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
 import { FETCHED_GAMES } from "../games/actions";
@@ -99,8 +100,8 @@ interface IMinifiedGame {
         [key: string]: IMinifiedPlayer;
     };
     htstd: string;
-    htrj: object;
-    vtrj: object;
+    htrj: ITeamRanks;
+    vtrj: ITeamRanks;
 }
 
 interface IMinifiedOutcome {
@@ -142,6 +143,8 @@ interface IMinifiedEventGamesCollection {
     };
     co: boolean;
     evt: IMinifiedFantasyEvent;
+    htrj: object;
+    vtrj: object;
 }
 
 export function fetchEventGamesCollection(
@@ -159,13 +162,15 @@ export function fetchEventGamesCollection(
             }).then((response) => {
                 response.json().then((raw: IRawEventGamesCollection) => {
                     const eventGamesSettings = JSON.parse(raw.settings_json) as
-                        EventGamesCollectionSettings;
+                        IEventGamesCollectionSettings;
                     const gameIds = Object.keys(raw.games);
                     const configSettings = JSON.parse(raw.config.settings_json) as
                         EventGamesCollectionConfigSettings;
 
+                    const settings = JSON.parse(raw.settings_json);
+
                     const eventGames: EventGamesCollection = {
-                        addOutcomesAfterOpen: eventGamesSettings.add_outcomes_after_open,
+                        addOutcomesAfterOpen: eventGamesSettings.addOutcomesAfterOpen,
                         checkTimestamp: moment.utc(raw.check_event).unix(),
                         closeEventTimestamp: moment.utc(raw.close_event).unix(),
                         config: {
@@ -181,16 +186,13 @@ export function fetchEventGamesCollection(
                         createdOutcomes: raw.created_outcomes,
                         createdTimestamp: moment.utc(raw.created_ts).unix(),
                         eventPositionIds: [],
-                        exportUrl: eventGamesSettings.export_url,
                         gameIds,
-                        hideSelections: eventGamesSettings.hide_selections,
                         id: String(raw.id),
-                        lineupsUrl: eventGamesSettings.lineups_url,
                         name: raw.name,
                         openEventTimestamp: moment.utc(raw.open_event).unix(),
                         outcomeIds: [],
                         prefix: raw.prefix,
-                        scoring: eventGamesSettings.scoring,
+                        settings,
                         suffix: raw.suffix,
                     };
 
@@ -305,9 +307,9 @@ interface IRawEventGamesCollection {
     suffix: string;
 }
 
-export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesCollection>> {
+export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesCollection[]>> {
     return (dispatch: ReduxDispatch) => {
-        const promise = new Promise((yes, no) => {
+        const promise: Promise<EventGamesCollection[]> = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS });
 
             fetch("https://qa7.fantasydraft.com/api/v1/eventgames/", {
@@ -365,10 +367,10 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
                         const configSettings = JSON.parse(config.settings_json) as
                             EventGamesCollectionConfigSettings;
 
-                        const settings = JSON.parse(raw.settings_json) as EventGamesCollectionSettings;
+                        const settings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettings;
 
                         const eventGamesCollection: EventGamesCollection = {
-                            addOutcomesAfterOpen: settings.add_outcomes_after_open,
+                            addOutcomesAfterOpen: settings.addOutcomesAfterOpen,
                             checkEventTimestamp: moment.utc(raw.check_event).unix(),
                             closeEventTimestamp: moment.utc(raw.close_event).unix(),
                             config: {
@@ -386,19 +388,16 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
                             createdTimestamp: moment.utc(raw.created_ts).unix(),
                             disableRecurrences: raw.disable_recurrences,
                             eventPositionIds: [],
-                            exportUrl: settings.export_url,
                             finalizeEventTimestamp: moment.utc(raw.finalize_event).unix(),
                             gameIds: raw.games.map((rawGame: IRawGame) => String(rawGame.id) ),
-                            hideSelections: settings.hide_selections,
                             id: String(raw.id),
-                            lineupsUrl: settings.lineups_url,
                             modifiedTimestamp: moment.utc(raw.modified_ts).unix(),
                             name: raw.name,
                             openEventTimestamp: moment.utc(raw.open_event).unix(),
                             outcomeIds: [],
                             prefix: raw.prefix,
                             resourceUri: raw.resource_uri,
-                            scoring: settings.scoring,
+                            settings,
                             suffix: raw.suffix,
                         };
 
@@ -555,27 +554,24 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         eventPositionsById[eventPosition.id] = eventPosition;
                     });
 
-                    const settings = JSON.parse(rawEventGames.evgsj) as EventGamesCollectionSettings;
+                    const settings = JSON.parse(rawEventGames.evgsj);
 
                     const eventGamesCollection: EventGamesCollection = {
-                        addOutcomesAfterOpen: settings.add_outcomes_after_open,
+                        addOutcomesAfterOpen: settings.addOutcomesAfterOpen,
                         closeEventTimestamp: moment.utc(rawEventGames.c).unix(),
                         config: {
-                            addOutcomesAfterOpen: settings.add_outcomes_after_open,
-                            hideSelections: settings.hide_selections,
+                            addOutcomesAfterOpen: settings.addOutcomesAfterOpen,
+                            hideSelections: settings.hideSelections,
                             name: rawEventGames.cfg,
                             salaryCap: rawEventGames.sc, // FIXME Rename this to be more generic?
                         },
                         context: rawEventGames.cxt,
                         createdOutcomes: rawEventGames.co,
                         eventPositionIds: Object.keys(rawEventGames.evp),
-                        exportUrl: rawEventGames.exu,
                         gameIds: Object.keys(rawEventGames.g),
-                        hideSelections: settings.hide_selections,
                         id: String(rawEventGames.i),
-                        lineupsUrl: settings.lineups_url,
                         outcomeIds: Object.keys(rawEventGames.o),
-                        scoring: settings.scoring,
+                        settings,
                     };
 
                     const eventPositions = Object.keys(eventPositionsById).map(
