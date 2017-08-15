@@ -1,20 +1,37 @@
-import React from "react";
+import * as React from "react";
 
-export default class Tooltip extends React.Component {
+interface IProps {
+    html?: string;
+    text?: string;
+    position?: string;
+}
+
+interface IState {
+    visible: boolean;
+}
+
+export default class Tooltip extends React.Component<IProps, IState> {
     public static styled: boolean = true;
+    public static propTypes = {
+        htmlOrText: (props: IProps) => {
+            if (!props.text && !props.html) {
+                throw new Error(`Invalid prop: "message" or "text" prop must be provided`);
+            }
+        },
+    };
     constructor() {
         super();
         this.state = {
             visible: false,
         };
-        this.element = null;
     }
     public componentDidMount() {
-        this.refs.wrapper.onmouseover = this.show.bind(this);
-        this.refs.wrapper.onmouseout = this.hide.bind(this);
-        this.refs.wrapper.onclick = this.toggle.bind(this);
+        const wrapper: HTMLElement = this.refs.wrapper as HTMLElement;
+        wrapper.onmouseover = this.show.bind(this);
+        wrapper.onmouseout = this.hide.bind(this);
+        wrapper.onclick = this.toggle.bind(this);
     }
-    public shouldComponentUpdate(nextProps, nextState) {
+    public shouldComponentUpdate(nextProps: IProps, nextState: IState) {
         if (
             nextProps.text !== this.props.text ||
             nextProps.html !== this.props.html ||
@@ -29,30 +46,30 @@ export default class Tooltip extends React.Component {
         if (!this.state.visible) {
             return;
         }
-        const tooltipElement: HTMLElement = this.refs.tooltip;
-        if (!tooltip) {
+        const tooltipElement: HTMLElement = this.refs.tooltip as HTMLElement;
+        if (!tooltipElement) {
             return;
         }
-        const wrapperElement: HTMLElement = this.refs.wrapper;
+        const wrapperElement: HTMLElement = this.refs.wrapper as HTMLElement;
 
-        const wrapperBounding: any = wrapper.getBoundingClientRect();
+        const wrapperBounding: any = wrapperElement.getBoundingClientRect();
         const wrapperWidth = wrapperBounding.width;
         const wrapperHeight = wrapperBounding.height;
 
-        const tooltipBounding = tooltip.getBoundingClientRect();
+        const tooltipBounding = tooltipElement.getBoundingClientRect();
         const tooltipWidth = tooltipBounding.width;
         const tooltipHeight = tooltipBounding.height;
 
-        let [tooltipLeft, tooltipTop] = this.findPos(wrapper);
+        let [tooltipLeft, tooltipTop] = this.findPos(wrapperElement);
 
         const position = this.props.position || "top";
 
-        const offsetLeft: number = 0;
-        const offsetTop: number = 0;
+        let offsetLeft: number = 0;
+        let offsetTop: number = 0;
 
         const padding = 10;
-        const bigger;
-        const smaller;
+        let bigger: number;
+        let smaller: number;
         if (position === "top" || position === "bottom") {
             bigger = Math.max(tooltipWidth, wrapperWidth);
             smaller = Math.min(tooltipWidth, wrapperWidth);
@@ -86,8 +103,8 @@ export default class Tooltip extends React.Component {
         tooltipLeft += offsetLeft;
         tooltipTop += offsetTop;
 
-        tooltip.style.left = `${tooltipLeft}px`;
-        tooltip.style.top = `${tooltipTop}px`;
+        tooltipElement.style.left = `${tooltipLeft}px`;
+        tooltipElement.style.top = `${tooltipTop}px`;
     }
     public render() {
         const position = this.props.position || "top";
@@ -118,26 +135,18 @@ export default class Tooltip extends React.Component {
     protected toggle() {
         this.setState({ visible: !this.state.visible });
     }
-    protected findPos(obj) {
-        const curleft = 0;
-        const curtop = 0;
+    protected findPos(obj: HTMLElement) {
+        let curleft: number = 0;
+        let curtop: number = 0;
         if (obj.offsetParent) {
             do {
                 curleft += obj.offsetLeft;
                 curleft -= obj.scrollLeft;
                 curtop += obj.offsetTop;
                 curtop -= obj.scrollTop;
-                obj = obj.offsetParent;
+                obj = obj.offsetParent as HTMLElement;
             } while (obj);
             return [curleft, curtop];
         }
     }
 }
-
-Tooltip.propTypes = {
-    htmlOrText: (props) => {
-        if (!props.text && !props.html) {
-            throw new Error("Invalid prop: 'message' or 'text' prop must be provided");
-        }
-    },
-};
