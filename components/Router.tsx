@@ -6,10 +6,7 @@ interface IProps {
     children: any;
 }
 
-export default class Router extends React.PureComponent<IProps> {
-    public props: IProps = {
-        children: null,
-    };
+export default class Router extends React.Component<IProps, undefined> {
     public render() {
         return (
             <ConnectedRouter history={ history }>
