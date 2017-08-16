@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
-import EventGamesCollection from "../classes/EventGamesCollection";
+import IEventGamesCollection from "../interfaces/IEventGamesCollection";
 import EventPosition from "../classes/EventPosition";
 import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
@@ -152,9 +152,9 @@ interface IRawEventGamesCollectionSettings {
 
 export function fetchEventGamesCollection(
     options: IFetchEventGamesCollectionOptions,
-): ReduxThunk<Promise<EventGamesCollection>> {
-    return (dispatch: ReduxDispatch): Promise<EventGamesCollection> => {
-        const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
+): ReduxThunk<Promise<IEventGamesCollection>> {
+    return (dispatch: ReduxDispatch): Promise<IEventGamesCollection> => {
+        const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
             const { id } = options;
 
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTION, options });
@@ -172,7 +172,7 @@ export function fetchEventGamesCollection(
 
                     const settings = JSON.parse(raw.settings_json);
 
-                    const eventGames: EventGamesCollection = {
+                    const eventGames: IEventGamesCollection = {
                         addOutcomesAfterOpen: eventGamesSettings.addOutcomesAfterOpen,
                         checkTimestamp: moment.utc(raw.check_event).unix(),
                         closeEventTimestamp: moment.utc(raw.close_event).unix(),
@@ -208,7 +208,7 @@ export function fetchEventGamesCollection(
             });
         });
 
-        promise.then((eventGamesCollection: EventGamesCollection) => {
+        promise.then((eventGamesCollection: IEventGamesCollection) => {
             dispatch({ type: FETCHED_EVENT_GAMES_COLLECTION, options, eventGamesCollection });
         }, (error) => {
             dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTION, options, error });
@@ -315,9 +315,9 @@ interface IRawEventGamesCollection {
     suffix: string;
 }
 
-export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesCollection[]>> {
+export function fetchEventGamesCollections(): ReduxThunk<Promise<IEventGamesCollection[]>> {
     return (dispatch: ReduxDispatch) => {
-        const promise: Promise<EventGamesCollection[]> = new Promise((yes, no) => {
+        const promise: Promise<IEventGamesCollection[]> = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS });
 
             fetch("https://qa7.fantasydraft.com/api/v1/eventgames/", {
@@ -328,7 +328,7 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
                     const gamesById: { [key: string]: Game } = {};
                     const teamsById: { [key: string]: Team } = {};
 
-                    const eventGamesCollections: EventGamesCollection[] = objects.map((
+                    const eventGamesCollections: IEventGamesCollection[] = objects.map((
                         raw: IRawEventGamesCollection,
                     ) => {
                         raw.games.forEach((rawGame: IRawGame) => {
@@ -377,7 +377,7 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
 
                         const settings = JSON.parse(raw.settings_json) as IEventGamesCollectionSettings;
 
-                        const eventGamesCollection: EventGamesCollection = {
+                        const eventGamesCollection: IEventGamesCollection = {
                             addOutcomesAfterOpen: settings.addOutcomesAfterOpen,
                             checkEventTimestamp: moment.utc(raw.check_event).unix(),
                             closeEventTimestamp: moment.utc(raw.close_event).unix(),
@@ -444,7 +444,7 @@ interface IFetchFantasyEventGamesCollectionOptions {
 
 export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGamesCollectionOptions) {
     return (dispatch: ReduxDispatch) => {
-        const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
+        const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
             const { id, eventId } = options;
 
             let url = `https://qa7.fantasydraft.com/api/v1/fantasy/eventgames/${ id }/`;
@@ -546,6 +546,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                     Object.keys(rawEventGames.evp).forEach((evpId) => {
                         const evp = rawEventGames.evp[evpId];
                         const eventPosition: EventPosition = {
+                            eventGamesId: String(rawEventGames.i),
                             id: String(evp.i),
                             name: evp.n,
                             outcomeTypeNames: evp.o,
@@ -558,7 +559,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
                     const settings = JSON.parse(rawEventGames.evgsj);
 
-                    const eventGamesCollection: EventGamesCollection = {
+                    const eventGamesCollection: IEventGamesCollection = {
                         addOutcomesAfterOpen: settings.addOutcomesAfterOpen,
                         closeEventTimestamp: moment.utc(rawEventGames.c).unix(),
                         config: {

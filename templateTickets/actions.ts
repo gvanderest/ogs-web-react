@@ -136,18 +136,30 @@ export function fetchTemplateTickets() {
                                     outcomeId: String(rawSelection.outcomeId),
                                 });
 
+                                const rawOutcome = rawSelection.outcome;
+
                                 const rawPosition = rawSelection.eventPosition;
                                 const eventPosition: EventPosition = {
-                                    ...rawPosition,
+                                    closeTimestamp: moment.utc(rawPosition.closeTs).unix(),
                                     eventGamesId: String(rawPosition.eventGamesId),
                                     id: String(rawPosition.id),
+                                    name: rawPosition.name,
+                                    outcomeTypeNames: [rawOutcome.type.name], // FIXME incomplete
+                                    sortOrder: rawPosition.sortOrder,
+                                    status: rawPosition.status,
                                 };
                                 positionsById[eventPosition.id] = eventPosition;
 
-                                const rawOutcome = rawSelection.outcome;
                                 const outcome: Outcome = {
-                                    ...rawOutcome,
+                                    availablePoints: rawOutcome.pointsAvailable,
+                                    closeTimestamp: moment.utc(rawOutcome.closeTs).unix(),
+                                    externalId: String(rawOutcome.externalId),
                                     id: String(rawOutcome.id),
+                                    name: rawOutcome.name,
+                                    plannedPoints: rawOutcome.plannedPoints,
+                                    selectionCost: rawOutcome.selectionCost,
+                                    statsId: null, // FIXME ?
+                                    typeName: rawOutcome.type.name,
                                 };
                                 outcomesById[outcome.id] = outcome;
 

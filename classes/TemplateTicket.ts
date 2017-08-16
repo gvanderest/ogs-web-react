@@ -13,4 +13,5 @@ export default class TemplateTicket extends Entity<ITemplateTicket> implements I
     public modifiedTimestamp: number;
     public ticketIds: string[];
     public tickets?: Ticket[];
+    public eventGamesId: string;
 }
