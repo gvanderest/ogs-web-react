@@ -1,12 +1,17 @@
+import * as _ from "lodash";
 import * as moment from "moment";
 import * as Promise from "promise";
 
-import EventGamesCollection from "../classes/EventGamesCollection";
+import IEventGamesCollection from "../interfaces/IEventGamesCollection";
+import EventPosition from "../classes/EventPosition";
 import ReduxDispatch from "../classes/ReduxDispatch";
+import Outcome from "../classes/Outcome";
 import ISelection from "../interfaces/ISelection";
 import ITemplateTicket from "../interfaces/ITemplateTicket";
 
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
+import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
+import { FETCHED_OUTCOMES } from "../outcomes/actions";
 
 export const FETCHING_TEMPLATE_TICKETS = "FETCHING_TEMPLATE_TICKETS";
 export const FETCHED_TEMPLATE_TICKETS = "FETCHED_TEMPLATE_TICKETS";
@@ -109,7 +114,9 @@ export function fetchTemplateTickets() {
             }).then((response) => {
                 response.json().then((results: IRawResults) => {
                     const templateTickets: ITemplateTicket[] = [];
-                    const eventGamesCollections: EventGamesCollection[] = [];
+                    const eventGamesCollections: IEventGamesCollection[] = [];
+                    const positionsById: { [key: string]: EventPosition } = {};
+                    const outcomesById: { [key: string]: Outcome } = {};
 
                     results.objects.map((result: IRawResult) => {
                         const evg: IRawEventGamesCollection = result.eventGamesCollection;
@@ -128,6 +135,22 @@ export function fetchTemplateTickets() {
                                     id: String(rawSelection.id),
                                     outcomeId: String(rawSelection.outcomeId),
                                 });
+
+                                const rawPosition = rawSelection.eventPosition;
+                                const eventPosition: EventPosition = {
+                                    ...rawPosition,
+                                    eventGamesId: String(rawPosition.eventGamesId),
+                                    id: String(rawPosition.id),
+                                };
+                                positionsById[eventPosition.id] = eventPosition;
+
+                                const rawOutcome = rawSelection.outcome;
+                                const outcome: Outcome = {
+                                    ...rawOutcome,
+                                    id: String(rawOutcome.id),
+                                };
+                                outcomesById[outcome.id] = outcome;
+
                                 return String(rawSelection.id);
                             });
                             const ticketIds = rawTemplate.tickets.map((uri) => {
@@ -149,7 +172,7 @@ export function fetchTemplateTickets() {
 
                         const settings = JSON.parse(evg.settingsJson);
 
-                        const eventGamesCollection: EventGamesCollection = {
+                        const eventGamesCollection: IEventGamesCollection = {
                             closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
                             context: evg.context,
                             createdOutcomes: true,
@@ -165,6 +188,12 @@ export function fetchTemplateTickets() {
                     });
 
                     dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
+
+                    const eventPositions = _.values(positionsById);
+                    dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions });
+
+                    const outcomes = _.values(outcomesById);
+                    dispatch({ type: FETCHED_OUTCOMES, outcomes });
 
                     yes(templateTickets);
                 }, no);

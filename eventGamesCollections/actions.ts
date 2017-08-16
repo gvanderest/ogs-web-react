@@ -516,7 +516,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                                 league: rawGame.l,
                                 teamId,
                             };
-                            if (teamId) {
+                            if (teamId && teamsById[teamId]) {
                                 teamsById[teamId].playerIds.push(player.id);
                             }
                             playersById[player.id] = player;

@@ -28,4 +28,11 @@ export default class EventGamesCollection extends Entity<IEventGamesCollection> 
     public config?: EventGamesCollectionConfig;
     public templateIds?: string[];
     public settings: IEventGamesCollectionSettings;
+
+    /**
+     * Return whether the EventGamesCollection is a tournament or not.
+     */
+    public isTournament(): boolean {
+        return this.context === "PGA";
+    }
 }
