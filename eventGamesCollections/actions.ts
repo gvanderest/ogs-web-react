@@ -7,7 +7,6 @@ import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
 import Player from "../classes/Player";
 import ReduxDispatch from "../classes/ReduxDispatch";
-import ReduxGetState from "../classes/ReduxGetState";
 import ReduxThunk from "../classes/ReduxThunk";
 import Team from "../classes/Team";
 import IEventGamesCollectionSettings from "../interfaces/IEventGamesCollectionSettings";
@@ -428,11 +427,11 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<EventGamesColle
             });
         });
 
-        // promise.then((eventGamesCollections) => {
-        //     dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
-        // }, (error) => {
-        //     dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTIONS, error });
-        // });
+        promise.then((eventGamesCollections) => {
+            dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
+        }, (error) => {
+            dispatch({ type: ERROR_FETCHING_EVENT_GAMES_COLLECTIONS, error });
+        });
 
         return promise;
     };
@@ -444,15 +443,9 @@ interface IFetchFantasyEventGamesCollectionOptions {
 }
 
 export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGamesCollectionOptions) {
-    return (dispatch: ReduxDispatch, getState: ReduxGetState) => {
+    return (dispatch: ReduxDispatch) => {
         const promise: Promise<EventGamesCollection> = new Promise((yes, no) => {
             const { id, eventId } = options;
-            const state = getState();
-            const existing: EventGamesCollection = state.eventGamesCollections.byId[id];
-
-            if (existing) {
-                return yes(existing);
-            }
 
             let url = `https://qa7.fantasydraft.com/api/v1/fantasy/eventgames/${ id }/`;
             if (eventId) {

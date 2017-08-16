@@ -2,6 +2,7 @@ import * as _ from "lodash";
 
 import EventGamesCollection from "../classes/EventGamesCollection";
 import generateReducer from "../utils/generateReducer";
+import reduceRecord from "../utils/reduceRecord";
 import reduceRecords from "../utils/reduceRecords";
 
 import {
@@ -11,6 +12,7 @@ import {
 } from "./actions";
 
 export interface IEventGamesCollectionState {
+    fetching: string[],
     byId: {
         [key: string]: EventGamesCollection;
     };
@@ -21,28 +23,30 @@ interface IHandleFetchedEventGamesCollectionAction {
     eventGamesCollection: EventGamesCollection;
 }
 
+function mergeEventGamesCollections(existing: EventGamesCollection, eventGamesCollection: EventGamesCollection) {
+    if (!existing) {
+        return eventGamesCollection;
+    }
+    if (!eventGamesCollection) {
+        return existing;
+    }
+    const outcomeIds = _.uniq([ ...existing.outcomeIds, ...eventGamesCollection.outcomeIds ]);
+    const eventPositionIds = _.uniq([ ...existing.eventPositionIds, ...eventGamesCollection.eventPositionIds ]);
+    return {
+        ...existing,
+        ...eventGamesCollection,
+        eventPositionIds,
+        outcomeIds,
+    };
+}
+
 function handleFetchedEventGamesCollection(
     state: IEventGamesCollectionState,
     action: IHandleFetchedEventGamesCollectionAction,
 ) {
     const { eventGamesCollection } = action;
-    const { id } = eventGamesCollection;
-    const existing: EventGamesCollection = state.byId[id] || eventGamesCollection;
-    return {
-        ...state,
-        byId: {
-            ...state.byId,
-            [eventGamesCollection.id]: {
-                ...existing,
-                ...eventGamesCollection,
-                fetching: false,
-                outcomeIds: _.uniq([
-                    ...existing.outcomeIds,
-                    ...eventGamesCollection.outcomeIds,
-                ]),
-            },
-        },
-    };
+    state.fetching = _.without(state.fetching, eventGamesCollection.id);
+    return reduceRecord(state, eventGamesCollection, mergeEventGamesCollections);
 }
 
 interface IHandleFetchingEventGamesCollectionAction {
@@ -55,15 +59,8 @@ function handleFetchingEventGamesCollection(
     action: IHandleFetchingEventGamesCollectionAction,
 ) {
     const { id } = action;
-    return {
-        ...state,
-        byId: {
-            ...state.byId,
-            [id]: {
-                fetching: true,
-            },
-        },
-    };
+    state.fetching = _.uniq([ ...state.fetching, id ]);
+    return reduceRecord(state, { id, fetching: true });
 }
 
 interface IHandleFetchedEventGamesCollectionsAction {
@@ -75,7 +72,10 @@ function handleFetchedEventGamesCollections(
     state: IEventGamesCollectionState,
     action: IHandleFetchedEventGamesCollectionsAction,
 ) {
-    return reduceRecords(state, action.eventGamesCollections);
+    const { eventGamesCollections } = action;
+    const ids = eventGamesCollections.map((evg) => evg.id);
+    state.fetching = _.difference(state.fetching, ids);
+    return reduceRecords(state, eventGamesCollections, mergeEventGamesCollections);
 }
 
 export default generateReducer({

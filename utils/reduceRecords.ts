@@ -6,7 +6,17 @@ interface IRecord {
     [key: string]: any;
 }
 
-export default function reduceRecords(state: IState, records: IRecord[] = [], index = "id", field = "byId") {
+function initialMergeFunction(existing: any, record: any) {
+    return { ...existing, ...record };
+}
+
+export default function reduceRecords(
+    state: IState,
+    records: IRecord[] = [],
+    mergeFunction = initialMergeFunction,
+    index = "id",
+    field = "byId"
+) {
     state = {
         ...state,
         [field]: {
@@ -15,10 +25,8 @@ export default function reduceRecords(state: IState, records: IRecord[] = [], in
     };
     records.forEach((record) => {
         const indexValue: string = record[index];
-        state[field][indexValue] = {
-            ...state[field][indexValue],
-            ...record,
-        };
+        const existing = state[field][indexValue];
+        state[field][indexValue] = mergeFunction(existing, record);
     });
     return state;
 }
