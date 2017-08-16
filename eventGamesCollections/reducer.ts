@@ -32,10 +32,12 @@ function mergeEventGamesCollections(existing: EventGamesCollection, eventGamesCo
     }
     const outcomeIds = _.uniq([ ...existing.outcomeIds, ...eventGamesCollection.outcomeIds ]);
     const eventPositionIds = _.uniq([ ...existing.eventPositionIds, ...eventGamesCollection.eventPositionIds ]);
+    const gameIds = _.uniq([ ...existing.gameIds, ...eventGamesCollection.gameIds ]);
     return {
         ...existing,
         ...eventGamesCollection,
         eventPositionIds,
+        gameIds,
         outcomeIds,
     };
 }
