@@ -5,10 +5,12 @@ import * as Promise from "promise";
 import IEventGamesCollection from "../interfaces/IEventGamesCollection";
 import EventPosition from "../classes/EventPosition";
 import ReduxDispatch from "../classes/ReduxDispatch";
+import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
 import ISelection from "../interfaces/ISelection";
 import ITemplateTicket from "../interfaces/ITemplateTicket";
 
+import { FETCHED_GAMES } from "../games/actions";
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
 import { FETCHED_EVENT_POSITIONS } from "../eventPositions/actions";
 import { FETCHED_OUTCOMES } from "../outcomes/actions";
@@ -117,6 +119,7 @@ export function fetchTemplateTickets() {
                     const eventGamesCollections: IEventGamesCollection[] = [];
                     const positionsById: { [key: string]: EventPosition } = {};
                     const outcomesById: { [key: string]: Outcome } = {};
+                    let games: Game[] = [];
 
                     results.objects.map((result: IRawResult) => {
                         const evg: IRawEventGamesCollection = result.eventGamesCollection;
@@ -180,6 +183,18 @@ export function fetchTemplateTickets() {
                             templateTickets.push(template);
                         });
 
+                        games = evg.games.map((rawGame) => {
+                            const startTimestamp = moment.utc(rawGame.gameTime).unix()
+                            return {
+                                id: String(rawGame.id),
+                                label: `${rawGame.visitingTeamAlias} @ ${rawGame.homeTeamAlias}`,
+                                league: rawGame.league,
+                                startDay: "REPLACE ME", // TODO check if timezone needed
+                                startTimestamp,
+                                status: null, // FIXME do we need this?
+                            };
+                        });
+
                         const gameIds = evg.games.map((game) => String(game.id));
 
                         const settings = JSON.parse(evg.settingsJson);
@@ -198,6 +213,8 @@ export function fetchTemplateTickets() {
 
                         eventGamesCollections.push(eventGamesCollection);
                     });
+
+                    dispatch({ type: FETCHED_GAMES, games });
 
                     dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
 

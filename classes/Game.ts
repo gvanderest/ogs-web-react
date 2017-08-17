@@ -11,7 +11,7 @@ export default class Game {
     public visitingTeamScore?: number;
     public gameInfo?: GameInfo;
     public externalId?: string;
-    public finalized: boolean;
+    public finalized?: boolean;
     public startDay: string;
     public status: string;
     public startTimestamp: number;

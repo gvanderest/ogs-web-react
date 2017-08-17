@@ -11,7 +11,7 @@ interface IGame {
     visitingTeamScore?: number;
     gameInfo?: IGameInfo;
     externalId?: string;
-    finalized: boolean;
+    finalized?: boolean;
     startDay: string;
     status: string;
     startTimestamp: number;
