@@ -8,7 +8,7 @@ export const DEFAULT_OVERFLOW_RECORDS = 10; // number of pre- and post- records
 let uniqueIdentifier = 0;
 
 interface IBaseRecord {
-    id: any;
+    id: string | number;
     [key: string]: any;
 }
 
@@ -17,6 +17,9 @@ interface IProps {
     rowHeight?: number;
     className?: string;
     records?: any[];
+    scrollToTopOnChange?: boolean;
+    scrollToRecord?: IBaseRecord;
+    scrollToRecordId?: string | number;
     [key: string]: any;
 }
 
@@ -75,6 +78,8 @@ extends React.Component<IProps, IState> {
         this.tableWillUnmount();
     }
     public componentWillReceiveProps(nextProps: IProps) {
+        this.scrollToTopCheck(this.props, nextProps);
+        this.scrollToRecordCheck(nextProps);
         window.requestAnimationFrame(() => {
             this.sliceViewport(this.getRecords(nextProps));
         });
@@ -283,21 +288,42 @@ extends React.Component<IProps, IState> {
             width: this.props.width || "100%",
         };
     }
+    /**
+     * The logic behind rendering the header of the table, expects the content
+     * to be wrapped in a <thead> element.
+     */
     protected renderHeader(records: IRecord[]): React.ReactElement<any> {
         return records ? null : null;
     }
+    /**
+     * The logic behind rendering a footer on the table.  Expected to be
+     * overwritten by extending classes, but not common.  Expects the content
+     * to be wrapped in a <tfoot> element.
+     */
     protected renderFooter(records: IRecord[]): React.ReactElement<any> {
         return records ? null : null;
     }
+    /**
+     * The logic behind rendering the empty view of the table.  Expected to be
+     * overwritten by extending classes, to show an "empty" message.
+     */
     protected renderEmpty(): React.ReactElement<any> {
         return null;
     }
+    /**
+     * The logic behind rendering the set of records in the viewport.  Can be
+     * overwritten by inheriting classes, but not typically expected.
+     */
     protected renderRecords(records?: IRecord[]) {
         const rendered = records.map((record: IRecord) => {
             return this.renderRecord(record);
         });
         return rendered;
     }
+    /**
+     * The logic behind rendering a single record.  Expected to be overridden
+     * by inheriting classes.
+     */
     protected renderRecord(record: IRecord) {
         return (
             <tr key={ record.id }>
@@ -305,6 +331,9 @@ extends React.Component<IProps, IState> {
             </tr>
         );
     }
+    /**
+     * If the row height differs from previously, update it and recalculate.
+     */
     protected updateRowHeight() {
         // Do not detect the rowHeight if it's provided
         if (this.props.rowHeight) {
@@ -328,5 +357,54 @@ extends React.Component<IProps, IState> {
                 detectedRowHeight,
             });
         }
+    }
+    /**
+     * Check whether enough changes have occurred to warrant a scroll-to-top.
+     */
+    protected scrollToTopCheck(currentProps: IProps, nextProps: IProps) {
+        if (!this.props.scrollToTopOnChange) {
+            return;
+        }
+        const records = this.getRecords(currentProps);
+        const newRecords = this.getRecords(nextProps);
+        if (this.props.scrollToTopOnChange) {
+            if (records !== newRecords || records.length !== newRecords.length) {
+                (this.refs.viewport as HTMLElement).scrollTop = 0;
+            }
+        }
+    }
+    /**
+     * Check whether it's time to scroll to a record, and figure out where that
+     * scroll position is.
+     */
+    protected scrollToRecordCheck(props: IProps) {
+        if (!this.props.scrollToRecord && !this.props.scrollToRecordId) {
+            return;
+        }
+
+        const records = this.getRecords(props);
+        let recordIndex: number = -1;
+
+        for (let index = 0; index < records.length; index++) {
+            const record = records[index];
+            if (
+                this.props.scrollToRecord && record === this.props.scrollToRecord ||
+                this.props.scrollToRecordId && record.id === this.props.scrollToRecordId
+            ) {
+                recordIndex = index;
+                break;
+            }
+        }
+
+        if (recordIndex === -1) {
+            return;
+        }
+
+        // Figure out scroll position
+        const rowHeight = this.getRowHeight();
+        const { viewportHeight } = this.props;
+        let recordScrollTop = rowHeight * recordIndex; // top of record
+        recordScrollTop -= (viewportHeight - rowHeight) / 2; // scroll up a bit
+        (this.refs.viewport as HTMLElement).scrollTop = Math.max(0, recordScrollTop);
     }
 }
