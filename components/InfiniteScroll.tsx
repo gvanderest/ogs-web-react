@@ -340,6 +340,9 @@ extends React.Component<IProps, IState> {
             return;
         }
         const body = this.refs.body as HTMLElement;
+        if (!body) {
+            return;
+        }
         const rows = body.getElementsByTagName("tr");
 
         // Can't detect rows that don't exist
