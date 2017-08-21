@@ -216,13 +216,13 @@ export function fetchTemplateTickets() {
 
                     dispatch({ type: FETCHED_GAMES, games });
 
-                    dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
-
                     const eventPositions = _.values(positionsById);
                     dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions });
 
                     const outcomes = _.values(outcomesById);
                     dispatch({ type: FETCHED_OUTCOMES, outcomes });
+
+                    dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
 
                     yes(templateTickets);
                 }, no);
