@@ -9,4 +9,5 @@ export default class Selection {
     public eventPositionId: string;
     public earnedPoints?: number;
     public modifiedTimestamp?: number;
+    public scoreDropped?: boolean;
 }

@@ -6,6 +6,7 @@ import * as events from "./events/actions";
 import * as games from "./games/actions";
 import * as outcomes from "./outcomes/actions";
 import * as players from "./players/actions";
+import * as selections from "./selections/actions";
 import * as systemMessages from "./systemMessages/actions";
 import * as teams from "./teams/actions";
 import * as templateTickets from "./templateTickets/actions";
@@ -32,6 +33,7 @@ const actions: IActions = {
     routing: {
         push,
     },
+    selections,
     systemMessages,
     teams,
     templateTickets,

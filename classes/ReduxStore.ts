@@ -5,6 +5,7 @@ import Ticket from "./Ticket";
 import Outcome from "./Outcome";
 import EventPosition from "./EventPosition";
 import Game from "./Game";
+import Selection from "./Selection";
 import Team from "./Team";
 import Player from "./Player";
 import Transaction from "./Transaction";
@@ -27,37 +28,42 @@ export default class ReduxStore {
     public events: {
         byId: {
             [key: string]: Event;
-        },
+        };
     };
     public tickets: {
         byId: {
             [key: string]: Ticket;
-        },
+        };
     };
     public outcomes: {
         byId: {
             [key: string]: Outcome;
-        },
+        };
     };
     public eventPositions: {
         byId: {
             [key: string]: EventPosition;
-        },
+        };
     };
     public games: {
         byId: {
             [key: string]: Game;
-        },
+        };
     };
     public teams: {
         byId: {
             [key: string]: Team;
-        },
+        };
     };
     public players: {
         byId: {
             [key: string]: Player;
-        },
+        };
+    };
+    public selections: {
+        byId: {
+            [key: string]: Selection;
+        };
     };
     public transactions: {
         byId: {

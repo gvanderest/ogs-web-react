@@ -8,6 +8,7 @@ import events from "./events/reducer";
 import games from "./games/reducer";
 import outcomes from "./outcomes/reducer";
 import players from "./players/reducer";
+import selections from "./selections/reducer";
 import systemMessages from "./systemMessages/reducer";
 import teams from "./teams/reducer";
 import templateTickets from "./templateTickets/reducer";
@@ -24,6 +25,7 @@ const reducers = {
     outcomes,
     players,
     routing,
+    selections,
     systemMessages,
     teams,
     templateTickets,

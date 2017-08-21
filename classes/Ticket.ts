@@ -9,4 +9,5 @@ export default class Ticket {
     public rank: number;
     public rankTied: boolean;
     public earnedPoints: number;
+    public selectionIds?: string[];
 }

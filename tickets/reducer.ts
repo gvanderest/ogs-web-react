@@ -3,8 +3,10 @@ import reduceRecord from "../utils/reduceRecord";
 
 import ReduxAction from "../classes/ReduxAction";
 import Ticket from "../classes/Ticket";
+import Selection from "../classes/Selection";
 
 import { FETCHED_TICKET, FETCHED_TICKETS, FETCHING_TICKETS } from "./actions";
+import { FETCHED_TICKET_SELECTIONS } from "../selections/actions";
 
 interface ITicketsState {
     byId: {
@@ -51,6 +53,31 @@ function handleFetchedTicket(state: ITicketsState, action: IHandleFetchedTicketA
     return reduceRecord(state, ticket);
 }
 
+interface IHandleFetchedTicketSelectionsAction extends ReduxAction {
+    selections: Selection[];
+}
+
+function handleFetchedTicketSelections(state: ITicketsState, action: IHandleFetchedTicketSelectionsAction) {
+    const { ticketId, selections } = action;
+    const selectionIds = selections.map((selection) => selection.id);
+
+    const existing = state.byId[ticketId];
+    if (!existing) {
+        return state;
+    }
+
+    return {
+        ...state,
+        byId: {
+            ...state.byId,
+            [ticketId]: {
+                ...existing,
+                selectionIds,
+            }
+        },
+    };
+}
+
 export default generateReducer({
     byId: {},
     fetchingAll: false,
@@ -58,4 +85,5 @@ export default generateReducer({
     [FETCHING_TICKETS]: handleFetchingTickets,
     [FETCHED_TICKETS]: handleFetchedTickets,
     [FETCHED_TICKET]: handleFetchedTicket,
+    [FETCHED_TICKET_SELECTIONS]: handleFetchedTicketSelections,
 });
