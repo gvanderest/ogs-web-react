@@ -17,7 +17,7 @@ interface IProps {
     rowHeight?: number;
     className?: string;
     records?: any[];
-    scrollToTopOnChange?: boolean;
+    scrollToTopWatch?: any;
     scrollToRecord?: IBaseRecord;
     scrollToRecordId?: string | number;
     [key: string]: any;
@@ -365,15 +365,8 @@ extends React.Component<IProps, IState> {
      * Check whether enough changes have occurred to warrant a scroll-to-top.
      */
     protected scrollToTopCheck(currentProps: IProps, nextProps: IProps) {
-        if (!this.props.scrollToTopOnChange) {
-            return;
-        }
-        const records = this.getRecords(currentProps);
-        const newRecords = this.getRecords(nextProps);
-        if (this.props.scrollToTopOnChange) {
-            if (records !== newRecords || records.length !== newRecords.length) {
-                (this.refs.viewport as HTMLElement).scrollTop = 0;
-            }
+        if (currentProps.scrollToTopWatch !== nextProps.scrollToTopWatch) {
+            (this.refs.viewport as HTMLElement).scrollTop = 0;
         }
     }
     /**
