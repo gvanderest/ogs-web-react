@@ -183,15 +183,17 @@ export function fetchTemplateTickets() {
                             templateTickets.push(template);
                         });
 
-                        games = evg.games.map((rawGame) => {
+                        games = evg.games.map((rawGame): Game => {
                             const startTimestamp = moment.utc(rawGame.gameTime).unix()
                             return {
+                                homeTeamId: String(rawGame.homeTeamId),
                                 id: String(rawGame.id),
                                 label: `${rawGame.visitingTeamAlias} @ ${rawGame.homeTeamAlias}`,
                                 league: rawGame.league,
                                 startDay: "REPLACE ME", // TODO check if timezone needed
                                 startTimestamp,
                                 status: null, // FIXME do we need this?
+                                visitingTeamId: String(rawGame.visitingTeamId),
                             };
                         });
 
