@@ -409,11 +409,11 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<IEventGamesColl
                             suffix: raw.suffix,
                         };
 
-                        const games = Object.keys(gamesById).map((id) => gamesById[id]);
-                        dispatch({ type: FETCHED_GAMES, games });
-
                         const teams = Object.keys(teamsById).map((id) => teamsById[id]);
                         dispatch({ type: FETCHED_TEAMS, teams });
+
+                        const games = Object.keys(gamesById).map((id) => gamesById[id]);
+                        dispatch({ type: FETCHED_GAMES, games });
 
                         return eventGamesCollection;
                     });
@@ -577,6 +577,16 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                         settings,
                     };
 
+                    const teams = Object.keys(teamsById).map((teamId) => teamsById[teamId]);
+                    dispatch({ type: FETCHED_TEAMS, teams });
+
+                    const games = Object.keys(gamesById).map((gameId) => gamesById[gameId]);
+                    dispatch({ type: FETCHED_GAMES, games });
+                    eventGamesCollection.gameIds = Object.keys(gamesById);
+
+                    const players = Object.keys(playersById).map((playerId) => playersById[playerId]);
+                    dispatch({ type: FETCHED_PLAYERS, players });
+
                     const eventPositions = Object.keys(eventPositionsById).map(
                         (eventPositionId) => eventPositionsById[eventPositionId]);
                     dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions });
@@ -585,16 +595,6 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
                     const outcomes = Object.keys(outcomesById).map((outcomeId) => outcomesById[outcomeId]);
                     dispatch({ type: FETCHED_OUTCOMES, outcomes });
                     eventGamesCollection.outcomeIds = Object.keys(outcomesById);
-
-                    const games = Object.keys(gamesById).map((gameId) => gamesById[gameId]);
-                    dispatch({ type: FETCHED_GAMES, games });
-                    eventGamesCollection.gameIds = Object.keys(gamesById);
-
-                    const teams = Object.keys(teamsById).map((teamId) => teamsById[teamId]);
-                    dispatch({ type: FETCHED_TEAMS, teams });
-
-                    const players = Object.keys(playersById).map((playerId) => playersById[playerId]);
-                    dispatch({ type: FETCHED_PLAYERS, players });
 
                     return yes(eventGamesCollection);
                 }, () => {
