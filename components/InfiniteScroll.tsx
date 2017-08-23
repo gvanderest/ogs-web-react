@@ -156,6 +156,9 @@ extends React.Component<IProps, IState> {
 
             const { state } = this;
             const viewport = this.refs.viewport as HTMLElement;
+            if (!viewport) {
+                return;
+            }
             if (viewport.scrollHeight !== state.scrollHeight) {
                 this.sliceViewport(this.getRecords(this.props));
             }
