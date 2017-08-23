@@ -9,6 +9,7 @@ import Game from "../classes/Game";
 import Outcome from "../classes/Outcome";
 import ISelection from "../interfaces/ISelection";
 import ITemplateTicket from "../interfaces/ITemplateTicket";
+import request from "../utils/request";
 
 import { FETCHED_GAMES } from "../games/actions";
 import { FETCHED_EVENT_GAMES_COLLECTIONS } from "../eventGamesCollections/actions";
@@ -109,125 +110,124 @@ interface IRawResults {
 export function fetchTemplateTickets() {
     return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
-            fetch("https://qa7.fantasydraft.com/api/v1/tickets/sportstemplates/", {
+            request("/v1/tickets/sportstemplates/", {
                 credentials: "include",
                 method: "GET",
                 mode: "cors",
-            }).then((response) => {
-                response.json().then((results: IRawResults) => {
-                    const templateTickets: ITemplateTicket[] = [];
-                    const eventGamesCollections: IEventGamesCollection[] = [];
-                    const positionsById: { [key: string]: EventPosition } = {};
-                    const outcomesById: { [key: string]: Outcome } = {};
-                    let games: Game[] = [];
+            }).then((results: IRawResults) => {
+                const templateTickets: ITemplateTicket[] = [];
+                const eventGamesCollections: IEventGamesCollection[] = [];
+                const positionsById: { [key: string]: EventPosition } = {};
+                const outcomesById: { [key: string]: Outcome } = {};
+                let games: Game[] = [];
 
-                    results.objects.map((result: IRawResult) => {
-                        const evg: IRawEventGamesCollection = result.eventGamesCollection;
-                        const templateIds: string[] = [];
+                results.objects.map((result: IRawResult) => {
+                    const evg: IRawEventGamesCollection = result.eventGamesCollection;
+                    const templateIds: string[] = [];
 
-                        result.templates.forEach((rawTemplate: IRawTemplate) => {
-                            templateIds.push(String(rawTemplate.id));
+                    result.templates.forEach((rawTemplate: IRawTemplate) => {
+                        templateIds.push(String(rawTemplate.id));
 
-                            const modifiedTimestamp = Math.max.apply(null, rawTemplate.selections.map((selection) => {
-                                return moment.utc(selection.modifiedTs).unix();
-                            }));
-                            const selections: ISelection[] = [];
-                            const selectionIds = rawTemplate.selections.map((rawSelection) => {
-                                selections.push({
-                                    eventPositionId: String(rawSelection.eventPositionId),
-                                    id: String(rawSelection.id),
-                                    outcomeId: String(rawSelection.outcomeId),
-                                });
-
-                                const rawOutcome = rawSelection.outcome;
-
-                                const rawPosition = rawSelection.eventPosition;
-                                const eventPosition: EventPosition = {
-                                    closeTimestamp: moment.utc(rawPosition.closeTs).unix(),
-                                    eventGamesId: String(rawPosition.eventGamesId),
-                                    id: String(rawPosition.id),
-                                    name: rawPosition.name,
-                                    outcomeTypeNames: [rawOutcome.type.name], // FIXME incomplete
-                                    sortOrder: rawPosition.sortOrder,
-                                    status: rawPosition.status,
-                                };
-                                positionsById[eventPosition.id] = eventPosition;
-
-                                const outcome: Outcome = {
-                                    availablePoints: rawOutcome.pointsAvailable,
-                                    closeTimestamp: moment.utc(rawOutcome.closeTs).unix(),
-                                    externalId: String(rawOutcome.externalId),
-                                    id: String(rawOutcome.id),
-                                    name: rawOutcome.name,
-                                    plannedPoints: rawOutcome.plannedPoints,
-                                    selectionCost: rawOutcome.selectionCost,
-                                    statsId: null, // FIXME ?
-                                    typeName: rawOutcome.type.name,
-                                };
-                                outcomesById[outcome.id] = outcome;
-
-                                return String(rawSelection.id);
+                        const modifiedTimestamp = Math.max.apply(null, rawTemplate.selections.map((selection) => {
+                            return moment.utc(selection.modifiedTs).unix();
+                        }));
+                        const selections: ISelection[] = [];
+                        const selectionIds = rawTemplate.selections.map((rawSelection) => {
+                            selections.push({
+                                eventPositionId: String(rawSelection.eventPositionId),
+                                id: String(rawSelection.id),
+                                outcomeId: String(rawSelection.outcomeId),
                             });
-                            const ticketIds = rawTemplate.tickets.map((uri) => {
-                                return uri.replace("/api/v1/tickets/", "").replace("/", "");
-                            });
-                            const template: ITemplateTicket = {
-                                externalId: String(rawTemplate.externalId),
-                                id: String(rawTemplate.id),
-                                modifiedTimestamp,
-                                selectionIds,
-                                selections,
-                                ticketIds,
-                                tickets: [],
+
+                            const rawOutcome = rawSelection.outcome;
+
+                            const rawPosition = rawSelection.eventPosition;
+                            const eventPosition: EventPosition = {
+                                closeTimestamp: moment.utc(rawPosition.closeTs).unix(),
+                                eventGamesId: String(rawPosition.eventGamesId),
+                                id: String(rawPosition.id),
+                                name: rawPosition.name,
+                                outcomeTypeNames: [rawOutcome.type.name], // FIXME incomplete
+                                sortOrder: rawPosition.sortOrder,
+                                status: rawPosition.status,
                             };
-                            templateTickets.push(template);
-                        });
+                            positionsById[eventPosition.id] = eventPosition;
 
-                        games = evg.games.map((rawGame): Game => {
-                            const startTimestamp = moment.utc(rawGame.gameTime).unix()
-                            return {
-                                homeTeamId: String(rawGame.homeTeamId),
-                                id: String(rawGame.id),
-                                label: `${rawGame.visitingTeamAlias} @ ${rawGame.homeTeamAlias}`,
-                                league: rawGame.league,
-                                startDay: "REPLACE ME", // TODO check if timezone needed
-                                startTimestamp,
-                                status: null, // FIXME do we need this?
-                                visitingTeamId: String(rawGame.visitingTeamId),
+                            const outcome: Outcome = {
+                                availablePoints: rawOutcome.pointsAvailable,
+                                closeTimestamp: moment.utc(rawOutcome.closeTs).unix(),
+                                externalId: String(rawOutcome.externalId),
+                                id: String(rawOutcome.id),
+                                injuryStatus: rawOutcome.injuryStatus,
+                                name: rawOutcome.name,
+                                plannedPoints: rawOutcome.plannedPoints,
+                                selectionCost: rawOutcome.selectionCost,
+                                statsId: null, // FIXME ?
+                                typeName: rawOutcome.type.name,
                             };
+                            outcomesById[outcome.id] = outcome;
+
+                            return String(rawSelection.id);
                         });
-
-                        const gameIds = evg.games.map((game) => String(game.id));
-
-                        const settings = JSON.parse(evg.settingsJson);
-
-                        const eventGamesCollection: IEventGamesCollection = {
-                            closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
-                            context: evg.context,
-                            createdOutcomes: true,
-                            eventPositionIds: [],
-                            gameIds,
-                            id: String(evg.id),
-                            outcomeIds: [],
-                            settings,
-                            templateIds,
+                        const ticketIds = rawTemplate.tickets.map((uri) => {
+                            return uri.replace("/api/v1/tickets/", "").replace("/", "");
+                        });
+                        const template: ITemplateTicket = {
+                            externalId: String(rawTemplate.externalId),
+                            id: String(rawTemplate.id),
+                            modifiedTimestamp,
+                            selectionIds,
+                            selections,
+                            ticketIds,
+                            tickets: [],
                         };
-
-                        eventGamesCollections.push(eventGamesCollection);
+                        templateTickets.push(template);
                     });
 
-                    dispatch({ type: FETCHED_GAMES, games });
+                    games = evg.games.map((rawGame): Game => {
+                        const startTimestamp = moment.utc(rawGame.gameTime).unix()
+                        return {
+                            homeTeamId: String(rawGame.homeTeamId),
+                            id: String(rawGame.id),
+                            label: `${rawGame.visitingTeamAlias} @ ${rawGame.homeTeamAlias}`,
+                            league: rawGame.league,
+                            startDay: "REPLACE ME", // TODO check if timezone needed
+                            startTimestamp,
+                            status: null, // FIXME do we need this?
+                            visitingTeamId: String(rawGame.visitingTeamId),
+                        };
+                    });
 
-                    const eventPositions = _.values(positionsById);
-                    dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions });
+                    const gameIds = evg.games.map((game) => String(game.id));
 
-                    const outcomes = _.values(outcomesById);
-                    dispatch({ type: FETCHED_OUTCOMES, outcomes });
+                    const settings = JSON.parse(evg.settingsJson);
 
-                    dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
+                    const eventGamesCollection: IEventGamesCollection = {
+                        closeEventTimestamp: moment.utc(evg.closeEvent).unix(),
+                        context: evg.context,
+                        createdOutcomes: true,
+                        eventPositionIds: [],
+                        gameIds,
+                        id: String(evg.id),
+                        outcomeIds: [],
+                        settings,
+                        templateIds,
+                    };
 
-                    yes(templateTickets);
-                }, no);
+                    eventGamesCollections.push(eventGamesCollection);
+                });
+
+                dispatch({ type: FETCHED_GAMES, games });
+
+                const eventPositions = _.values(positionsById);
+                dispatch({ type: FETCHED_EVENT_POSITIONS, eventPositions });
+
+                const outcomes = _.values(outcomesById);
+                dispatch({ type: FETCHED_OUTCOMES, outcomes });
+
+                dispatch({ type: FETCHED_EVENT_GAMES_COLLECTIONS, eventGamesCollections });
+
+                yes(templateTickets);
             }, no);
         });
 

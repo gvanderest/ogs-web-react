@@ -160,7 +160,7 @@ export function fetchEventGamesCollection(
 
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTION, options });
 
-            request(`/api/v1/eventgames/${ id }/`, {
+            request(`/v1/eventgames/${ id }/`, {
                 method: "GET",
                 mode: "cors",
             }).then((raw: IRawEventGamesCollection) => {
@@ -315,7 +315,7 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<IEventGamesColl
         const promise: Promise<IEventGamesCollection[]> = new Promise((yes, no) => {
             dispatch({ type: FETCHING_EVENT_GAMES_COLLECTIONS });
 
-            request("/api/v1/eventgames/", {
+            request("/v1/eventgames/", {
                 method: "GET",
                 mode: "cors",
             }).then(({ objects }) => {
@@ -436,7 +436,7 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
         const promise: Promise<IEventGamesCollection> = new Promise((yes, no) => {
             const { id, eventId } = options;
 
-            let url = `https://qa7.fantasydraft.com/api/v1/fantasy/eventgames/${ id }/`;
+            let url = `/v1/fantasy/eventgames/${ id }/`;
             if (eventId) {
                 url += `?event_id=${ eventId }`;
             }
