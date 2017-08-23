@@ -22,7 +22,7 @@ export interface IMinifiedFantasyEvent {
     pc: string;
     s: string;
     tc: number;
-    tcc: string;
+    tcc: number;
     max: number;
     maxu: number;
     co: boolean;
@@ -47,6 +47,13 @@ export function fetchEvent(options: IFetchEventOptions) {
                 method: "GET",
             }).then((response) => {
                 response.json().then((rawEvent) => {
+                    let lobbyTabs: string[] = [];
+                    if (typeof rawEvent.lobbytab === "string") {
+                        lobbyTabs = [rawEvent.lobbytab];
+                    } else if (rawEvent.lobbytab instanceof Array) {
+                        lobbyTabs = rawEvent.lobbytab;
+                    }
+
                     const event = {
                         adminId: String(rawEvent.pool_admin_id),
                         blacklisted: rawEvent.blacklisted,
@@ -64,7 +71,7 @@ export function fetchEvent(options: IFetchEventOptions) {
                         id: String(rawEvent.id),
                         lateSwap: rawEvent.can_late_swap,
                         lobbySort: rawEvent.lobbysort ? parseInt(rawEvent.lobbysort, 10) : 0,
-                        lobbyTabs: rawEvent.lobbytab,
+                        lobbyTabs,
                         notes: rawEvent.notes,
                         passwordProtected: rawEvent.is_password_protected,
                         payout: rawEvent.payout,
@@ -77,7 +84,7 @@ export function fetchEvent(options: IFetchEventOptions) {
                         selectionConstraints: rawEvent.selection_constraints,
                         ticketCost: rawEvent.ticket_cost,
                         ticketCostCurrency: rawEvent.ticket_cost_currency,
-                        ticketCount: rawEvent.ticket_count,
+                        ticketCount: rawEvent.ticket_count || 0,
                         ticketMax: rawEvent.ticket_max,
                         ticketMaxPerUser: rawEvent.ticket_max_per_user,
                         ticketMin: rawEvent.ticket_min,
@@ -122,6 +129,13 @@ export function fetchEvents(options?: IFetchEventsOptions) {
             }).then((response) => {
                 response.json().then((rawEvents) => {
                     const events: IEvent[] = rawEvents.objects.map((rawEvent: IMinifiedFantasyEvent): IEvent => {
+                        let lobbyTabs: string[] = [];
+                        if (typeof rawEvent.lt === "string") {
+                            lobbyTabs = [rawEvent.lt];
+                        } else if (rawEvent.lt instanceof Array) {
+                            lobbyTabs = rawEvent.lt;
+                        }
+
                         const event: IEvent = {
                             adminId: String(rawEvent.adm),
                             closeTimestamp: rawEvent.ct,
@@ -132,13 +146,13 @@ export function fetchEvents(options?: IFetchEventsOptions) {
                             featured: rawEvent.f === "true",
                             id: String(rawEvent.i),
                             lobbySort: rawEvent.ls ? parseInt(rawEvent.ls, 10) : 0,
-                            lobbyTabs: [],
+                            lobbyTabs,
                             payout: rawEvent.p,
                             payoutCurrency: rawEvent.pc,
                             status: rawEvent.s,
                             ticketCost: rawEvent.tc,
                             ticketCostCurrency: rawEvent.pc,
-                            ticketCount: rawEvent.tc,
+                            ticketCount: rawEvent.tcc || 0,
                             ticketMax: rawEvent.max,
                             ticketMaxPerUser: rawEvent.maxu,
                             ticketMin: rawEvent.min,

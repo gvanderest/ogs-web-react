@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 import IEvent from "../interfaces/IEvent";
 import Entity from "./Entity";
 
@@ -48,5 +50,8 @@ export default class Event extends Entity<IEvent> implements IEvent {
     }
     public isUserCreated() {
         return !!this.adminId;
+    }
+    public hasLobbyTab(tab: string) {
+        return _.includes(this.lobbyTabs, tab);
     }
 }
