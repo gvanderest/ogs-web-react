@@ -33,6 +33,9 @@ export default class Event extends Entity<IEvent> implements IEvent {
     public isOpen?() {
         return this.status === Event.STATUS_OPEN;
     }
+    public isClosing() {
+        return true;
+    }
     public isClosed() {
         return this.status === Event.STATUS_CLOSED;
     }
