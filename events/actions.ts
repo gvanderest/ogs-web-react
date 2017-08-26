@@ -1,12 +1,17 @@
 import * as moment from "moment";
 import * as Promise from "promise";
 
+import ReduxDispatch from "../classes/ReduxDispatch";
+import IEvent from "../interfaces/IEvent";
+import ITicket from "../interfaces/ITicket";
+import request from "../utils/request";
+
+import { FETCHED_TICKETS } from "../tickets/actions";
+
 export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
 export const ERROR_FETCHING_EVENT = "ERROR_FETCHING_EVENT";
 
-import ReduxDispatch from "../classes/ReduxDispatch";
-import IEvent from "../interfaces/IEvent";
 
 export interface IMinifiedFantasyEvent {
     i: number;
@@ -177,6 +182,78 @@ export function fetchEvents(options?: IFetchEventsOptions) {
             dispatch({ type: FETCHED_EVENTS, options, events });
         }, (errors) => {
             dispatch({ type: ERROR_FETCHING_EVENTS, options, errors });
+        });
+
+        return promise;
+    };
+}
+
+interface IFetchLiveEventOptions {
+    id: string;
+    ticketIds?: string[];
+}
+
+export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
+    return (dispatch: ReduxDispatch) => {
+        const promise: Promise<IEvent> = new Promise((yes, no) => {
+            let url = `/v1/fantasy/events/${ options.id }/`;
+            if (options.ticketIds) {
+                url += `?ticket_ids=${ options.ticketIds.join(",") }`;
+            }
+            request(url).then((raw: IRawFantasyEventResponse): IEvent => {
+                // FIXME Add support for the new fields!
+                const tickets: Ticket[] = Object.keys(raw.t).map((id) => {
+                    const t = raw.t[id];
+                    const ticket: ITicket = {
+                        // avatar: t.a,
+                        amountWon: t.aw,
+                        earnedPoints: t.p,
+                        id: String(t.id),
+                        timeUnitsRemaining: t.pmr,
+                        payout: t.pd,
+                        rank: t.r,
+                        rankTied: t.t,
+                        status: t.s,
+                        username: t.u,
+                        userId: t.uid,
+                    };
+                    return ticket;
+                });
+                const ticketIds: string[] = Object.keys(raw.t);
+                const event: IEvent = {
+                    adminId: null,
+                    // customerBlacklisted: raw.bl,
+                    // entrantsBlacklisted: raw.ble,
+                    // entrantsBlacklistedsernames: raw.bleu,
+                    // blacklisterUsername: raw.blu,
+                    closeTimestamp: moment.utc(raw.c).unix(),
+                    // category: raw.cat,
+                    context: raw.c,
+                    description: raw.d,
+                    externalId: String(raw.eg),
+                    // finalizeTimestamp: moment.utc(raw.f).unix(),
+                    id: String(raw.i),
+                    // oldPayouts: raw.ps,
+                    // payouts: raw.pse,
+                    payout: raw.p,
+                    status: raw.s,
+                    ticketCount: raw.tcnt,
+                    ticketIds,
+                    ticketMax: raw.tm,
+                    ticketMin: raw.tmn,
+                    ticketMaxPerUser: raw.tmu,
+                    ticketCost: raw.tc,
+                    ticketCostCurrency: raw.tcc,
+                };
+
+                dispatch({ type: FETCHED_TICKETS, tickets });
+
+                yes(event);
+            }, no);
+        });
+
+        promise.then((event) => {
+            dispatch({ type: FETCHED_EVENT, event });
         });
 
         return promise;

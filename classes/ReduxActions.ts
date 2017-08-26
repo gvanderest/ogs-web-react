@@ -20,6 +20,7 @@ export default class ReduxActions {
     public events: {
         fetchEvent: (options: object) => Promise<Event>;
         fetchEvents: (options: object) => Promise<Event[]>;
+        fetchLiveEvent: (options: object) => Promise<Event>;
     };
     public routing: {
         push: (url: string) => void;

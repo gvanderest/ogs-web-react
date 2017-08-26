@@ -9,8 +9,8 @@ export default class Event extends Entity<IEvent> implements IEvent {
     public static readonly STATUS_FINALIZED = "f";
 
     public adminId: string;
-    public lobbySort: number;
-    public lobbyTabs: string[];
+    public lobbySort?: number;
+    public lobbyTabs?: string[];
     public denyGroups: string[];
     public id: string;
     public externalId: string;
@@ -23,6 +23,7 @@ export default class Event extends Entity<IEvent> implements IEvent {
     public ticketCostCurrency: string;
     public ticketMax: number;
     public ticketCount: number;
+    public ticketIds?: string[];
     public context: string;
     public closeTimestamp: number;
     public fetching?: boolean;
@@ -34,7 +35,7 @@ export default class Event extends Entity<IEvent> implements IEvent {
         return this.status === Event.STATUS_OPEN;
     }
     public isClosing() {
-        return true;
+        return false;
     }
     public isClosed() {
         return this.status === Event.STATUS_CLOSED;

@@ -1,7 +1,7 @@
 interface IEvent {
     adminId: string;
-    lobbySort: number;
-    lobbyTabs: string[];
+    lobbySort?: number;
+    lobbyTabs?: string[];
     denyGroups: string[];
     id: string;
     externalId: string;
@@ -20,5 +20,6 @@ interface IEvent {
     failed?: boolean;
     ticketMaxPerUser: number;
     ticketMin: number;
+    ticketIds?: string[];
 }
 export default IEvent;

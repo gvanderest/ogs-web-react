@@ -88,6 +88,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
                     const ticket: Ticket = { ...raw };
                     ticket.id = String(ticket.id);
                     ticket.eventId = String(ticket.event.id);
+                    ticket.event.lobbyTabs = [];
                     return yes(ticket);
                 }, () => {
                     return no([{ type: "JSON_ERROR" }]);

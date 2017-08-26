@@ -1,4 +1,5 @@
 import Event from "./Event";
+import Selection from "./Selection";
 
 export default class Ticket {
     public id: string;
@@ -10,4 +11,7 @@ export default class Ticket {
     public rankTied: boolean;
     public earnedPoints: number;
     public selectionIds?: string[];
+    public selections?: Selection[];
+    public timeUnitsRemaining?: number;
+    public username?: string;
 }
