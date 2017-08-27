@@ -20,6 +20,7 @@ interface IProps {
     scrollToTopWatch?: any;
     scrollToRecord?: IBaseRecord;
     scrollToRecordId?: string | number;
+    onScroll?: () => void;
     [key: string]: any;
 }
 
@@ -78,10 +79,10 @@ extends React.Component<IProps, IState> {
         this.tableWillUnmount();
     }
     public componentWillReceiveProps(nextProps: IProps) {
-        this.scrollToTopCheck(this.props, nextProps);
-        this.scrollToRecordCheck(nextProps);
         window.requestAnimationFrame(() => {
+            this.scrollToTopCheck(this.props, nextProps);
             this.sliceViewport(this.getRecords(nextProps));
+            this.scrollToRecordCheck(nextProps);
         });
     }
     public render() {
@@ -196,7 +197,7 @@ extends React.Component<IProps, IState> {
         const scrollTop = viewport.scrollTop as number;
         const scrollHeight = viewport.scrollHeight as number;
 
-        const viewportHeight = (this.props.viewportHeight || DEFAULT_VIEWPORT_HEIGHT) as number;
+        const viewportHeight = this.getViewportHeight();
         const scrollBottom = scrollTop + viewportHeight;
 
         const topPercent = scrollHeight ? (scrollTop / scrollHeight) : 0;
@@ -285,6 +286,10 @@ extends React.Component<IProps, IState> {
         window.requestAnimationFrame(() => {
             this.sliceViewport(this.getRecords(this.props));
         });
+
+        if (this.props.onScroll) {
+            this.props.onScroll();
+        }
     }
     protected getBodyStyle() {
         return {
@@ -362,6 +367,7 @@ extends React.Component<IProps, IState> {
             this.setState({
                 detectedRowHeight,
             });
+            this.scrollToRecordCheck(this.props);
         }
     }
     /**
@@ -377,7 +383,7 @@ extends React.Component<IProps, IState> {
      * scroll position is.
      */
     protected scrollToRecordCheck(props: IProps) {
-        if (!this.props.scrollToRecord && !this.props.scrollToRecordId) {
+        if (!props.scrollToRecord && !props.scrollToRecordId) {
             return;
         }
 
@@ -387,8 +393,8 @@ extends React.Component<IProps, IState> {
         for (let index = 0; index < records.length; index++) {
             const record = records[index];
             if (
-                this.props.scrollToRecord && record === this.props.scrollToRecord ||
-                this.props.scrollToRecordId && record.id === this.props.scrollToRecordId
+                props.scrollToRecord && record === props.scrollToRecord ||
+                props.scrollToRecordId && record.id === props.scrollToRecordId
             ) {
                 recordIndex = index;
                 break;
@@ -401,9 +407,11 @@ extends React.Component<IProps, IState> {
 
         // Figure out scroll position
         const rowHeight = this.getRowHeight();
-        const { viewportHeight } = this.props;
+        const viewportHeight = this.getViewportHeight();
+
         let recordScrollTop = rowHeight * recordIndex; // top of record
         recordScrollTop -= (viewportHeight - rowHeight) / 2; // scroll up a bit
+
         (this.refs.viewport as HTMLElement).scrollTop = Math.max(0, recordScrollTop);
     }
 }
