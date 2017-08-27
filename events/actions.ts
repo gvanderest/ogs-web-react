@@ -3,10 +3,12 @@ import * as Promise from "promise";
 
 import ReduxDispatch from "../classes/ReduxDispatch";
 import IEvent from "../interfaces/IEvent";
+import ISelection from "../interfaces/ISelection";
 import ITicket from "../interfaces/ITicket";
 import request from "../utils/request";
 
 import { FETCHED_TICKETS } from "../tickets/actions";
+import { FETCHED_SELECTIONS } from "../selections/actions";
 
 export const FETCHING_EVENT = "FETCHING_EVENT";
 export const FETCHED_EVENT = "FETCHED_EVENT";
@@ -193,6 +195,32 @@ interface IFetchLiveEventOptions {
     ticketIds?: string[];
 }
 
+interface IRawFantasyEventResponse {
+    t: {
+        [key: string]: {
+            a: string;
+            aw: number;
+            id: number;
+            p: number;
+            pd: string;
+            pmr: number;
+            r: number;
+            s: Array<{
+                evp: number;
+                i: number;
+                o: number;
+                p: number;
+                sd: boolean;
+                t: number;
+            }>;
+            st: string;
+            t: boolean;
+            u: string;
+            uid: number;
+        }
+    };
+}
+
 export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
     return (dispatch: ReduxDispatch) => {
         const promise: Promise<IEvent> = new Promise((yes, no) => {
@@ -200,23 +228,39 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
             if (options.ticketIds) {
                 url += `?ticket_ids=${ options.ticketIds.join(",") }`;
             }
-            request(url).then((raw: IRawFantasyEventResponse): IEvent => {
+            request(url).then((raw: IRawFantasyEventResponse) => {
                 // FIXME Add support for the new fields!
-                const tickets: Ticket[] = Object.keys(raw.t).map((id) => {
+                const selections: ISelection[] = [];
+                const tickets: ITicket[] = Object.keys(raw.t).map((id) => {
                     const t = raw.t[id];
+
+                    const selectionIds: string[] = t.s.map((s) => {
+                        const selection: ISelection = {
+                            earnedPoints: s.p,
+                            eventPositionId: String(s.evp),
+                            id: String(s.i),
+                            outcomeId: String(s.o),
+                            scoreDropped: s.sd,
+                        };
+                        selections.push(selection);
+                        return selection.id;
+                    });
+
                     const ticket: ITicket = {
                         // avatar: t.a,
                         amountWon: t.aw,
                         earnedPoints: t.p,
                         id: String(t.id),
-                        timeUnitsRemaining: t.pmr,
                         payout: t.pd,
                         rank: t.r,
                         rankTied: t.t,
+                        selectionIds,
                         status: t.s,
-                        username: t.u,
+                        timeUnitsRemaining: t.pmr,
                         userId: t.uid,
+                        username: t.u,
                     };
+
                     return ticket;
                 });
                 const ticketIds: string[] = Object.keys(raw.t);
@@ -246,6 +290,7 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
                     ticketCostCurrency: raw.tcc,
                 };
 
+                dispatch({ type: FETCHED_SELECTIONS, selections });
                 dispatch({ type: FETCHED_TICKETS, tickets });
 
                 yes(event);

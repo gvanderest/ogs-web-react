@@ -9,5 +9,11 @@ interface ITicket {
     rank: number;
     rankTied: boolean;
     earnedPoints: number;
+    username?: string;
+    payout?: any;
+    status?: "n" | "c" | "x";
+    timeUnitsRemaining?: number;
+    userId?: string;
+    selectionIds: string[];
 }
 export default ITicket;

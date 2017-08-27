@@ -1,7 +1,8 @@
 import Event from "./Event";
 import Selection from "./Selection";
+import ITicket from "../interfaces/ITicket";
 
-export default class Ticket {
+export default class Ticket implements ITicket {
     public id: string;
     public eventId: string;
     public event: Event;

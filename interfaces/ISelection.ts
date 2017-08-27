@@ -9,5 +9,6 @@ interface ISelection {
     eventPositionId: string;
     earnedPoints?: number;
     modifiedTimestamp?: number;
+    scoreDropped?: boolean;
 }
 export default ISelection;
