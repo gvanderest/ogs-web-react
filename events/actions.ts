@@ -228,7 +228,7 @@ interface IRawFantasyEventResponse {
     };
 }
 
-export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
+export function fetchFantasyEvent(options?: IFetchLiveEventOptions) {
     return (dispatch: ReduxDispatch) => {
         const promise: Promise<IEvent> = new Promise((yes, no) => {
             let url = `/v1/fantasy/events/${ options.id }/`;
@@ -306,10 +306,10 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
                     ticketCount: raw.tcnt,
                     ticketIds,
                     ticketMax: raw.tm,
-                    ticketMin: raw.tmn,
                     ticketMaxPerUser: raw.tmu,
                     ticketCost: raw.tc,
                     ticketCostCurrency: raw.tcc,
+                    ticketMin: raw.tmn,
                 };
 
                 dispatch({ type: FETCHED_SELECTIONS, selections });
