@@ -1,5 +1,8 @@
 import IEvent from "../interfaces/IEvent";
 import generateReducer from "../utils/generateReducer";
+import reduceRecord from "../utils/reduceRecord";
+import reduceRecords from "../utils/reduceRecords";
+
 import { ERROR_FETCHING_EVENT, FETCHED_EVENT, FETCHING_EVENT} from "./actions";
 import { FETCHED_EVENTS, FETCHING_EVENTS } from "./actions";
 
@@ -22,17 +25,7 @@ interface IHandleFetchedEventAction {
 
 function handleFetchedEvent(state: IEventsState, action: IHandleFetchedEventAction) {
     const event: IEvent = action.event;
-    return {
-        ...state,
-        byId: {
-            ...state.byId,
-            [event.id]: {
-                ...state.byId[event.id],
-                ...event,
-                fetching: false,
-            },
-        },
-    };
+    return reduceRecord(state, event);
 }
 
 interface IHandleFetchedEventsAction {
@@ -42,25 +35,7 @@ interface IHandleFetchedEventsAction {
 
 function handleFetchedEvents(state: IEventsState, action: IHandleFetchedEventsAction) {
     const events: IEvent[] = action.events;
-
-    state = {
-        ...state,
-        byId: {
-            ...state.byId,
-        },
-        fetchingAll: false,
-    };
-
-    events.forEach((event) => {
-        const id: string = event.id;
-        const existing: IEvent = state.byId[id];
-        state.byId[id] = {
-            ...existing,
-            ...event,
-        };
-    });
-
-    return state;
+    return reduceRecords(state, events);
 }
 
 interface IHandleFetchingEventAction {
@@ -71,19 +46,7 @@ interface IHandleFetchingEventAction {
 }
 
 function handleFetchingEvent(state: IEventsState, action: IHandleFetchingEventAction) {
-    const id: string = action.options.id;
-    const existing: IEvent = state.byId[id];
-    return {
-        ...state,
-        byId: {
-            ...state.byId,
-            [id]: {
-                ...existing,
-                failed: false,
-                fetching: true,
-            },
-        },
-    };
+    return state;
 }
 
 interface IHandleErrorFetchingEventAction {
@@ -94,24 +57,11 @@ interface IHandleErrorFetchingEventAction {
 }
 
 function handleErrorFetchingEvent(state: IEventsState, action: IHandleErrorFetchingEventAction) {
-    const id: string = action.options.id;
-    return {
-        ...state,
-        byId: {
-            ...state.byId,
-            [id]: {
-                failed: true,
-                fetching: false,
-            },
-        },
-    };
+    return state;
 }
 
 function handleFetchingEvents(state: IEventsState) {
-    return {
-        ...state,
-        fetchingAll: true,
-    };
+    return state;
 }
 
 export default generateReducer(initialState, {

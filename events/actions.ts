@@ -196,6 +196,13 @@ interface IFetchLiveEventOptions {
 }
 
 interface IRawFantasyEventResponse {
+    heu: {
+        [key: number]: {
+            gid: number;
+            n: string;
+            m: number[];
+        };
+    };
     t: {
         [key: string]: {
             a: string;
@@ -230,6 +237,19 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
             }
             request(url).then((raw: IRawFantasyEventResponse) => {
                 // FIXME Add support for the new fields!
+
+                // Extract groups by the user IDs
+                const experienceGroupsByUserId: Map<string, string[]> = {};
+                Object.keys(raw.heu).forEach((groupId) => {
+                    const group = raw.heu[groupId];
+                    group.m.forEach((userId) => {
+                        if (!experienceGroupsByUserId[userId]) {
+                            experienceGroupsByUserId[userId] = [];
+                        }
+                        experienceGroupsByUserId[userId].push(group.n);
+                    });
+                });
+
                 const selections: ISelection[] = [];
                 const tickets: ITicket[] = Object.keys(raw.t).map((id) => {
                     const t = raw.t[id];
@@ -250,6 +270,7 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
                         // avatar: t.a,
                         amountWon: t.aw,
                         earnedPoints: t.p,
+                        experienceGroups: experienceGroupsByUserId[t.uid] || [],
                         id: String(t.id),
                         payout: t.pd,
                         rank: t.r,

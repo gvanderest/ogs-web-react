@@ -27,6 +27,7 @@ export function fetchSystemMessages() {
     return (dispatch: ReduxDispatch): Promise<SystemMessage[]> => {
         const promise: Promise<SystemMessage[]> = new Promise((yes, no) => {
             fetch("https://qa7.fantasydraft.com/api/v1/systemmessages/", {
+                credentials: "omit",
                 method: "GET",
                 mode: "cors",
             }).then(() => {

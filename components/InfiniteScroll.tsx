@@ -117,15 +117,20 @@ extends React.Component<IProps, IState> {
             width: "100%",
         };
 
+        const headerComponents = this.renderHeader(allRecords);
+        const footerComponents = this.renderFooter(allRecords);
+
         recordComponents = allRecords.length === 0 ? this.renderEmpty() : this.renderRecords(viewportRecords);
 
         const result = (
             <div className="infinite-scroll" ref="container">
-                <div className="infinite-scroll-header">
-                    <table className={ this.props.className } ref="header">
-                        { this.renderHeader(allRecords) }
-                    </table>
-                </div>
+                { headerComponents ? (
+                    <div className="infinite-scroll-header">
+                        <table className={ this.props.className } ref="header">
+                            { headerComponents }
+                        </table>
+                    </div>
+                ) : null }
                 <div
                     className="infinite-scroll-viewport"
                     ref="viewport"
@@ -141,11 +146,13 @@ extends React.Component<IProps, IState> {
                         </table>
                     </div>
                 </div>
-                <div className="infinite-scroll-footer">
-                    <table className={ this.props.className || "" } ref="footer">
-                        { this.renderFooter(allRecords) }
-                    </table>
-                </div>
+                { footerComponents ? (
+                    <div className="infinite-scroll-footer">
+                        <table className={ this.props.className || "" } ref="footer">
+                            { footerComponents }
+                        </table>
+                    </div>
+                ) : null }
             </div>
         );
         return result;

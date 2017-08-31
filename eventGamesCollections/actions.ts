@@ -317,7 +317,6 @@ export function fetchEventGamesCollections(): ReduxThunk<Promise<IEventGamesColl
 
             request("/v1/eventgames/", {
                 method: "GET",
-                mode: "cors",
             }).then(({ objects }) => {
                 const gamesById: { [key: string]: Game } = {};
                 const teamsById: { [key: string]: Team } = {};

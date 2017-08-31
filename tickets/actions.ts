@@ -32,7 +32,7 @@ interface ITicketsResponse {
     objects: IRawTicket[];
 }
 
-export function fetchTickets(options: { [key: string]: string } = {}) {
+export function fetchTickets(options: Map<string, any> = {}) {
     return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
             API.get("v1/tickets", { event__status__in: "o,c" }).then((response: ITicketsResponse) => {
@@ -44,6 +44,7 @@ export function fetchTickets(options: { [key: string]: string } = {}) {
                             ...rawTicket.event,
                             id: String(rawTicket.event_id),
                             ticketCost: rawTicket.event.ticket_cost,
+                            lobbyTabs: [],
                         },
                         eventId: String(rawTicket.event_id),
                         templateId: String(rawTicket.template_id),
@@ -51,6 +52,7 @@ export function fetchTickets(options: { [key: string]: string } = {}) {
                 });
 
                 const events = tickets.map((ticket) => ticket.event);
+                tickets.forEach((ticket) => { delete ticket.event; });
                 dispatch({ type: FETCHED_EVENTS, events });
 
                 yes(tickets);
@@ -60,7 +62,7 @@ export function fetchTickets(options: { [key: string]: string } = {}) {
         });
 
         dispatch({ type: FETCHING_TICKETS, options });
-        promise.then((tickets) => {
+        promise.then((tickets: Ticket[]) => {
             dispatch({ type: FETCHED_TICKETS, options, tickets });
         }, (errors) => {
             dispatch({ type: ERROR_FETCHING_TICKETS, options, errors });
@@ -88,6 +90,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
                     const ticket: Ticket = { ...raw };
                     ticket.id = String(ticket.id);
                     ticket.eventId = String(ticket.event.id);
+                    ticket.event.id = String(ticket.event.id);
                     ticket.event.lobbyTabs = [];
                     return yes(ticket);
                 }, () => {
@@ -101,6 +104,7 @@ export function fetchTicket(options: IFetchTicketOptions) {
         dispatch({ type: FETCHING_TICKET, options });
         promise.then((ticket: Ticket) => {
             dispatch({ type: FETCHED_EVENT, event: ticket.event });
+            delete ticket.event;
             dispatch({ type: FETCHED_TICKET, options, ticket });
         }, (errors) => {
             dispatch({ type: ERROR_FETCHING_TICKET, options, errors });
