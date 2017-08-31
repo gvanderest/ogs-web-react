@@ -32,10 +32,10 @@ interface ITicketsResponse {
     objects: IRawTicket[];
 }
 
-export function fetchTickets(options: Map<string, any> = {}) {
+export function fetchTickets(options: Map<string, any> = { event__status__in: "o,c" }) {
     return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
-            API.get("v1/tickets", { event__status__in: "o,c" }).then((response: ITicketsResponse) => {
+            API.get("v1/tickets", options).then((response: ITicketsResponse) => {
                 const tickets = response.objects.map((rawTicket) => {
                     return {
                         ...rawTicket,

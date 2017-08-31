@@ -270,6 +270,7 @@ export function fetchLiveEvent(options?: IFetchLiveEventOptions) {
                         // avatar: t.a,
                         amountWon: t.aw,
                         earnedPoints: t.p,
+                        eventId: options.id,
                         experienceGroups: experienceGroupsByUserId[t.uid] || [],
                         id: String(t.id),
                         payout: t.pd,
