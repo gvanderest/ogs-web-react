@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 import EventPosition from "../classes/EventPosition";
 import generateReducer from "../utils/generateReducer";
 import reduceRecord from "../utils/reduceRecord";
@@ -9,12 +11,28 @@ interface IHandleFetchedEventPositionAction {
     eventPositions: EventPosition[];
 }
 
+function mergeEventPositions(existing, eventPosition) {
+    if (!existing) {
+        return eventPosition;
+    } else if (!eventPosition) {
+        return existing;
+    }
+
+    const outcomeTypeNames = _.uniq([...existing.outcomeTypeNames, ...eventPosition.outcomeTypeNames]);
+    return {
+        ...existing,
+        ...eventPosition,
+        outcomeTypeNames,
+    };
+
+}
+
 function handleFetchedEventPositions(
     state: IEventPositionsState,
     action: IHandleFetchedEventPositionAction,
 ) {
     const { eventPositions } = action;
-    return reduceRecords(state, eventPositions);
+    return reduceRecords(state, eventPositions, mergeEventPositions);
 }
 
 interface IHandleFetchedEventPositionAction {
@@ -27,7 +45,7 @@ function handleFetchedEventPosition(
     action: IHandleFetchedEventPositionAction,
 ) {
     const { eventPosition } = action;
-    return reduceRecord(state, eventPosition);
+    return reduceRecord(state, eventPosition, mergeEventPositions);
 }
 
 interface IEventPositionsState {
