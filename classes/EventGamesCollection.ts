@@ -1,3 +1,5 @@
+import * as moment from "moment";
+
 import IEventGamesCollection from "../interfaces/IEventGamesCollection";
 import IEventGamesCollectionSettings from "../interfaces/IEventGamesCollectionSettings";
 import Entity from "./Entity";
@@ -34,5 +36,33 @@ export default class EventGamesCollection extends Entity<IEventGamesCollection> 
      */
     public isTournament(): boolean {
         return this.context === "PGA";
+    }
+
+    /**
+     * Return whether the EventGamesCollection is open or not.
+     */
+    public isOpen(): boolean {
+        const now = moment();
+        const closeMoment = moment.unix(this.closeEventTimestamp);
+        return now.isBefore(closeMoment);
+    }
+
+    /**
+     * Return whether the EventGamesCollection is closed or not.
+     */
+    public isClosed(): boolean {
+        const now = moment();
+        const closeMoment = moment.unix(this.closeEventTimestamp);
+        const finalizeMoment = moment.unix(this.finalizeEventTimestamp);
+        return now.isBetween(closeMoment, finalizeMoment, null, "[]")
+    }
+
+    /**
+     * Return whether the EventGamesCollection is finalized or not.
+     */
+    public isFinalized(): boolean {
+        const now = moment();
+        const finalizeMoment = moment.unix(this.finalizeEventTimestamp);
+        return now.isSameOrAfter(finalizeMoment);
     }
 }
