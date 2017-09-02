@@ -20,6 +20,7 @@ function handleFetchingAuthenticatedCustomer(state: IState): IState {
 function handleNotAuthenticated(state: IState): IState {
     return {
         ...state,
+        csrfToken: null,
         customerId: null,
         fetching: false,
     };
@@ -32,8 +33,10 @@ interface IHandleFetchedAuthenticatedCustomer {
 
 function handleFetchedAuthenticatedCustomer(state: IState, action: IHandleFetchedAuthenticatedCustomer) {
     const { customer } = action;
+    const { csrfToken } = customer;
     return {
         ...state,
+        csrfToken,
         customerId: customer.id,
         fetching: false,
     };

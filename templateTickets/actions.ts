@@ -111,11 +111,7 @@ interface IRawResults {
 export function fetchTemplateTickets() {
     return (dispatch: ReduxDispatch) => {
         const promise = new Promise((yes, no) => {
-            request("/v1/tickets/sportstemplates/", {
-                credentials: "include",
-                method: "GET",
-                mode: "cors",
-            }).then((results: IRawResults) => {
+            request("/v1/tickets/sportstemplates/", { method: "GET" }).then((results: IRawResults) => {
                 const templateTickets: ITemplateTicket[] = [];
                 const eventGamesCollections: IEventGamesCollection[] = [];
                 const positionsById: { [key: string]: EventPosition } = {};
@@ -258,10 +254,6 @@ export function createTemplateTicket(options) {
 
         const promise = request("/v1/tickets/templates/", {
             data,
-            headers: {
-                "content-type": "application/json",
-                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
-            },
             method: "POST",
         });
 
@@ -272,10 +264,6 @@ export function createTemplateTicket(options) {
 export function deleteTemplateTicket(id) {
     return (dispatch) => {
         const promise = request(`/v1/tickets/templates/${ id }/`, {
-            headers: {
-                "content-type": "application/json",
-                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
-            },
             method: "DELETE",
         });
 

@@ -15,14 +15,41 @@ export const defaultOptions: IOptions = {
     baseUrl: '',
     credentials: "include",
     data: null,
-    headers: {},
+    headers: {
+        "content-type": "application/json",
+    },
     method: "GET",
     mode: "cors",
     transformResponse: null,
 };
 
-export default function request(url: string, options: IOptions = defaultOptions): Promise<any> {
-    options = { ...defaultOptions, ...options };
+export default function request(url: string, providedOptions?: IOptions): Promise<any> {
+    if (!providedOptions) {
+        providedOptions = defaultOptions;
+    }
+    const options = {
+        ...defaultOptions,
+        ...providedOptions,
+        headers: {
+            ...defaultOptions.headers,
+            ...providedOptions.headers,
+        },
+    };
+
+    const newHeaders = {};
+
+    for (const key of Object.keys(options.headers)) {
+        let value = options.headers[key];
+        value = (typeof value === "function") ? value() : value;
+
+        if (value === undefined || value === null) {
+            continue;
+        }
+
+        newHeaders[key] = value;
+    }
+
+    options.headers = newHeaders;
 
     if (url.indexOf("/") === 0) {
         url = options.baseUrl + url;

@@ -162,7 +162,6 @@ export function fetchEventGamesCollection(
 
             request(`/v1/eventgames/${ id }/`, {
                 method: "GET",
-                mode: "cors",
             }).then((raw: IRawEventGamesCollection) => {
                 const eventGamesSettings = JSON.parse(raw.settings_json) as
                     IEventGamesCollectionSettings;
@@ -442,7 +441,6 @@ export function fetchFantasyEventGamesCollection(options: IFetchFantasyEventGame
 
             request(url, {
                 method: "GET",
-                mode: "cors",
             }).then((rawEventGames: IMinifiedEventGamesCollection) => {
                 const teamsById: { [key: string]: Team } = {};
                 const gamesById: { [key: string]: Game } = {};

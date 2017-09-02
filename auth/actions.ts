@@ -150,6 +150,7 @@ export function fetchAuthenticatedCustomer(): ReduxThunk<Promise<Customer>> {
                                 },
                                 address1: cx.address1,
                                 address2: cx.address2,
+                                csrfToken: rawUser["X-CSRFToken"],
                                 experienceGroups,
                                 id: String(cx.id),
                                 phone: cx.phone,

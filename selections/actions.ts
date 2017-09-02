@@ -78,10 +78,6 @@ export function updateTicketSelections(options) {
 
         const promise = request("/v1/selections/", {
             data,
-            headers: {
-                "content-type": "application/json",
-                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
-            },
             method: "PATCH",
         });
 

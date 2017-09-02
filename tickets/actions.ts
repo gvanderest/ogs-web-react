@@ -144,10 +144,6 @@ export function createTicket(options: ISaveTicketOptions) {
 
         const promise = request("/v1/tickets/", {
             data,
-            headers: {
-                "content-type": "application/json",
-                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
-            },
             method: "POST",
         });
 
