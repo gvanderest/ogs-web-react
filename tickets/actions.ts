@@ -1,5 +1,6 @@
 import * as Promise from "promise";
 
+import request from "../utils/request";
 import ReduxDispatch from "../classes/ReduxDispatch";
 import Ticket from "../classes/Ticket";
 
@@ -112,4 +113,44 @@ export function fetchTicket(options: IFetchTicketOptions) {
 
         return promise;
     };
+}
+
+interface ISaveTicketOptions {
+    eventId: string;
+    selections: ISaveTicketOptionsSelection[];
+}
+
+interface ISaveTicketOptionsSelection {
+    eventPositionId: string;
+    outcomeId: string;
+}
+
+export function createTicket(options: ISaveTicketOptions) {
+    return (dispatch: ReduxDispatch) => {
+        const data = {
+            application_view_id: 2,
+            event: `/api/v1/events/${ options.eventId }/`,
+            rsu_gps_available: 1,
+            rsu_latitude: 50.649063000000005,
+            rsu_longitude: -120.3518694,
+            rsu_platform: "desktop",
+            selections: options.selections.map((selection: ISaveTicketOptionsSelection) => {
+                return {
+                    event_position_id: parseInt(selection.eventPositionId, 10),
+                    outcome_id: parseInt(selection.outcomeId, 10),
+                };
+            }),
+        };
+
+        const promise = request("/v1/tickets/", {
+            data,
+            headers: {
+                "content-type": "application/json",
+                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
+            },
+            method: "POST",
+        });
+
+        return promise;
+    }
 }

@@ -49,3 +49,42 @@ export function fetchTicketSelections(ticketId: string) {
         return promise;
     };
 }
+
+export function updateTicketSelections(options) {
+    return (dispatch) => {
+        const selections: any[] = [];
+        options.selections.forEach((selection) => {
+            if (selection.id) {
+                return;
+            }
+            selections.push({
+                event_position_id: parseInt(selection.eventPositionId, 10),
+                outcome_id: parseInt(selection.outcomeId, 10),
+                ticket_id: parseInt(options.ticketId, 10),
+            });
+        });
+
+        const deletedSelectionIds = options.deletedSelectionIds.map((id) => parseInt(id, 10));
+
+        const data = {
+            deleted_objects: deletedSelectionIds,
+            objects: selections,
+            rsu_gps_available: 1,
+            rsu_latitude: 50.674239899999996,
+            rsu_longitude: -120.32810699999999,
+            rsu_platform: "desktop",
+            ticket_id: parseInt(options.ticketId, 10),
+        };
+
+        const promise = request("/v1/selections/", {
+            data,
+            headers: {
+                "content-type": "application/json",
+                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
+            },
+            method: "PATCH",
+        });
+
+        return promise;
+    };
+}

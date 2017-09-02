@@ -19,6 +19,7 @@ import { FETCHED_OUTCOMES } from "../outcomes/actions";
 export const FETCHING_TEMPLATE_TICKETS = "FETCHING_TEMPLATE_TICKETS";
 export const FETCHED_TEMPLATE_TICKETS = "FETCHED_TEMPLATE_TICKETS";
 export const ERROR_FETCHING_TEMPLATE_TICKETS = "ERROR_FETCHING_TEMPLATE_TICKETS";
+export const DELETED_TEMPLATE_TICKET = "DELETED_TEMPLATE_TICKET";
 
 interface IRawTemplate {
     description: string;
@@ -240,4 +241,46 @@ export function fetchTemplateTickets() {
 
         return promise;
     };
+}
+
+export function createTemplateTicket(options) {
+    return (dispatch: ReduxDispatch) => {
+        const { externalId } = options;
+        const data = {
+            externalId,
+            selections: options.selections.map((selection: ISaveTicketOptionsSelection) => {
+                return {
+                    eventPositionId: parseInt(selection.eventPositionId, 10),
+                    outcomeId: parseInt(selection.outcomeId, 10),
+                };
+            }),
+        };
+
+        const promise = request("/v1/tickets/templates/", {
+            data,
+            headers: {
+                "content-type": "application/json",
+                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
+            },
+            method: "POST",
+        });
+
+        return promise;
+    }
+}
+
+export function deleteTemplateTicket(id) {
+    return (dispatch) => {
+        const promise = request(`/v1/tickets/templates/${ id }/`, {
+            headers: {
+                "content-type": "application/json",
+                "x-csrftoken": "sgwzwl6gUsoymuLnAxaxQNHXbawTpbXz",
+            },
+            method: "DELETE",
+        });
+
+        dispatch({ type: DELETED_TEMPLATE_TICKET, id });
+
+        return promise;
+    }
 }

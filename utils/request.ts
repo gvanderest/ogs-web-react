@@ -35,18 +35,29 @@ export default function request(url: string, options: IOptions = defaultOptions)
 
     const promise = new Promise<any>((yes: any, no: any) => {
         fetch(url, options).then((response) => {
+
+            // Success
             if (response.ok) {
-                response.json().then((data) => {
-                    if (options.transformResponse) {
-                        yes(options.transformResponse(data));
-                    } else {
+
+                // No body provided
+                if (response.status === 204) {
+                    yes(null);
+
+                // Parse the body
+                } else {
+                    response.json().then((data) => {
+                        if (options.transformResponse) {
+                            data = options.transformResponse(data);
+                        }
                         yes(data);
-                    }
-                }, no);
+                    }, no).catch(no);
+                }
+
+            // Response was of user or server error type
             } else {
-                no();
+                no(response);
             }
-        }, no);
+        }, no).catch(no);
     });
 
     return promise;
