@@ -6,6 +6,8 @@ import Selection from "../classes/Selection";
 export const FETCHING_SELECTIONS = "FETCHING_SELECTIONS";
 export const FETCHED_SELECTIONS = "FETCHED_SELECTIONS";
 export const FETCHED_TICKET_SELECTIONS = "FETCHED_TICKET_SELECTIONS";
+export const DELETED_SELECTIONS = "DELETED_SELECTIONS";
+export const DELETED_TICKET_SELECTIONS = "DELETED_TICKET_SELECTIONS";
 
 interface IRawSelection {
     points_adjustment: number;
@@ -50,25 +52,31 @@ export function fetchTicketSelections(ticketId: string) {
     };
 }
 
-export function updateTicketSelections(options) {
-    return (dispatch) => {
-        const selections: any[] = [];
-        options.selections.forEach((selection) => {
-            if (selection.id) {
-                return;
-            }
-            selections.push({
+interface IUpdateTicketSelectionsOptions {
+    deletedSelections: Selection[];
+    selections: Selection[];
+}
+
+export function updateTicketSelections(options: IUpdateTicketSelectionsOptions) {
+    return (dispatch, getState) => {
+        const {
+            deletedSelections,
+            ticketId,
+        } = options;
+
+        const createdSelections = options.createdSelections.map((selection) => {
+            return {
                 event_position_id: parseInt(selection.eventPositionId, 10),
                 outcome_id: parseInt(selection.outcomeId, 10),
                 ticket_id: parseInt(options.ticketId, 10),
-            });
+            };
         });
 
-        const deletedSelectionIds = options.deletedSelectionIds.map((id) => parseInt(id, 10));
+        const deletedSelectionIds = deletedSelections.map((selection) => parseInt(selection.id, 10); );
 
         const data = {
             deleted_objects: deletedSelectionIds,
-            objects: selections,
+            objects: createdSelections,
             rsu_gps_available: 1,
             rsu_latitude: 50.674239899999996,
             rsu_longitude: -120.32810699999999,
@@ -79,6 +87,23 @@ export function updateTicketSelections(options) {
         const promise = request("/v1/selections/", {
             data,
             method: "PATCH",
+            transformResponse: (response) => {
+                return response.objects.map((rawSel): Selection => {
+                    return {
+                        eventPositionId: String(rawSel.event_position_id),
+                        id: String(rawSel.id),
+                        outcomeId: String(rawSel.outcome_id),
+                        pointsEarned: rawSel.points_earned,
+                        scoreDropped: rawSel.score_dropped,
+                        ticketId: String(rawSel.ticket_id),
+                    };
+                });
+            },
+        });
+
+        promise.then(() => {
+            // FIXME Apply a change directly, without calling API again
+            dispatch(fetchTicketSelections(ticketId));
         });
 
         return promise;
