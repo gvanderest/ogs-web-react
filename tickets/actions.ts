@@ -41,13 +41,17 @@ export function fetchTickets(options: Map<string, any> = { event__status__in: "o
                     return {
                         ...rawTicket,
                         amountWon: rawTicket.amount_won,
+                        earnedPoints: rawTicket.points_earned,
                         event: {
                             ...rawTicket.event,
                             id: String(rawTicket.event_id),
                             ticketCost: rawTicket.event.ticket_cost,
                             lobbyTabs: [],
+                            ticketCount: rawTicket.event.ticket_count,
                         },
                         eventId: String(rawTicket.event_id),
+                        rank: rawTicket.position,
+                        rankTied: rawTicket.position_tied,
                         templateId: String(rawTicket.template_id),
                     };
                 });
