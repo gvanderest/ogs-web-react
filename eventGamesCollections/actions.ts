@@ -229,9 +229,6 @@ interface IRawTeam {
 }
 
 function transformTeam(raw: IRawTeam): Team {
-    if (!raw) {
-        return null;
-    }
     return {
         alias: raw.alias,
         city: raw.city,

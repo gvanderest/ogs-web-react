@@ -16,7 +16,7 @@ interface IProps {
     viewportHeight?: number;
     rowHeight?: number;
     className?: string;
-    records?: any[];
+    records: any[];
     scrollToTopWatch?: any;
     scrollToRecord?: IBaseRecord;
     scrollToRecordId?: string | number;
@@ -307,7 +307,7 @@ extends React.Component<IProps, IState> {
      * The logic behind rendering the header of the table, expects the content
      * to be wrapped in a <thead> element.
      */
-    protected renderHeader(records: IRecord[]): React.ReactElement<any> {
+    protected renderHeader(records: IRecord[]): React.ReactElement<any> | null {
         return records ? null : null;
     }
     /**
@@ -315,14 +315,14 @@ extends React.Component<IProps, IState> {
      * overwritten by extending classes, but not common.  Expects the content
      * to be wrapped in a <tfoot> element.
      */
-    protected renderFooter(records: IRecord[]): React.ReactElement<any> {
+    protected renderFooter(records: IRecord[]): React.ReactElement<any> | null {
         return records ? null : null;
     }
     /**
      * The logic behind rendering the empty view of the table.  Expected to be
      * overwritten by extending classes, to show an "empty" message.
      */
-    protected renderEmpty(): React.ReactElement<any> {
+    protected renderEmpty(): React.ReactElement<any> | null {
         return null;
     }
     /**
@@ -330,9 +330,9 @@ extends React.Component<IProps, IState> {
      * overwritten by inheriting classes, but not typically expected.
      */
     protected renderRecords(records?: IRecord[]) {
-        const rendered = records.map((record: IRecord) => {
+        const rendered = records ? records.map((record: IRecord) => {
             return this.renderRecord(record);
-        });
+        }) : null;
         return rendered;
     }
     /**

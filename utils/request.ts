@@ -1,9 +1,15 @@
 import * as Promise from "promise";
 
+type HeadersFunction  = () => string;
+
 interface IOptions {
     baseUrl?: string;
-    data?: { [key: string]: any };
-    headers?: { [jey: string]: string };
+    data?: {
+        [key: string]: any
+    };
+    headers?: {
+        [key: string]: string | HeadersFunction;
+    };
     method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE" | string;
     body?: string;
     credentials?: "include";

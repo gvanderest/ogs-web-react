@@ -54,7 +54,9 @@ export function fetchTicketSelections(ticketId: string) {
 
 interface IUpdateTicketSelectionsOptions {
     deletedSelections: Selection[];
+    createdSelections: Selection[];
     selections: Selection[];
+    ticketId: string;
 }
 
 export function updateTicketSelections(options: IUpdateTicketSelectionsOptions) {
@@ -72,7 +74,9 @@ export function updateTicketSelections(options: IUpdateTicketSelectionsOptions) 
             };
         });
 
-        const deletedSelectionIds = deletedSelections.map((selection) => parseInt(selection.id, 10); );
+        const deletedSelectionIds = deletedSelections.map((selection) => {
+            return parseInt(selection.id, 10);
+        });
 
         const data = {
             deleted_objects: deletedSelectionIds,

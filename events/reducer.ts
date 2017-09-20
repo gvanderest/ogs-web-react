@@ -45,7 +45,7 @@ interface IHandleFetchingEventAction {
     };
 }
 
-function handleFetchingEvent(state: IEventsState, action: IHandleFetchingEventAction) {
+function handleFetchingEvent(state: IEventsState) {
     return state;
 }
 
@@ -56,7 +56,7 @@ interface IHandleErrorFetchingEventAction {
     };
 }
 
-function handleErrorFetchingEvent(state: IEventsState, action: IHandleErrorFetchingEventAction) {
+function handleErrorFetchingEvent(state: IEventsState) {
     return state;
 }
 

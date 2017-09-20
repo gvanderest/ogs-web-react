@@ -1,22 +1,18 @@
 import * as Promise from "promise";
 
-interface IData {
-    [key: string]: string;
-}
-
 interface IOptions {
     [key: string]: any;
 }
 
 export default class API {
-    public static get(url: string, data?: IData, options?: IOptions) {
+    public static get(url: string, data?: Map<string, string>, options?: IOptions) {
         const passedOptions = { ...options, data, method: "GET" };
         return API.request(url, passedOptions);
     }
     /**
      * Return a URL for the API with any encoded query strings as needed.
      */
-    public static generateUrl(url: string, data?: IData) {
+    public static generateUrl(url: string, data?: Map<string, string>) {
         let fullUrl = API.baseUrl + "/" + url + "/";
         if (data) {
             const queries: string[] = Object.keys(data).sort().map((key: string): string => {

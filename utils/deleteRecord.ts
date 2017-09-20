@@ -1,28 +1,32 @@
+interface IRecord {
+    [key: string]: any;
+};
+
 interface IState {
     [key: string]: any;
 }
 
 export default function deleteRecord(
     state: IState,
-    record: string | IRecord,
+    record: IRecord,
     index = "id",
     field = "byId",
 ) {
-    console.log("BEFORE DELETE", state, record);
-    const newState = {
+    const newState: any  = {
         ...state,
         [field]: {
             ...state[field]
         }
     };
 
-    const id = record;
-    if (typeof record === "object") {
-        id = record[index];
-    }
-    console.log("DELETING", id);
+    let id = null;
 
-    delete newState[field][id];
-    console.log("AFTER DELETE", newState);
+    if (record && record[index]) {
+        id = record[index];
+        if (newState && newState[field] && newState[field][id]) {
+            delete newState[field][id];
+        }
+    }
+
     return newState;
 }

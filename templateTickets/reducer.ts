@@ -27,8 +27,11 @@ function handleFetchedTemplateTickets(state: IState, action: IHandleFetchedTempl
     return reduceRecords(state, action.templateTickets);
 }
 
-function handleDeletedTemplateTicket(state: IState, action) {
-    console.log("DELETING RECORD", id);
+interface IHandleDeletedTemplateTicketAction {
+    id: string;
+}
+
+function handleDeletedTemplateTicket(state: IState, action: IHandleDeletedTemplateTicketAction) {
     const { id } = action;
     return deleteRecord(state, id);
 }

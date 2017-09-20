@@ -196,6 +196,15 @@ interface IFetchLiveEventOptions {
 }
 
 interface IRawFantasyEventResponse {
+    c: string;
+    d: string;
+    eg: number;
+    i: number;
+    p: {
+        [key: number]: {
+            i: number;
+        };
+    };
     heu: {
         [key: number]: {
             gid: number;
@@ -203,6 +212,7 @@ interface IRawFantasyEventResponse {
             m: number[];
         };
     };
+    s: "o" | "c" | "f";
     t: {
         [key: string]: {
             a: string;
@@ -226,6 +236,12 @@ interface IRawFantasyEventResponse {
             uid: number;
         }
     };
+    tc: number;
+    tm: number;
+    tmu: number;
+    tcc: number;
+    tmn: number;
+    tcnt: number;
 }
 
 export function fetchFantasyEvent(options?: IFetchLiveEventOptions) {
@@ -303,12 +319,12 @@ export function fetchFantasyEvent(options?: IFetchLiveEventOptions) {
                     // payouts: raw.pse,
                     payout: raw.p,
                     status: raw.s,
+                    ticketCost: raw.tc,
+                    ticketCostCurrency: raw.tcc,
                     ticketCount: raw.tcnt,
                     ticketIds,
                     ticketMax: raw.tm,
                     ticketMaxPerUser: raw.tmu,
-                    ticketCost: raw.tc,
-                    ticketCostCurrency: raw.tcc,
                     ticketMin: raw.tmn,
                 };
 

@@ -261,8 +261,8 @@ export function createTemplateTicket(options) {
     }
 }
 
-export function deleteTemplateTicket(id) {
-    return (dispatch) => {
+export function deleteTemplateTicket(id: string) {
+    return (dispatch: ReduxDispatch) => {
         const promise = request(`/v1/tickets/templates/${ id }/`, {
             method: "DELETE",
         });

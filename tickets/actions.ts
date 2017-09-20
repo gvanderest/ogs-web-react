@@ -15,11 +15,14 @@ export const FETCHING_TICKETS = "FETCHING_TICKETS";
 export const FETCHED_TICKETS = "FETCHED_TICKETS";
 export const ERROR_FETCHING_TICKETS = "ERROR_FETCHING_TICKETS";
 
+export const CREATED_TICKET = "CREATED_TICKET";
+
 import API from "../api";
 
 interface IRawEvent {
     id: number;
     ticket_cost: number;
+    ticket_count: number;
 }
 
 interface IRawTicket {
@@ -27,6 +30,9 @@ interface IRawTicket {
     event_id: number;
     event: IRawEvent;
     template_id: number;
+    position_tied: boolean;
+    position: number;
+    points_earned: number;
 }
 
 interface ITicketsResponse {
@@ -45,8 +51,8 @@ export function fetchTickets(options: Map<string, any> = { event__status__in: "o
                         event: {
                             ...rawTicket.event,
                             id: String(rawTicket.event_id),
-                            ticketCost: rawTicket.event.ticket_cost,
                             lobbyTabs: [],
+                            ticketCost: rawTicket.event.ticket_cost,
                             ticketCount: rawTicket.event.ticket_count,
                         },
                         eventId: String(rawTicket.event_id),
@@ -149,6 +155,10 @@ export function createTicket(options: ISaveTicketOptions) {
         const promise = request("/v1/tickets/", {
             data,
             method: "POST",
+        });
+
+        promise.then((ticket) => {
+            dispatch({ type: CREATED_TICKET, ticket });
         });
 
         return promise;

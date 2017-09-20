@@ -15,5 +15,6 @@ interface ITicket {
     timeUnitsRemaining?: number;
     userId?: string;
     selectionIds: string[];
+    experienceGroups?: string[];
 }
 export default ITicket;
